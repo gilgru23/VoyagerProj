@@ -1,11 +1,12 @@
 class User:
-    # class attribute
-    email = None
-    phone = None
-    first_name = None
-    date_of_birth = None
 
     def __init__(self) -> None:
+        # class attribute
+        self.email = None
+        self.phone = None
+        self.first_name = None
+        self.date_of_birth = None
+
         pass
 
     async def do_something(self, thing):
