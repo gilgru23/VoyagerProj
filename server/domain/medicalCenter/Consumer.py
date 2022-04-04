@@ -1,20 +1,20 @@
-from domain.User import User
-from domain.medicalCenter.Dosing import Dosing
 
 from datetime import datetime
 from random import randint
 
-from domain.medicalCenter.Dosing import Feedback
+from domain.User import User
+from domain.medicalCenter.Dispenser import Dispenser
+from domain.medicalCenter.Dosing import *
 from domain.medicalCenter.Pod import *
 
 
 class Consumer(User):
 
-    def __init__(self, ) -> None:
+    def __init__(self) -> None:
         # dispenser-related relations
-        self.dispenser = None       # 1-to-1 (?)
-        self.pods = []              # 1-to-n
-        self.dosing_history = []    # 1-to-n
+        self.dispensers = []                    # 1-to-n (?)
+        self.pods = []                          # 1-to-n
+        self.dosing_history = []                # 1-to-n
 
         # personal info
         self.residence = ""
@@ -22,7 +22,6 @@ class Consumer(User):
         self.weight = None
         self.gender = ""
         self.goal = ""
-        pass
 
     # add a consumer dosing occurrence when a dosing is performed.
     # * adds a 'dosing record' to dosing_history
@@ -83,7 +82,7 @@ class Consumer(User):
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
         feedback_id = randint(1, 1000)
         new_feedback = Feedback(id=feedback_id,rating=feedback_rating,description=feedback_description,time=feedback_time)
-        # @TODO: add a call (await) to IMapper (when adding DAL)
+        # @TODO: add a call (await) to IMapper to update feedback situation (when adding DAL)
         dosing.feedback = new_feedback
         return True
 
@@ -95,10 +94,7 @@ class Consumer(User):
                 return dose
         return None
 
-    # @TODO: make method async
-    def get_recommendation(self, stuff):
-        raise NotImplementedError("replace this with an actual method")
-
+    # registers a new pod to the consumer. receives a podType arg and adds a new pod to the consumer's pod collection.
     # @TODO: make method async
     def register_pod(self, pod_type: PodType):
         # @TODO: replace ID with an ORM generated id (when adding DAL)
@@ -108,6 +104,21 @@ class Consumer(User):
             id = 1
         new_pod = Pod(pod_id=id, pod_type=pod_type)
         self.pods.insert(0, new_pod)
+        # @TODO: add a call (await) to IMapper to update pod situation (when adding DAL)
+
+    # registers a new dispenser to the consumer. receives a dispneser serial number arg
+    # and adds a new dispenser to the consumer's collection.
+    # @TODO: make method async
+    def register_dispenser(self, stuff):
+        # @TODO: replace ID with an ORM generated id (when adding DAL)
+        if self.dispenser:
+            disp_serial = 1 + max(disp.serial_number for disp in self.dispensers)
+        else:
+            disp_serial = 1
+        new_dispenser = Dispenser(serial_number=disp_serial)
+        self.dispensers.insert(0, new_dispenser)
+        # @TODO: add a call (await) to IMapper to update dispenser registration (when adding DAL)
+
 
     # @TODO: make method async
     def get_recommendation(self, stuff):

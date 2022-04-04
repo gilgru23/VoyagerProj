@@ -1,4 +1,4 @@
 class Dispenser:
-    def __init__(self) -> None:
-        self.serial_number = ""
+    def __init__(self,serial_number) -> None:
+        self.serial_number = serial_number
         self.registration_time = -1
