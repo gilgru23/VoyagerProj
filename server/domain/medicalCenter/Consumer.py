@@ -113,14 +113,9 @@ class Consumer(User):
     # @TODO: make method async
     def register_dispenser(self, serial_number):
         # # @TODO: replace ID with an ORM generated id (when adding DAL)
-        # if self.dispensers:
-        #     disp_serial = 1 + max(disp.serial_number for disp in self.dispensers)
-        # else:
-        #     disp_serial = 1
         new_dispenser = Dispenser(serial_number=serial_number)
         self.dispensers.insert(0, new_dispenser)
         # @TODO: add a call (await) to IMapper to update dispenser registration (when adding DAL)
-
 
     # @TODO: make method async
     def get_recommendation(self, stuff):

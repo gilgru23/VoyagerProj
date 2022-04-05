@@ -8,8 +8,8 @@ class IMapper:
 
     # instance init
     def __init__(self):
-        raise NotImplementedError("Init engine and session")
-
+        # Init engine and session
+        pass
 
     # methods
     async def get_consumer(self,consumer_id):

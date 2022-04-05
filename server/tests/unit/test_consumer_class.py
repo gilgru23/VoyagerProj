@@ -9,7 +9,6 @@ class TestConsumer(unittest.TestCase):
 
 
     consumer1 = Consumer()
-    consumer1.first_name = 'Gil'
 
     def setUp(self):
         print('set up unit test')
