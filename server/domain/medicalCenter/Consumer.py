@@ -11,6 +11,7 @@ from domain.medicalCenter.Pod import *
 class Consumer(User):
 
     def __init__(self) -> None:
+        super().__init__()
         # dispenser-related relations
         self.dispensers = []                    # 1-to-n (?)
         self.pods = []                          # 1-to-n
@@ -72,6 +73,7 @@ class Consumer(User):
 
     # receives receives feedback details and dosing-id and adds a new feedback to the dosing
     # returns True if successful, otherwise False.
+    # overrides past feedback for the same dosing!
     # @TODO: make method async
     def provide_feedback(self, dosing_id, feedback_rating, feedback_description):
         dosing = self.get_dosing_by_id(dosing_id)
@@ -106,16 +108,16 @@ class Consumer(User):
         self.pods.insert(0, new_pod)
         # @TODO: add a call (await) to IMapper to update pod situation (when adding DAL)
 
-    # registers a new dispenser to the consumer. receives a dispneser serial number arg
+    # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
     # @TODO: make method async
-    def register_dispenser(self, stuff):
-        # @TODO: replace ID with an ORM generated id (when adding DAL)
-        if self.dispenser:
-            disp_serial = 1 + max(disp.serial_number for disp in self.dispensers)
-        else:
-            disp_serial = 1
-        new_dispenser = Dispenser(serial_number=disp_serial)
+    def register_dispenser(self, serial_number):
+        # # @TODO: replace ID with an ORM generated id (when adding DAL)
+        # if self.dispensers:
+        #     disp_serial = 1 + max(disp.serial_number for disp in self.dispensers)
+        # else:
+        #     disp_serial = 1
+        new_dispenser = Dispenser(serial_number=serial_number)
         self.dispensers.insert(0, new_dispenser)
         # @TODO: add a call (await) to IMapper to update dispenser registration (when adding DAL)
 
