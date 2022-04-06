@@ -1,6 +1,7 @@
 from dal.DummyMapper import DummyMapper
 from dal.IMapper import IMapper
 from domain.medicalCenter.Consumer import Consumer
+import domain.common.Result as res
 
 
 # @TODO: make this class a singleton (?)
@@ -75,3 +76,10 @@ class MedicalCenter:
         result = await consumer.get_recommendation(None)
         return result
 
+    async def register_consumer(self, user_id: int):
+        consumer = await self.object_mapper.get_consumer(user_id)
+        if consumer:
+            return res.failure("user is already a consumer")
+        await self.object_mapper.add_consumer(user_id)
+        #todo: check that adding consumer was successful
+        return res.success()

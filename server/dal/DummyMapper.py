@@ -38,3 +38,10 @@ class DummyMapper(IMapper):
 
     async def delete_consumer(self,consumer):
         print("DummyMapper: delete_consumer was called!")
+
+    #general user
+    async def add_account(self, email: str, f_name: str, l_name: str, phone: str, pwd: str):
+        print("DummyMapper: add_account was called!")
+
+    async def get_account(self, email: str):
+        print("DummyMapper: get_account was called!")

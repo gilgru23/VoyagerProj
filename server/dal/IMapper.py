@@ -16,7 +16,7 @@ class IMapper:
         raise NotImplementedError("Should have implemented this")
 
 
-    async def create_consumer(self,consumer_id):
+    async def add_consumer(self, user_id):
         raise NotImplementedError("Should have implemented this")
 
 
@@ -25,4 +25,14 @@ class IMapper:
 
 
     async def delete_consumer(self,consumer):
+        raise NotImplementedError("Should have implemented this")
+
+    #general user
+    async def add_account(self, email: str, f_name: str, l_name: str, phone: str, pwd: str):
+        raise NotImplementedError("Should have implemented this")
+
+    async def get_account(self, email: str):
+        raise NotImplementedError("Should have implemented this")
+
+    async def get_account_by_id(self, user_id: int):
         raise NotImplementedError("Should have implemented this")
