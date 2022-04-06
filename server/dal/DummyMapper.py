@@ -1,6 +1,7 @@
 import asyncio
 
 from dal.IMapper import IMapper
+from domain.medicalCenter.Consumer import Consumer
 
 
 class DummyMapper(IMapper):
@@ -17,6 +18,9 @@ class DummyMapper(IMapper):
     async def get_consumer(self,consumer_id):
         print("DummyMapper: get_consumer was called")
         print(f"Here is consumer #{consumer_id}!")
+        consumer = Consumer()
+        consumer.id = consumer_id
+        return consumer
 
 
     async def add_consumer(self,consumer_id):

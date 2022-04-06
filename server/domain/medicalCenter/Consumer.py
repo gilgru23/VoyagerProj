@@ -59,6 +59,10 @@ class Consumer(User):
                 return pod
         return None
 
+    # returns a (SHALLOW) copy of the list of pods registered to the consumer
+    def get_pods(self):
+        return self.pods.copy()
+
     # returns a list of the dosing in consumer's dosing history which matches the filters
     def get_dosage_history(self, filters=None):
         dosings = [dose for dose in self.dosing_history if self.filter_dosing(dose,filters)]
@@ -107,7 +111,7 @@ class Consumer(User):
             id = 1
         new_pod = Pod(pod_id=id, pod_type=pod_type)
         self.pods.insert(0, new_pod)
-        # @TODO: add a call (await) to IMapper to update pod situation (when adding DAL)
+        return True
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
@@ -116,7 +120,7 @@ class Consumer(User):
         # # @TODO: replace ID with an ORM generated id (when adding DAL)
         new_dispenser = Dispenser(serial_number=serial_number)
         self.dispensers.insert(0, new_dispenser)
-        # @TODO: add a call (await) to IMapper to update dispenser registration (when adding DAL)
+        return True
 
     # @TODO: make method async
     def get_recommendation(self, stuff):

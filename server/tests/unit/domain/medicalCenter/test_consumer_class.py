@@ -11,7 +11,7 @@ class TestConsumer(unittest.TestCase):
     consumer1 = Consumer()
 
     def setUp(self):
-        print('set up unit test')
+        print('\nset up unit test')
         dosings = [Dosing(dosing_id=i, pod_id=i//2, amount=20, time=None, location=None) for i in range(10)]
         pod_type_1 = PodType(type_id=111, capacity=100)
         pods = [Pod(pod_id=i,pod_type=pod_type_1) for i in range(5)]
@@ -49,20 +49,20 @@ class TestConsumer(unittest.TestCase):
 
     def test_2_dose_fail1(self):
         print(f'Test: dose - fail')
-        print(f'\nno pods to dose from')
+        print(f'\tno pods to dose from')
         self.consumer1.pods = []
         result = self.consumer1.dose(pod_id=1, amount=42.5,location='here')
         self.assertFalse(result)
 
     def test_3_dose_fail2(self):
         print(f'Test: dose - fail')
-        print(f'\nno incorrect pod id')
+        print(f'\tno incorrect pod id')
         result = self.consumer1.dose(pod_id=1000, amount=42.5,location='here')
         self.assertFalse(result)
 
     def test_4_dose_fail3(self):
         print(f'Test: dose - fail')
-        print(f'\nno dosing amount too large')
+        print(f'\tno dosing amount too large')
         result = self.consumer1.dose(pod_id=1, amount=1000, location='here')
         self.assertFalse(result)
 

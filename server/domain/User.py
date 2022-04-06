@@ -2,6 +2,7 @@ class User:
 
     def __init__(self) -> None:
         # class attribute
+        self.id = -1
         self.email = None
         self.phone = None
         self.first_name = None
