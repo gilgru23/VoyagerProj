@@ -16,7 +16,7 @@ class IMapper:
         raise NotImplementedError("Should have implemented this")
 
 
-    async def add_consumer(self,consumer_id):
+    async def create_consumer(self,consumer_id):
         raise NotImplementedError("Should have implemented this")
 
 
