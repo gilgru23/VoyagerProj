@@ -63,7 +63,7 @@ class Consumer(User):
     async def get_pods(self):
         return self.pods.copy()
 
-    # returns a list of the dosing in consumer's dosing history which matches the filters
+    # returns a list (SHALLOW COPY) of the dosing in consumer's dosing history which matches the filters
     async def get_dosage_history(self, filters=None):
         dosings = [dose for dose in self.dosing_history if self.filter_dosing(dose,filters)]
         return dosings
