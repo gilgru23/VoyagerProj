@@ -38,7 +38,7 @@ class Consumer(User):
         # @TODO: replace datetime.now with a more generic time method
         dosing_time = datetime.now()
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
-        dosing_id = randint(1, 1000)
+        dosing_id = randint(1, 100000)
         new_dosing = Dosing(pod_id=pod_id, dosing_id=dosing_id,amount=amount, time=dosing_time, location=location)
         # @TODO: add a call (await) to IMapper (when adding DAL)
         self.dosing_history.insert(0, new_dosing)
@@ -87,7 +87,7 @@ class Consumer(User):
         # @TODO: replace datetime.now with a more generic time method
         feedback_time = datetime.now()
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
-        feedback_id = randint(1, 1000)
+        feedback_id = randint(1, 100000)
         new_feedback = Feedback(id=feedback_id,rating=feedback_rating,description=feedback_description,time=feedback_time)
         # @TODO: add a call (await) to IMapper to update feedback situation (when adding DAL)
         dosing.feedback = new_feedback
