@@ -21,3 +21,7 @@ class User:
     async def logout(self, thing):
         raise NotImplementedError("replace this with an actual method")
         thing.do()
+
+    async def register(self, thing):
+        raise NotImplementedError("replace this with an actual method")
+        thing.do()
