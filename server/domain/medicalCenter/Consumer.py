@@ -28,7 +28,8 @@ class Consumer(User):
     # * adds a 'dosing record' to dosing_history
     # * changes the current state of the relevant pod(?)
     # returns True if successful, otherwise False.
-    # @TODO: make method async
+    # @TODO: make method async ?? (possibly can be avoided, for every mention in this file,
+    # @TODO: if we confine DB operations to Medical-Center class)
     def dose(self,pod_id, amount: float, location):
         if not self.can_dose(pod_id,amount):
             return False
@@ -97,7 +98,7 @@ class Consumer(User):
         return None
 
     # registers a new pod to the consumer. receives a podType arg and adds a new pod to the consumer's pod collection.
-    # @TODO: make method async
+    # @TODO: make method async ??
     def register_pod(self, pod_type: PodType):
         # @TODO: replace ID with an ORM generated id (when adding DAL)
         if self.pods:
@@ -110,7 +111,7 @@ class Consumer(User):
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
-    # @TODO: make method async
+    # @TODO: make method async ??
     def register_dispenser(self, serial_number):
         # # @TODO: replace ID with an ORM generated id (when adding DAL)
         new_dispenser = Dispenser(serial_number=serial_number)
