@@ -1,7 +1,7 @@
 from dal.DummyMapper import DummyMapper
 from dal.IMapper import IMapper
 from domain.medicalCenter.Consumer import Consumer
-import domain.common.Result as res
+import domain.common.Result as Res
 
 
 # @TODO: make this class a singleton (?)
@@ -15,71 +15,78 @@ class MedicalCenter:
 
 
 # consumer related interface
-    def consumer_error(self,consumer_id):
-        return False, f"Error : consumer [{consumer_id}] not found!"
 
     async def get_consumer(self, consumer_id):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
-        return consumer
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        return consumer_res
 
     async def get_consumer_history(self, consumer_id, filters):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
         history = await consumer.get_dosage_history(filters)
         return history
 
     async def consumer_dose(self,consumer_id, pod_id, amount: float, location):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
+        dose_res = await consumer.dose(pod_id=pod_id,amount=amount,location=location)
         # @TODO: add a call (await) to IMapper (when adding DAL)
-        pass
+        return dose_res
 
     async def consumer_get_consumer_pods(self,consumer_id):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
-        history = await consumer.get_pods()
-        return history
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
+        history_res = await consumer.get_pods()
+        return history_res
 
     async def consumer_provide_feedback(self, consumer_id, dosing_id, feedback_rating, feedback_description):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
-        result = await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
+        feedback_res = await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
         # @TODO: add a call (await) to IMapper to update feedback situation (when adding DAL)
-        return result
+        return feedback_res
 
     async def consumer_register_pod(self, consumer_id, pod_type):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
         result = await consumer.register_pod(pod_type=pod_type)
         # @TODO: add a call (await) to IMapper to update pod situation (when adding DAL)
         return result
 
     async def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
         result = await consumer.register_dispenser(dispenser_serial_number)
         # @TODO: add a call (await) to IMapper to update dispenser registration (when adding DAL)
         return result
 
     async def consumer_get_recommendation(self, consumer_id):
-        consumer = await self.object_mapper.get_consumer(consumer_id)
-        if consumer is None:
-            return self.consumer_error(consumer_id)
-        result = await consumer.get_recommendation(None)
-        return result
+        consumer_res = await self.object_mapper.get_consumer(consumer_id)
+        if Res.is_failure(consumer_res):
+            return consumer_res
+        consumer = Res.get_value(consumer_res)
+        recommendation_res = await consumer.get_recommendation(None)
+        return recommendation_res
 
     async def register_consumer(self, user_id: int):
-        consumer = await self.object_mapper.get_consumer(user_id)
-        if consumer:
-            return res.failure("user is already a consumer")
-        await self.object_mapper.add_consumer(user_id)
+        consumer_res = await self.object_mapper.get_consumer(user_id)
+        if Res.is_successful(consumer_res):
+            return Res.failure(f"Error: register consumer: user [{user_id}] is already a registered consumer")
+        result = await self.object_mapper.add_consumer(user_id)
         #todo: check that adding consumer was successful
-        return res.success()
+        return result
+
