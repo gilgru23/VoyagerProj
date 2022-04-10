@@ -6,9 +6,9 @@ class ICacher:
         pass
 
 
-    def get_consumer_by_id(self, consumer_id):
+    async def get_consumer_by_id(self, consumer_id):
         raise NotImplementedError("Should have implemented this")
 
 
-    def add_consumer_to_cache(self, consumer: Consumer):
+    async def add_consumer_to_cache(self, consumer: Consumer):
         raise NotImplementedError("Should have implemented this")

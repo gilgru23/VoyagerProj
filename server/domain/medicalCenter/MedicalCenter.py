@@ -86,7 +86,9 @@ class MedicalCenter:
         consumer_res = await self.object_mapper.get_consumer(user_id)
         if Res.is_successful(consumer_res):
             return Res.failure(f"Error: register consumer: user [{user_id}] is already a registered consumer")
-        result = await self.object_mapper.add_consumer(user_id)
-        #todo: check that adding consumer was successful
+        # @TODO: add the rest of the fields of new_consumer
+        new_consumer = Consumer()
+        result = await self.object_mapper.add_consumer(new_consumer)
+        # @TODO: check that adding consumer was successful
         return result
 

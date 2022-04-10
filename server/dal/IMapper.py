@@ -1,5 +1,7 @@
 import asyncio
 
+from domain.medicalCenter.Consumer import Consumer
+
 
 class IMapper:
     # class attribute
@@ -16,15 +18,15 @@ class IMapper:
         raise NotImplementedError("Should have implemented this")
 
 
-    async def add_consumer(self, user_id):
+    async def add_consumer(self, consumer: Consumer):
         raise NotImplementedError("Should have implemented this")
 
 
-    async def update_consumer(self,consumer):
+    async def update_consumer(self,consumer: Consumer):
         raise NotImplementedError("Should have implemented this")
 
 
-    async def delete_consumer(self,consumer):
+    async def delete_consumer(self,consumer: Consumer):
         raise NotImplementedError("Should have implemented this")
 
     #general user

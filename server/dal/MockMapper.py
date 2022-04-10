@@ -20,25 +20,31 @@ class MockMapper(IMapper):
 
     # methods
     async def get_consumer(self,consumer_id):
-        print("DummyMapper: get_consumer was called")
-        print(f"Here is consumer #{consumer_id}!")
-
-        # failure example
-        # if False:
-        #     self.consumer_error(consumer_id)
-
-        consumer = Consumer()
-        consumer.id = consumer_id
-        dosings = [Dosing(dosing_id=i, pod_id=i//2, amount=20, time=None, location=None) for i in range(10)]
-        pod_type_1 = PodType(type_id=111, capacity=100, description="None")
-        pods = [Pod(pod_id=i,pod_type=pod_type_1) for i in range(5)]
-        consumer.dosing_history = dosings
-        consumer.pods = pods
-        return Res.success(consumer)
+        consumer_res = await self.cache.get_consumer_by_id(consumer_id=consumer_id)
+        if Res.is_successful(consumer_res):
+            return Res.get_value(consumer_res)
+        consumer_res = await self.db.get_consumer(consumer_id=consumer_id)
+        if Res.is_successful(consumer_res):
+            consumer = Res.get_value(consumer_res)
+            add_consumer_res = await self.cache.add_consumer_to_cache(consumer)
+            if Res.is_successful(add_consumer_res):
+                return Res.get_value(consumer)
+            else:
+                return add_consumer_res
+        return consumer_res
 
 
-    async def add_consumer(self,consumer_id):
-        print("MockMapper (Dummy): add_consumer was called!")
+    async def add_consumer(self,consumer: Consumer):
+        get_cache_res = await self.cache.get_consumer_by_id(consumer_id=consumer.id)
+        if Res.is_failure(get_cache_res):
+            return get_cache_res
+        add_db_res = await self.db.add_consumer(consumer)
+        if Res.is_failure(add_db_res):
+            return add_db_res
+        add_cache_res = await self.cache.add_consumer_to_cache(consumer)
+        if Res.is_failure(add_cache_res):
+            return add_cache_res
+        return Res.success()
 
 
     async def update_consumer(self,consumer):
