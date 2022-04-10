@@ -11,8 +11,10 @@ import RNBluetoothClassic, {
   TouchableOpacity,
   PermissionsAndroid
 } from "react-native";
+import { NavigationActions, withNavigation } from 'react-navigation';
+
  
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
@@ -21,6 +23,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Image style={styles.image} source={require("./assets/voyagerLogo.png")} />
       <Image style={styles.dispenserImg} source={require("./assets/dispenser.png")} /> 
+
       
       {/* <View style={styles.inputView}>
         <TextInput
@@ -44,13 +47,16 @@ export default function HomeScreen() {
       {/* <TouchableOpacity>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
       </TouchableOpacity> */}
-      
+      <Button
+        title="Go to Bluetooth"
+        onPress={() => navigation.navigate('Bluetooth')}
+      />      
       <View style={styles.buttonLayout}>
         <TouchableOpacity style={styles.loginBtn}>
             <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginBtn}>
+        <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('signUp')}>
             <Text style={styles.loginText}>Register</Text>
         </TouchableOpacity>
       </View>
