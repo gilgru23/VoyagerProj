@@ -15,7 +15,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         print('\nset up unit test')
         dosings = [Dosing(dosing_id=i, pod_id=i//2, amount=20, time=None, location=None) for i in range(10)]
-        pod_type_1 = PodType(type_id=111, capacity=100)
+        pod_type_1 = PodType(type_id=111, capacity=100, description="None")
         pods = [Pod(pod_id=i,pod_type=pod_type_1) for i in range(5)]
         self.consumer1.dosing_history = dosings
         self.consumer1.pods = pods

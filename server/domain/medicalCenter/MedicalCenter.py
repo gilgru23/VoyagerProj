@@ -9,8 +9,8 @@ import domain.common.Result as Res
 
 class MedicalCenter:
 
-    def __init__(self) -> None:
-        self.object_mapper: IMapper = DummyMapper()
+    def __init__(self, mapper: IMapper) -> None:
+        self.object_mapper: IMapper = mapper
         pass
 
 

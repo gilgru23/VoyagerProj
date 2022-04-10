@@ -1,13 +1,14 @@
 import unittest
 
+from dal.DummyMapper import DummyMapper
 from domain.medicalCenter.Consumer import Consumer
 from domain.medicalCenter.MedicalCenter import MedicalCenter
 
 import domain.common.Result as Res
 
 class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
-
-    medical_center = MedicalCenter()
+    test_mapper = DummyMapper()
+    medical_center = MedicalCenter(test_mapper)
 
     def setUp(self):
         pass
