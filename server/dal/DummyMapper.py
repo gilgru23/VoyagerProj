@@ -5,17 +5,14 @@ from domain.medicalCenter.Consumer import *
 
 
 class DummyMapper(IMapper):
-    # class attribute
-    engine = None
-    session = None
 
     # instance init
     def __init__(self):
         super(DummyMapper, self).__init__()
 
 
-
-    def consumer_error(self,consumer_id):
+    @staticmethod
+    def consumer_error(consumer_id):
         return False, f"Error : consumer [{consumer_id}] not found!"
 
     # methods
@@ -54,3 +51,6 @@ class DummyMapper(IMapper):
 
     async def get_account(self, email: str):
         print("DummyMapper: get_account was called!")
+
+    async def get_account_by_id(self, user_id: int):
+        print("DummyMapper: get_account_by_id was called!")

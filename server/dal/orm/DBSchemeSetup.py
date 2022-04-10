@@ -12,21 +12,22 @@ from domain.medicalCenter.Dosing import *
 
 Base = declarative_base()
 
-print(f'setting up DB!')
 
-
+# define schemes for DTOs - each DTO class describes the sql DB table of the Domain Layer object:
+# attributes = columns, instances = rows
 class ConsumerDTO(Base):
     __tablename__ = 'consumer'
 
+    # Dto attributes
     id = Column(Integer, primary_key=True)
-    pods = relationship("PodDTO")
-    dosing_history = relationship("DosingDTO")
-    dispensers = relationship("DispenserDTO")
-
-    # temp fields - to be moved to UserDTO when exists
+    pods = relationship("PodDTO")                   # 1-to-many relation: CONSUMER --holds references of--> PODs
+    dosing_history = relationship("DosingDTO")      # 1-to-many relation: CONSUMER --holds references of--> DOSINGs
+    dispensers = relationship("DispenserDTO")       # 1-to-many relation: CONSUMER --holds references of--> DISPENSERs
+    # temp fields - @TODO: to be moved to UserDTO when exists -
     first_name = Column(String(50))
     last_name = Column(String(50))
 
+    # static method. receives a (Domain layer) Consumer object and returns an instance of its DTO counterpart
     @staticmethod
     def from_consumer(consumer: Consumer):
         consumer_dto = ConsumerDTO()
@@ -36,6 +37,7 @@ class ConsumerDTO(Base):
         consumer_dto.dispensers = [DispenserDTO.from_dispenser(dispenser) for dispenser in consumer.dispensers]
         return consumer_dto
 
+    # returns a Domain layer Consumer object for the referenced DTO instance
     def to_consumer(self):
         pods = [dto.to_pod() for dto in self.pods]
         dosing_history = [dto.to_dosing() for dto in self.dosing_history]
@@ -50,13 +52,12 @@ class ConsumerDTO(Base):
 class DispenserDTO(Base):
     __tablename__ = 'dispenser'
 
-    # id = Column(Integer, primary_key=True)
+    # Dto attributes
     serial_number = Column(String(50), primary_key=True)
-    # @TODO: check if Datetime resets every time or only on first insert (through different instances)
-    registration_time = Column(DateTime(timezone=True), server_default=func.now())
+    registration_time = Column(DateTime(timezone=True), server_default=func.now())  # if Datetime not specified - sets it to the time of the SQL insert operation (based on the sql server's clock)
+    consumer_id = Column(Integer, ForeignKey('consumer.id'))                        # many-to-1 relation: CONSUMER --holds references of--> DISPENSERs
 
-    consumer_id = Column(Integer, ForeignKey('consumer.id'))
-
+    # static method. receives a (Domain layer) Dispenser object and returns an instance of its DTO counterpart
     @staticmethod
     def from_dispenser(dispenser: Dispenser):
         dispenser_dto = DispenserDTO()
@@ -64,6 +65,7 @@ class DispenserDTO(Base):
         dispenser_dto.registration_time = dispenser.registration_time
         return dispenser_dto
 
+    # returns a Domain layer Dispenser object for the referenced DTO instance
     def to_dispenser(self):
         dispenser = Dispenser(serial_number=self.serial_number, registration_time=self.registration_time)
         return dispenser
@@ -72,14 +74,14 @@ class DispenserDTO(Base):
 class PodDTO(Base):
     __tablename__ = 'pod'
 
+    # Dto attributes
     id = Column(Integer, primary_key=True)
     remainder = Column(Float)
+    type = relationship("PodTypeDTO")                           # 1-to-1 relation: POD --holds references of--> PODTYPEs
+    type_id = Column(Integer, ForeignKey('podType.id'))         #   Domian Layer Pods only hold a 'type' reference field; 'type_id' only shows in the DB table
+    consumer_id = Column(Integer, ForeignKey('consumer.id'))    # many-to-1 relation: CONSUMER --holds references of--> DISPENSERs
 
-    type_id = Column(Integer, ForeignKey('podType.id'))
-    type = relationship("PodTypeDTO")
-
-    consumer_id = Column(Integer, ForeignKey('consumer.id'))
-
+    # static method. receives a (Domain layer) Pod object and returns an instance of its DTO counterpart
     @staticmethod
     def from_pod(pod: Pod):
         pod_dto = PodDTO()
@@ -89,6 +91,7 @@ class PodDTO(Base):
         # pod_dto.type.from_podType(pod.type)
         return pod_dto
 
+    # returns a Domain layer Pod object for the referenced DTO instance
     def to_pod(self):
         pod = Pod(pod_id=self.id, pod_type=self.type.to_podType())
         return pod
@@ -97,10 +100,12 @@ class PodDTO(Base):
 class PodTypeDTO(Base):
     __tablename__ = 'podType'
 
+    # Dto attributes
     id = Column(Integer, primary_key=True)
     capacity = Column(Float)
     description = Column(String(500))
 
+    # static method. receives a (Domain layer) PodType object and returns an instance of its DTO counterpart
     @staticmethod
     def from_podType(pod_type: PodType):
         pod_type_dto = PodTypeDTO()
@@ -109,6 +114,7 @@ class PodTypeDTO(Base):
         pod_type_dto.description = pod_type.description
         return pod_type_dto
 
+    # returns a Domain layer PodType object for the referenced DTO instance
     def to_podType(self):
         podType = PodType(type_id=self.id,capacity=self.capacity, description=self.description)
         return podType
@@ -117,16 +123,17 @@ class PodTypeDTO(Base):
 class DosingDTO(Base):
     __tablename__ = 'dosing'
 
+    # Dto attributes
     id = Column(Integer, primary_key=True)
     amount = Column(Float)
     location = Column(String(50))
-    time = Column(DateTime(timezone=True), server_default=func.now())
-    pod_id = Column(Integer, ForeignKey('pod.id'))
-    feedback_id = Column(Integer, ForeignKey('feedback.id'))
-    feedback = relationship("FeedbackDTO")
+    time = Column(DateTime(timezone=True), server_default=func.now())   # if Datetime not specified - sets it to the time of the SQL insert operation (based on the sql server's clock)
+    pod_id = Column(Integer, ForeignKey('pod.id'))                      # holds the pod_id of the Pod used in dose
+    feedback = relationship("FeedbackDTO")                              # 1-to-1 relation: POD --holds references of--> PODTYPEs
+    feedback_id = Column(Integer, ForeignKey('feedback.id'))            #   Domian Layer Dosings only hold a 'feedback' reference field; 'feedback_id' only shows in the DB table
+    consumer_id = Column(Integer, ForeignKey('consumer.id'))            # many-to-1 relation: CONSUMER --holds references of--> DOSINGs
 
-    consumer_id = Column(Integer, ForeignKey('consumer.id'))
-
+    # static method. receives a (Domain layer) Dosing object and returns an instance of its DTO counterpart
     @staticmethod
     def from_dosing(dosing: Dosing):
         dosing_dto = DosingDTO()
@@ -135,6 +142,7 @@ class DosingDTO(Base):
         dosing_dto.feedback = FeedbackDTO.from_feedback(dosing.feedback)
         return dosing_dto
 
+    # returns a Domain layer Dosing object for the referenced DTO instance
     def to_dosing(self):
         feedback = self.feedback.to_feedback()
         dosing = Dosing(dosing_id=self.id, pod_id=self.pod_id,amount=self.amount,
@@ -146,11 +154,13 @@ class DosingDTO(Base):
 class FeedbackDTO(Base):
     __tablename__ = 'feedback'
 
+    # Dto attributes
     id = Column(Integer, primary_key=True)
     rating = Column(Integer)
     description = Column(String(500))
-    time = Column(DateTime(timezone=True), server_default=func.now())
+    time = Column(DateTime(timezone=True), server_default=func.now())   # if Datetime not specified - sets it to the time of the SQL insert operation (based on the sql server's clock)
 
+    # static method. receives a (Domain layer) Feedback object and returns an instance of its DTO counterpart
     @staticmethod
     def from_feedback(feedback: Feedback):
         feedback_dto = FeedbackDTO()
@@ -160,9 +170,12 @@ class FeedbackDTO(Base):
         feedback_dto.time = feedback.time
         return feedback_dto
 
+    # returns a Domain layer Feedback object for the referenced DTO instance
     def to_feedback(self):
         feedback = Feedback(id=self.id, rating=self.rating, description=self.description, time=self.time)
         return feedback
+
+
 
 
 def test_db(engine):
@@ -225,11 +238,15 @@ def test_db(engine):
     session.commit()
     print(dto_consumer4)
 
-if __name__ == "__main__":
-    engine = create_engine('sqlite:///medicalCenter.db')
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+
+def setup_DB(engine):
+    Base.metadata.drop_all(engine)      # drop all schemes in current DB
+    Base.metadata.create_all(engine)    # create all schemes described above in current DB
     test_db(engine)
+
+if __name__ == "__main__":
+    engine = create_engine('sqlite:///medicalCenter.db')    # creates the specified db, if it does not exist
+    setup_DB(engine)
 
 
 
