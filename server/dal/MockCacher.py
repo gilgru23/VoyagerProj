@@ -6,6 +6,7 @@ from domain.medicalCenter.Consumer import Consumer
 
 class MockCacher(ICacher):
     def __init__(self) -> None:
+        super().__init__()
         self.consumers_cache = dict()
 
     async def get_consumer_by_id(self, consumer_id):
