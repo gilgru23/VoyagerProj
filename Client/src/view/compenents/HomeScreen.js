@@ -18,12 +18,10 @@ export default function HomeScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
- 
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={require("./assets/voyagerLogo.png")} />
-      <Image style={styles.dispenserImg} source={require("./assets/dispenser.png")} /> 
-
+      <Image source={require('./assets/voyagerLogo.png')} />
+       <Image source={require("./assets/dispenser.png")} />
       
       {/* <View style={styles.inputView}>
         <TextInput
@@ -52,7 +50,7 @@ export default function HomeScreen({ navigation }) {
         onPress={() => navigation.navigate('Bluetooth')}
       />      
       <View style={styles.buttonLayout}>
-        <TouchableOpacity style={styles.loginBtn}>
+        <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
 

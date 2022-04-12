@@ -1,52 +1,58 @@
 // components/signup.js
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, ActivityIndicator, Image} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-
+import React, { Component } from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  Alert,
+  ActivityIndicator,
+  Image
+} from 'react-native'
+import { Picker } from '@react-native-picker/picker'
+import { registerUser } from '../../controller/controller'
 
 export default class Signup extends Component {
-  
   constructor() {
-    super();
-    this.state = { 
+    super()
+    this.state = {
       displayName: '',
-      email: '', 
+      email: '',
       password: '',
       isLoading: false,
       role: 'Consumer'
     }
   }
   updateInputVal = (val, prop) => {
-    const state = this.state;
-    state[prop] = val;
-    this.setState(state);
+    const state = this.state
+    state[prop] = val
+    this.setState(state)
   }
-  registerUser = () => {
-    if(this.state.email === '' && this.state.password === '') {
-      Alert.alert('Enter details to signup!')
-    } else {
-      this.setState({
-        isLoading: true,
-      })
-    this.props.navigation.navigate('Login')
-  }}
+  register() {
+    const { email, password, role } = this.state
+    console.log(email)
+    registerUser(email, password, role)
+    this.props.navigation.navigate('PersonalInfo')
+  }
+
   render() {
-    if(this.state.isLoading){
-      return(
+    if (this.state.isLoading) {
+      return (
         <View style={styles.preloader}>
-          <ActivityIndicator size="large" color="#9E9E9E"/>
+          <ActivityIndicator size="large" color="#9E9E9E" />
         </View>
       )
-    }    
+    }
     return (
-      <View style={styles.container}>  
-        <Image source={require("../assets/voyagerLogo.png")} />
+      <View style={styles.container}>
+        <Image source={require('./assets/voyagerLogo.png')} />
         <TextInput
           style={styles.inputStyle}
           placeholder="Name"
           value={this.state.displayName}
           onChangeText={(val) => this.updateInputVal(val, 'displayName')}
-        />      
+        />
         <TextInput
           style={styles.inputStyle}
           placeholder="Email"
@@ -60,37 +66,40 @@ export default class Signup extends Component {
           onChangeText={(val) => this.updateInputVal(val, 'password')}
           maxLength={15}
           secureTextEntry={true}
-        />   
-      <Picker
-        selectedValue={this.state.role}
-        onValueChange={(itemValue, itemIndex) => this.setState({role : itemValue})}
-        style={styles.inputStyle}
-      >
-        <Picker.Item label="Consumer" value="Consumer" />
-        <Picker.Item label="Voyager Manager" value="Voyager Manager" />
-        <Picker.Item label="Care Giver" value="Care Giver" />
-      </Picker>
-          
+        />
+        <Picker
+          selectedValue={this.state.role}
+          onValueChange={(itemValue, itemIndex) =>
+            this.setState({ role: itemValue })
+          }
+          style={styles.inputStyle}
+        >
+          <Picker.Item label="Consumer" value="Consumer" />
+          <Picker.Item label="Voyager Manager" value="Voyager Manager" />
+          <Picker.Item label="Care Giver" value="Care Giver" />
+        </Picker>
+
         <Button
           color="#3740FE"
           title="Signup"
-          onPress={() => this.registerUser()}
+          onPress={() => this.register()}
         />
-        <Text 
+        <Text
           style={styles.loginText}
-          onPress={() => this.props.navigation.navigate('Login')}>
+          onPress={() => this.props.navigation.navigate('Login')}
+        >
           Already Registered? Click here to login
-        </Text>                          
+        </Text>
       </View>
-    );
+    )
   }
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
     padding: 35,
     backgroundColor: '#fff'
   },
@@ -98,8 +107,8 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 15,
     paddingBottom: 15,
-    alignSelf: "center",
-    borderColor: "#ccc",
+    alignSelf: 'center',
+    borderColor: '#ccc',
     borderBottomWidth: 1
   },
   loginText: {
@@ -117,4 +126,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff'
   }
-});
+})
