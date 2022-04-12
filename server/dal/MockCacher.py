@@ -1,6 +1,6 @@
 
-import domain.common.Result as Res
 from dal.ICacher import ICacher
+from dal.Util import DataAccessError
 from domain.medicalCenter.Consumer import Consumer
 
 
@@ -11,16 +11,14 @@ class MockCacher(ICacher):
 
     async def get_consumer_by_id(self, consumer_id):
         if consumer_id not in self.consumers_cache:
-            return Res.failure('')
+            return None
         else:
-            return Res.success(self.consumers_cache[consumer_id])
+            return self.consumers_cache[consumer_id]
 
     async def add_consumer_to_cache(self, consumer: Consumer):
         if consumer.id in self.consumers_cache:
-            return Res.failure(f"Error add_consumer_to_cache: consumer [{consumer.id}] is already in cache!")
-        else:
-            self.consumers_cache[consumer.id] = consumer
-            return Res.success()
+            raise DataAccessError(f"Error add_consumer_to_cache: consumer [{consumer.id}] is already in cache!")
+        self.consumers_cache[consumer.id] = consumer
 
 
 

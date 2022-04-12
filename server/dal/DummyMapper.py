@@ -1,5 +1,4 @@
 import asyncio
-import domain.common.Result as Res
 from dal.IMapper import IMapper
 from domain.medicalCenter.Consumer import *
 
@@ -7,9 +6,9 @@ from domain.medicalCenter.Consumer import *
 class DummyMapper(IMapper):
 
     # instance init
-    def __init__(self):
+    def __init__(self, consumer_factory):
         super(DummyMapper, self).__init__()
-
+        self.consumer_factory = consumer_factory
 
     @staticmethod
     def consumer_error(consumer_id):
@@ -24,14 +23,8 @@ class DummyMapper(IMapper):
         # if False:
         #     self.consumer_error(consumer_id)
 
-        consumer = Consumer()
-        consumer.id = consumer_id
-        dosings = [Dosing(dosing_id=i, pod_id=i//2, amount=20, time=None, location=None) for i in range(10)]
-        pod_type_1 = PodType(type_id=111, capacity=100, description="None")
-        pods = [Pod(pod_id=i,pod_type=pod_type_1) for i in range(5)]
-        consumer.dosing_history = dosings
-        consumer.pods = pods
-        return Res.success(consumer)
+
+        return self.consumer_factory(consumer_id)
 
 
     async def add_consumer(self,consumer_id):

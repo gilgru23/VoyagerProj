@@ -1,0 +1,2 @@
+class AppOperationError(Exception):
+    pass
