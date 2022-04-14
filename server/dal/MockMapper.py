@@ -1,7 +1,7 @@
 from dal.IMapper import IMapper
 from dal.MockCacher import MockCacher
 from dal.Util import DataAccessError
-from dal.orm.DBController import *
+from dal.db.DBController import *
 
 
 class MockMapper(IMapper):

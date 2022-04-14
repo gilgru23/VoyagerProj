@@ -1,5 +1,5 @@
 from domain.medicalCenter.Consumer import Consumer
-from dal.orm.DBSchemeSetup import *
+from dal.db.DBSchemeSetup import *
 
 class DBController:
     def __init__(self) -> None:
