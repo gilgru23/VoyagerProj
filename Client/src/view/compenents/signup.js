@@ -17,7 +17,7 @@ export default class Signup extends Component {
   constructor() {
     super()
     this.state = {
-      displayName: '',
+      name: '',
       email: '',
       password: '',
       isLoading: false,
@@ -33,7 +33,10 @@ export default class Signup extends Component {
     const { email, password, role } = this.state
     console.log(email)
     registerUser(email, password, role)
-    this.props.navigation.navigate('PersonalInfo')
+    console.log(this.state.name)
+    this.props.navigation.navigate('PersonalInfo', {
+      name: this.state.name
+    })
   }
 
   render() {
@@ -50,8 +53,8 @@ export default class Signup extends Component {
         <TextInput
           style={styles.inputStyle}
           placeholder="Name"
-          value={this.state.displayName}
-          onChangeText={(val) => this.updateInputVal(val, 'displayName')}
+          value={this.state.name}
+          onChangeText={(val) => this.updateInputVal(val, 'name')}
         />
         <TextInput
           style={styles.inputStyle}

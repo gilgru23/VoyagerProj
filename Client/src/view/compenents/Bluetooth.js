@@ -13,8 +13,9 @@ import {
   PermissionsAndroid
 } from 'react-native'
 
-export default function Bluetooth({ navigation }) {
+export default function Bluetooth({ navigation, route }) {
   const [bondedDevices, setBondedDevices] = useState([])
+  const [selctedDevice, setSelectedDevice] = useState()
 
   const requestAccessFineLocationPermission = async () => {
     const granted = await PermissionsAndroid.request(
@@ -77,7 +78,7 @@ export default function Bluetooth({ navigation }) {
       })
       setBondedDevices(devices)
       // const pairedDevices = await RNBluetoothClassic.getConnectedDevices();
-      console.log(pairedDevices)
+      console.log(devices)
     } catch (err) {
       console.log(err)
     }
@@ -85,31 +86,48 @@ export default function Bluetooth({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* <Image source={require("../../../assets/voyagerLogo.png")} /> */}
-      {/* <Image style={styles.image} source={require("./assets/voyagerLogo.png")} /> */}
-      {/* <Image style={styles.dispenserImg} source={require("./assets/dispenser.png")} /> */}
+      <Image
+        style={styles.dispenserImg}
+        source={require('./assets/dispenser.png')}
+      />
       <Button title="Show bonded Dispensers" onPress={() => bluetoothScan()} />
       <Text>Bonded Devices List:</Text>
       {bondedDevices.map((device) => (
-        <Button
-          title={device.name}
-          onPress={() => connect(device)}
-          style={{ marginBottom: '20%' }}
-        />
+        <TouchableOpacity
+          style={styles.deviceBtn}
+          onPress={() => setSelectedDevice(device)}
+        >
+          <Text style={{ color: 'white' }}>{device.name}</Text>
+        </TouchableOpacity>
       ))}
+      {selctedDevice ? (
+        <TouchableOpacity
+          style={styles.submitBtn}
+          onPress={() =>
+            navigation.navigate('PersonalPage', {
+              name: route.params.name,
+              device: { name: selctedDevice.name, id: selctedDevice.id }
+            })
+          }
+        >
+          <Text style={{ color: 'white' }}>
+            {`move to your personal with the dispenser ${selctedDevice.name}`}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  head: { height: 40, backgroundColor: '#f1f8ff' },
+  text: { margin: 6 },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    marginTop: '10%',
-    alignItems: 'center'
+    marginTop: '5%',
+    alignItems: 'center',
+    flexDirection: 'column'
   },
-
-  image: {},
 
   dispenserImg: {
     height: '50%',
@@ -143,13 +161,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
 
-  loginBtn: {
-    width: '50%',
-    borderRadius: 25,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 40,
-    backgroundColor: '#eee'
+  deviceBtn: {
+    marginRight: 40,
+    marginLeft: 40,
+    marginTop: 5,
+    paddingTop: 5,
+    paddingBottom: 10,
+    backgroundColor: 'gray',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fff'
+  },
+
+  submitBtn: {
+    marginRight: 40,
+    marginLeft: 40,
+    marginTop: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#1E6738',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fff'
   }
 })

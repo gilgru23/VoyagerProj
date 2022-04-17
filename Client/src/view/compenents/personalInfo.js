@@ -12,41 +12,47 @@ import {
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import DatePicker from 'react-native-date-picker'
-import RNNumberPickerLibrary from 'react-native-number-picker-library'
-
-export default function PersonalInfo({ navigation }) {
+import { updatePersonalInfo } from '../../controller/controller'
+export default function PersonalInfo({ navigation, route }) {
   const [birthDate, setBirthDate] = useState(new Date())
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [height, setHeight] = useState(100)
   const [weight, setWeight] = useState(30)
-  const [gender, setGender] = useState()
+  const [gender, setGender] = useState('Male')
 
   function range(start, end) {
     const output = Array(end - start + 1)
       .fill()
       .map((_, idx) => start + idx)
-    console.log(output)
     return output
+  }
+
+  function onSubmit() {
+    updatePersonalInfo(birthDate, height, weight, gender)
+    console.log(route.params.name)
+    navigation.navigate('Bluetooth', {
+      name: route.params.name
+    })
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Personal Information</Text>
       <View style={styles.option}>
+        <Text>Pick Year Of Birth</Text>
         <Button
-          title="Pick Year Of Birth"
           onPress={() => setDateModalOpen(true)}
+          title={birthDate.toDateString()}
         />
-        <Text>{birthDate.toDateString()}</Text>
       </View>
       <View style={styles.option}>
         <Text>Pick your height</Text>
         <Picker
           selectedValue={height.toString()}
           onValueChange={(itemValue, itemIndex) => setHeight(itemValue)}
-          style={styles.inputStyle}
+          style={styles.inputNumberStyle}
         >
-          {range(height, height + 100).map((heightInRange) => (
+          {range(100, 250).map((heightInRange) => (
             <Picker.Item
               label={heightInRange.toString()}
               value={heightInRange.toString()}
@@ -60,9 +66,9 @@ export default function PersonalInfo({ navigation }) {
         <Picker
           selectedValue={weight.toString()}
           onValueChange={(itemValue, itemIndex) => setWeight(itemValue)}
-          style={styles.inputStyle}
+          style={styles.inputNumberStyle}
         >
-          {range(weight, weight + 170).map((weightInRange) => (
+          {range(30, 170).map((weightInRange) => (
             <Picker.Item
               label={weightInRange.toString()}
               value={weightInRange.toString()}
@@ -71,6 +77,25 @@ export default function PersonalInfo({ navigation }) {
         </Picker>
         <Text>kg</Text>
       </View>
+      <View style={styles.option}>
+        <Text>Pick your gender</Text>
+        <Picker
+          selectedValue={weight.toString()}
+          onValueChange={(itemValue, itemIndex) => setWeight(itemValue)}
+          style={styles.inputWordStyle}
+        >
+          <Picker.Item label={'Male'} value={'Male'} />
+          <Picker.Item label={'Female'} value={'Female'} />
+        </Picker>
+      </View>
+      <Button
+        title="Submit"
+        onPress={(e) =>
+          onSubmit(navigation.navigate('Bluetooth'), {
+            name: route.params.name
+          })
+        }
+      />
       <DatePicker
         modal
         open={dateModalOpen}
@@ -89,8 +114,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 30,
     alignContent: 'flex-start',
-    marginBottom: 40,
-    borderBottomWidth: 1
+    marginBottom: 40
   },
   option: {
     display: 'flex',
@@ -111,7 +135,10 @@ const styles = StyleSheet.create({
     padding: 35,
     backgroundColor: '#fff'
   },
-  inputStyle: {
+  inputWordStyle: {
+    width: '50%'
+  },
+  inputNumberStyle: {
     width: '40%'
   },
   loginText: {
