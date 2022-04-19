@@ -17,3 +17,5 @@ https://stackoverflow.com/questions/17769430/command-django-admin-py-startprojec
 
 4)commands:
 run the server from VoyagerProject/django_site with the command python manage.py runserver 
+
+tzuri-mrvoyager
