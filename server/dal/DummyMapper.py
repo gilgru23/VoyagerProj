@@ -23,7 +23,6 @@ class DummyMapper(IMapper):
         # if False:
         #     self.consumer_error(consumer_id)
 
-
         return self.consumer_factory(consumer_id)
 
 
