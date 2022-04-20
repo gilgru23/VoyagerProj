@@ -37,3 +37,5 @@ def register_user(request: HttpRequest):
     user = User.objects.create_user(email, email, pwd)
     return HttpResponse("registerred!")
 
+def domain_create_user(email):
+    return False
