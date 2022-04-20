@@ -1,4 +1,5 @@
-
+# def register_dispenser(self, consumer_id: int dispenser_serial_num: str):
+#     pass
 
 class ConsumerService:
     def __init__(self) -> None:

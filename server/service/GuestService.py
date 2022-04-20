@@ -1,18 +1,19 @@
+import domain.SystemManagement as SystemManagement
+
+# from server.domain.SystemManagement import SystemManagement
 
 
-from server.domain.SystemManagement import SystemManagement
+# class GuestService:
+#     def __init__(self) -> None:
+#         self.system_management = SystemManagement()
+#         pass
 
+# email, pwd, phone, f_name, l_name, dob
+def create_account(email: str, pwd: str, phone: str, f_name: str, l_name: str, dob: str) -> str:
+    return SystemManagement.create_account(email, pwd, phone, f_name, l_name, dob)
 
-class GuestService:
-    def __init__(self) -> None:
-        self.system_management = SystemManagement()
-        pass
+def login(email: str, pwd: str) -> str:
+    return SystemManagement.login(email, pwd)
 
-    async def create_account(self, email: str, first_name: str, last_name: str, phone_num: str, pwd: str) -> str:
-        return self.system_management.create_account(email, first_name, last_name, phone_num, pwd)
-
-    async def login(self, email: str, pwd: str) -> str:
-        return self.system_management.login(email, pwd)
-
-    async def register_as_consumer(self, user_id: int) -> str:
-        pass
+def create_consumer_profile(id: int, residence:str, height:int, weight:int, units: str, gender:chr, goal:any) -> str:
+    return SystemManagement.create_consumer_profile(id, residence, height, weight, units, gender, goal)
