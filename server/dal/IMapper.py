@@ -5,8 +5,6 @@ from domain.medicalCenter.Consumer import Consumer
 
 class IMapper:
     # class attribute
-    engine = None
-    session = None
 
     # instance init
     def __init__(self):
