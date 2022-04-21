@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import { registerUser } from '../../controller/controller'
+import PushNotification from 'react-native-push-notification'
 
 export default class Signup extends Component {
   constructor() {

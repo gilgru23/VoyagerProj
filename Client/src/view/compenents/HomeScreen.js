@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic'
@@ -13,10 +13,22 @@ import {
   PermissionsAndroid
 } from 'react-native'
 import { NavigationActions, withNavigation } from 'react-navigation'
+import PushNotification from 'react-native-push-notification'
 
 export default function HomeScreen({ navigation }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  useEffect(() => {
+    createChannels()
+  }, [])
+
+  const createChannels = () => {
+    PushNotification.createChannel({
+      channelId: 'test-channel',
+      channelName: 'Test channel'
+    })
+  }
 
   return (
     <View style={styles.container}>
