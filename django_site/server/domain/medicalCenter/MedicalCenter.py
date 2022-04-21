@@ -1,11 +1,15 @@
-from dal.DummyMapper import DummyMapper
-from dal.IMapper import IMapper
-from dal.Util import DataAccessError
-from domain.common.Util import AppOperationError
-from domain.medicalCenter.Consumer import Consumer
+from server.dal.DummyMapper import DummyMapper
+from server.dal.IMapper import IMapper
+from server.dal.Util import DataAccessError
+from server.domain.common.Util import AppOperationError
+from server.domain.medicalCenter.Consumer import Consumer
 
 import logging
 
+import server.data_access.database as db
+
+def consumer_register_dispenser(consumer_id, dispenser_serial_number):
+    return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
 
 
 class MedicalCenter:

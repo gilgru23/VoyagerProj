@@ -1,22 +1,38 @@
 from django.db import models
-from django_site.accounts.models import Account
+from accounts.models import Account
 
 # Create your models here.
 class Consumer(models.Model):
-    acount = models.OneToOneField(Account, primary_key=True)
+    class Unit(models.IntegerChoices):
+        METRIC = 1
+        IMPERIAL = 2
+
+    class Gender(models.IntegerChoices):
+        MALE = 1
+        FEMALE = 2
+        OTHER = 3
+
+    account = models.OneToOneField(Account, primary_key=True, parent_link=True, on_delete=models.CASCADE)
     residence = models.CharField(max_length=50)
-    height = models.FloatField()
+    height = models.DecimalField(max_digits=6, decimal_places=3)
     weight = models.IntegerField()
-    units = models.CharField(max_length=1)
-    gender = models.CharField(max_length=10)
-    goal = models.CharField(max_length=50)
+    units = models.IntegerField(choices=Unit.choices)
+    gender = models.IntegerField(choices=Gender.choices)
+    # goal = models.CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.pk)
+        # act : Account = self.account
+        # return act.f_name + ' ' + act.l_name + ' ' + act.email
 
 class Dispenser(models.Model):
-    serial_num = models.CharField(max_length=100, unique=True)
-    version = models.CharField(max_length=50)
-    consumer = models.ForeignKey(Consumer)
-    registration_date = models.DateTimeField()
+    serial_num = models.CharField(max_length=100, unique=True, null=False)
+    version = models.CharField(max_length=50, null=False)
+    consumer = models.ForeignKey(Consumer, null=True, blank=True, default=None, on_delete=models.SET_NULL)
+    registration_date = models.DateTimeField(null=True, blank=True, default=None)
 
+    def __str__(self):
+        return self.serial_num
 # class Pod(models.Model):
 #     serial_num = models.CharField(max_length=100, unique=True)
 #     consumer = models.ForeignKey(Consumer)

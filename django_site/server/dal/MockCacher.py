@@ -1,7 +1,7 @@
 
-from dal.ICacher import ICacher
-from dal.Util import DataAccessError
-from domain.medicalCenter.Consumer import Consumer
+from server.dal.ICacher import ICacher
+from server.dal.Util import DataAccessError
+from server.domain.medicalCenter.Consumer import Consumer
 
 
 class MockCacher(ICacher):

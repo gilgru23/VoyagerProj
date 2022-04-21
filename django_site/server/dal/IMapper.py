@@ -1,6 +1,6 @@
 import asyncio
 
-from domain.medicalCenter.Consumer import Consumer
+from server.domain.medicalCenter.Consumer import Consumer
 
 
 class IMapper:

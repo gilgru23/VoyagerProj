@@ -1,8 +1,8 @@
 import unittest
 
-from domain.medicalCenter.Consumer import Consumer
-from domain.medicalCenter.Dosing import *
-from domain.medicalCenter.Pod import *
+from server.domain.medicalCenter.Consumer import Consumer
+from server.domain.medicalCenter.Dosing import *
+from server.domain.medicalCenter.Pod import *
 
 
 

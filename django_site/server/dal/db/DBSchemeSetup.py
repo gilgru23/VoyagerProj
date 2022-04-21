@@ -4,10 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
 
-from domain.medicalCenter.Consumer import Consumer
-from domain.medicalCenter.Dispenser import Dispenser
-from domain.medicalCenter.Pod import *
-from domain.medicalCenter.Dosing import *
+from server.domain.medicalCenter.Consumer import Consumer
+from server.domain.medicalCenter.Dispenser import Dispenser
+from server.domain.medicalCenter.Pod import *
+from server.domain.medicalCenter.Dosing import *
 
 import logging
 

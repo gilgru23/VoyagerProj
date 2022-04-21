@@ -1,23 +1,23 @@
 import re
-import domain.common.Result as res
+import server.domain.common.Result as res
 from server.dal.DummyMapper import DummyMapper
 from server.dal.IMapper import IMapper
 
 from server.domain.medicalCenter.MedicalCenter import MedicalCenter
-import data_access.database as db
+import server.data_access.database as db
 
 EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' 
 
 #todo: handle phone number and password
-def create_account(email: str, f_name: str, l_name: str, phone: str, pwd: str) -> str:
+def create_account(email, phone, f_name, l_name, dob) -> str:
     if not re.search(EMAIL_REGEX, email):
         return res.failure("Invalid email format")
-    if (not f_name) or (not l_name):
-        return res.failure("Invalid name")
+    if not (email and phone and f_name and l_name and dob):
+        return res.failure("Invalid parameters")
     if is_email_registerred(email):
         return res.failure("email already registerred")
-    db.add_account
-    return True
+    db.add_account(email, phone, f_name, l_name, dob)
+    return res.success()
 
 def create_consumer_profile(id: int, residence:str, height:int, weight:int, units: str, gender:str, goal:any):
     if not does_id_exist(id):
@@ -29,10 +29,10 @@ def create_consumer_profile(id: int, residence:str, height:int, weight:int, unit
 
 
 def is_email_registerred(email):
-    return False
+    return db.has_account_with_email(email)
 
 def does_id_exist(id: int) -> bool:
-    return False
+    return True
 
 def is_consumer(id: int) -> bool:
     return False

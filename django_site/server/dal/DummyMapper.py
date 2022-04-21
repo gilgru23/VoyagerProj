@@ -1,6 +1,6 @@
 import asyncio
-from dal.IMapper import IMapper
-from domain.medicalCenter.Consumer import *
+from server.dal.IMapper import IMapper
+from server.domain.medicalCenter.Consumer import *
 
 
 class DummyMapper(IMapper):

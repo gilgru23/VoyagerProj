@@ -5,13 +5,25 @@ from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 
+# from service import GuestService
 import server.service.GuestService as GuestService
+import common.request_helper as rh
+# import server.service.GuestService as GuestService
+# import common.request_helper as rh
 
 
-# Create your views here.
+@csrf_exempt
+def register_user(request: HttpRequest):
+    keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
+    email, pwd, phone, f_name, l_name, dob = rh.keys_to_values(request, keys)
+    res = GuestService.create_account(email, phone, f_name, l_name, dob)
+    User.objects.create_user(email, email, pwd)
+    return HttpResponse(res)
+
+@csrf_exempt
 def login_user(request: HttpRequest):
     keys = ['email', 'pwd']
-    email, pwd = keys_to_values(request.POST, keys)
+    email, pwd = rh.keys_to_values(request, keys)
     user = authenticate(request, username=email, password=pwd)
     if user is not None:
         login(request, user)
@@ -19,30 +31,16 @@ def login_user(request: HttpRequest):
     else:
         return HttpResponse("Failed to log in")
 
+@csrf_exempt
 def logout_user(request: HttpRequest):
     logout(request)
     return HttpResponse("logged out")
 
 @csrf_exempt
-def register_user(request: HttpRequest):
-    keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
-    email, pwd, phone, f_name, l_name, dob = keys_to_values(request.POST, keys)
-    res = GuestService.create_account(email, pwd, phone, f_name, l_name, dob)
+def create_consumer_profile(request: HttpRequest):
+    id = rh.get_acount_id(request)
+    keys = ['residence', 'height', 'weight', 'units', 'gender', 'goal']
+    residence, height, weight, units, gender, goal = rh.keys_to_values(request, keys)
+    res = GuestService.create_consumer_profile(id, residence, height, weight, units, gender, goal)
     return HttpResponse(res)
 
-
-def create_consumer_profile(request: HttpRequest):
-    id = get_acount_id(request)
-    keys = ['residence', 'height', 'weight', 'units', 'gender', 'goal']
-    residence, height, weight, units, gender, goal = keys_to_values(request.POST, keys)
-    res = GuestService.create_consumer_profile(id, residence, height, weight, units, gender, goal)
-
-#region helper
-def get_acount_id(request: HttpRequest) -> int:
-    #todo: implement!
-    return 0
-
-def keys_to_values(d:dict, keys):
-    return [d[key] for key in keys]
-
-#endregion
