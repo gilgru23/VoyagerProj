@@ -6,7 +6,7 @@ Dev Team notes for django:
 https://www.youtube.com/watch?v=cW1_OoTiWg8
 
 2) if you cant run django, try setting up a virtual env:
-answered by 'Nids Barthwal'
+answered by 'Nids Barthwal' (don't do the last step, thats what creates the project, which we already have)
 https://stackoverflow.com/questions/17769430/command-django-admin-py-startproject-mysite-not-recognized
 
 3)general flow:
