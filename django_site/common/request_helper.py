@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 
 from accounts.models import Account
-import server.service.ManagerService as manager_service
+import voyager_system.service.ManagerService as manager_service
 
 
 #todo: implement better

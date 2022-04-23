@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
 import common.request_helper as rh
-import server.service.ConsumerService as consumer_service
+import voyager_system.service.ConsumerService as consumer_service
 
 def index(request):
     return HttpResponse("Hello Voyager Consumer!")

@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 
 # from service import GuestService
-import server.service.GuestService as GuestService
+import voyager_system.service.GuestService as GuestService
 import common.request_helper as rh
-# import server.service.GuestService as GuestService
+# import voyager_system.service.GuestService as GuestService
 # import common.request_helper as rh
 
 

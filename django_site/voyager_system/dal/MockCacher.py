@@ -1,7 +1,7 @@
 
-from server.dal.ICacher import ICacher
-from server.dal.Util import DataAccessError
-from server.domain.medicalCenter.Consumer import Consumer
+from voyager_system.dal.ICacher import ICacher
+from voyager_system.dal.Util import DataAccessError
+from voyager_system.domain.medicalCenter.Consumer import Consumer
 
 
 class MockCacher(ICacher):

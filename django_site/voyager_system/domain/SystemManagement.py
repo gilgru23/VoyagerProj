@@ -1,10 +1,10 @@
 import re
-import server.domain.common.Result as res
-from server.dal.DummyMapper import DummyMapper
-from server.dal.IMapper import IMapper
+import voyager_system.domain.common.Result as res
+from voyager_system.dal.DummyMapper import DummyMapper
+from voyager_system.dal.IMapper import IMapper
 
-from server.domain.medicalCenter.MedicalCenter import MedicalCenter
-import server.data_access.database as db
+from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
+import voyager_system.data_access.database as db
 
 EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' 
 

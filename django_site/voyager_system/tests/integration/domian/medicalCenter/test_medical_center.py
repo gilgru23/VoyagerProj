@@ -1,9 +1,9 @@
 import unittest
-from server.dal.DummyMapper import DummyMapper
-from server.domain.medicalCenter.Consumer import Consumer
-from server.domain.medicalCenter.Dosing import Dosing
-from server.domain.medicalCenter.MedicalCenter import MedicalCenter
-from server.domain.medicalCenter.Pod import *
+from voyager_system.dal.DummyMapper import DummyMapper
+from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.domain.medicalCenter.Dosing import Dosing
+from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
+from voyager_system.domain.medicalCenter.Pod import *
 
 
 class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):

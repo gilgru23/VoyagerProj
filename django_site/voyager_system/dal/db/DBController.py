@@ -1,5 +1,5 @@
-from server.domain.medicalCenter.Consumer import Consumer
-from server.dal.db.DBSchemeSetup import *
+from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.dal.db.DBSchemeSetup import *
 
 class DBController:
     def __init__(self) -> None:

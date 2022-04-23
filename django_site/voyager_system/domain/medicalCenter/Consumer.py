@@ -3,10 +3,10 @@ from datetime import datetime
 from random import randint
 
 
-from server.domain.User import User
-from server.domain.medicalCenter.Dispenser import Dispenser
-from server.domain.medicalCenter.Dosing import *
-from server.domain.medicalCenter.Pod import *
+from voyager_system.domain.User import User
+from voyager_system.domain.medicalCenter.Dispenser import Dispenser
+from voyager_system.domain.medicalCenter.Dosing import *
+from voyager_system.domain.medicalCenter.Pod import *
 
 
 class Consumer(User):

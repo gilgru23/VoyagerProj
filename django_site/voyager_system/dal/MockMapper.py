@@ -1,7 +1,7 @@
-from server.dal.IMapper import IMapper
-from server.dal.MockCacher import MockCacher
-from server.dal.Util import DataAccessError
-from server.dal.db.DBController import *
+from voyager_system.dal.IMapper import IMapper
+from voyager_system.dal.MockCacher import MockCacher
+from voyager_system.dal.Util import DataAccessError
+from voyager_system.dal.db.DBController import *
 
 
 class MockMapper(IMapper):

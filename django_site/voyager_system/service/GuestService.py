@@ -1,6 +1,6 @@
-import server.domain.SystemManagement as SystemManagement
+import voyager_system.domain.SystemManagement as SystemManagement
 
-# from server.domain.SystemManagement import SystemManagement
+# from voyager_system.domain.SystemManagement import SystemManagement
 
 
 # class GuestService:

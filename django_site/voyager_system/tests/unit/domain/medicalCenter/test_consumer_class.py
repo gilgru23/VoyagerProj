@@ -1,8 +1,8 @@
 import unittest
 
-from server.domain.medicalCenter.Consumer import Consumer
-from server.domain.medicalCenter.Dosing import *
-from server.domain.medicalCenter.Pod import *
+from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.domain.medicalCenter.Dosing import *
+from voyager_system.domain.medicalCenter.Pod import *
 
 
 
