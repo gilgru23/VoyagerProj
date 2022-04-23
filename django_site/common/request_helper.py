@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpRequest
 
 from accounts.models import Account
 import voyager_system.service.ManagerService as manager_service
+import json
 
 
 #todo: implement better
@@ -13,6 +14,8 @@ def get_acount_id(request: HttpRequest) -> int:
     return account_id
 
 def keys_to_values(request: HttpRequest, keys):
-    body = request.POST
+    # body_unicode = request.body.decode('utf-8')
+    body = json.loads(request.body)
+    # body = request.POST
     return [body[key] for key in keys]
 

@@ -12,6 +12,7 @@ def index(request):
 @csrf_exempt
 def register_dispenser(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    serial_num = request.POST['serial_num']
+    keys = ['serial_num']
+    serial_num, = rh.keys_to_values(request, keys)
     res = consumer_service.register_dispenser(account_id, serial_num)
     return HttpResponse(res)
