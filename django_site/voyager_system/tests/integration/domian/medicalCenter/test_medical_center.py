@@ -1,5 +1,7 @@
 import unittest
 from voyager_system.dal.DummyMapper import DummyMapper
+from voyager_system.data_access.DatabaseProxy import *
+from voyager_system.data_access.DummyDatabase import DummyDatabase
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 from voyager_system.domain.medicalCenter.Dosing import Dosing
 from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
@@ -10,7 +12,8 @@ class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
     def __init__(self, *args, **kwargs):
         super(TestMedicalCenter, self).__init__(*args, **kwargs)
         self.test_mapper = DummyMapper(consumer_factory=consumer_factory)
-        self.medical_center = MedicalCenter(self.test_mapper)
+        dummy_db = DummyDatabase(consumer_factory=consumer_factory)
+        self.medical_center = MedicalCenter(mapper=self.test_mapper, db_proxy=DatabaseProxy(dummy_db))
 
     def setUp(self):
         pass

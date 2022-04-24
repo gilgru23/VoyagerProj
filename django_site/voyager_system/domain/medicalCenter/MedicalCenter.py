@@ -1,26 +1,22 @@
 from voyager_system.dal.DummyMapper import DummyMapper
 from voyager_system.dal.IMapper import IMapper
 from voyager_system.dal.Util import DataAccessError
+from voyager_system.data_access import IStorage
 from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.data_access import DatabaseProxy as db
 
-import logging
+from common import Logger
 
-import voyager_system.data_access.database as db
 
-def consumer_register_dispenser(consumer_id, dispenser_serial_number):
-    return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
 
 
 class MedicalCenter:
 
-    def __init__(self, mapper: IMapper) -> None:
+    def __init__(self,mapper:IMapper, db_proxy: IStorage) -> None:
         self.object_mapper: IMapper = mapper
-        self.logger = logging.getLogger('domain.MedicalCenter')
-        handler = logging.FileHandler('../../../../domain.log')  # make more generic with a local logging module
-        handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s'))
-        self.logger.addHandler(handler)
-        self.logger.setLevel(logging.DEBUG)
+        self.db = db_proxy
+        self.logger = Logger.get_logger('Domain','MedicalCenter')
         self.logger.debug("here!!")
         pass
 
@@ -83,7 +79,7 @@ class MedicalCenter:
         await self.object_mapper.update_consumer(consumer)
 
 
-    async def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
+    async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
         consumer = await self.get_consumer(consumer_id)
         try:
             await consumer.register_dispenser(dispenser_serial_number)
@@ -92,6 +88,10 @@ class MedicalCenter:
             self.logger.error(err_str)
             raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
+
+
+    def consumer_register_dispenser(consumer_id, dispenser_serial_number):
+        return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
 
 
     async def consumer_get_recommendation(self, consumer_id):

@@ -8,7 +8,6 @@ class IMapper:
 
     # instance init
     def __init__(self):
-        # Init engine and session
         pass
 
     # methods

@@ -1,10 +1,10 @@
 
 
 # from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-import voyager_system.domain.medicalCenter.MedicalCenter as med_cen
+import voyager_system.domain.medicalCenter.MedicalCenter as med_center
 
 def register_dispenser(consumer_id: int, dispenser_serial_num: str):
-    med_cen.consumer_register_dispenser(consumer_id, dispenser_serial_num)
+    med_center.consumer_register_dispenser(consumer_id, dispenser_serial_num)
 
 # class ConsumerService:
 #     def __init__(self) -> None:

@@ -2,7 +2,6 @@
 from datetime import datetime
 from random import randint
 
-
 from voyager_system.domain.User import User
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
 from voyager_system.domain.medicalCenter.Dosing import *
