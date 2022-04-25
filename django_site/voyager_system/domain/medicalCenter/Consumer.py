@@ -49,7 +49,7 @@ class Consumer(User):
         pod = await self.get_pod_by_id(pod_id)
         if pod is None:
             return False
-        if pod.remainder < amount:
+        if pod.remainder < amount or amount <= 0:
             return False
         return True
 
