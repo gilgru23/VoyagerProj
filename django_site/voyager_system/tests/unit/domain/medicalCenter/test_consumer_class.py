@@ -1,5 +1,6 @@
 import unittest
 
+from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *
@@ -29,7 +30,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
 
 
     async def test_0_get_dosing_history(self):
-        print(f'Test 0: get dosing history')
+        print(f'Test 0: get dosing history - success')
         dosing = await self.consumer1.get_dosage_history()
         dosing_output = dosing
         for d_out,d_hist in zip(dosing_output, self.consumer1.dosing_history):
@@ -53,27 +54,27 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         print(f'Test 2: dose - fail')
         print(f'\tno pods to dose from')
         self.consumer1.pods = []
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AppOperationError):
             await self.consumer1.dose(pod_id=1, amount=42.5,location='here')
 
     async def test_3_dose_fail2(self):
         print(f'Test 3: dose - fail')
-        print(f'\tno incorrect pod id')
-        with self.assertRaises(ValueError):
+        print(f'\tincorrect pod id')
+        with self.assertRaises(AppOperationError):
             await self.consumer1.dose(pod_id=1000, amount=42.5,location='here')
 
     async def test_4_dose_fail3(self):
         print(f'Test 4: dose - fail')
-        print(f'\tno dosing amount too large')
-        with self.assertRaises(ValueError):
+        print(f'\tdosing amount too large')
+        with self.assertRaises(AppOperationError):
             await self.consumer1.dose(pod_id=1000, amount=1000,location='here')
 
 
     async def test_5_add_feedback_to_dose_success(self):
         print(f'Test 5: add feedback to dose - success')
-        description = "its nice"
         rating = 10
         d_id = 1
+        description = "its nice"
         await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating, feedback_description=description)
         past_dosings = [dose for dose in self.consumer1.dosing_history if dose.id == d_id]
         self.assertTrue(past_dosings, "no dosing after provide_feedback method call")
@@ -88,7 +89,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         description = "its nice"
         rating = 10
         d_id = 100
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AppOperationError):
             await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
                                                   feedback_description=description)
 
@@ -100,7 +101,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         description = "its nice"
         rating = 10
         d_id = 1
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AppOperationError):
             await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
                                               feedback_description=description)
 

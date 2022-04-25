@@ -1,6 +1,6 @@
 import re
 import voyager_system.domain.common.Result as res
-from voyager_system.dal.DummyMapper import DummyMapper
+from voyager_system.tests.test_objects.DummyMapper import DummyMapper
 from voyager_system.dal.IMapper import IMapper
 
 from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter

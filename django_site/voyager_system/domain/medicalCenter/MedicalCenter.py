@@ -1,4 +1,3 @@
-from voyager_system.dal.DummyMapper import DummyMapper
 from voyager_system.dal.IMapper import IMapper
 from voyager_system.dal.Util import DataAccessError
 from voyager_system.data_access import IStorage

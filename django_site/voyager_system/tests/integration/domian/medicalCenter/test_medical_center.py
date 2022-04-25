@@ -1,7 +1,7 @@
 import unittest
-from voyager_system.dal.DummyMapper import DummyMapper
+from voyager_system.tests.test_objects.DummyMapper import DummyMapper
 from voyager_system.data_access.DatabaseProxy import *
-from voyager_system.data_access.DummyDatabase import DummyDatabase
+from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 from voyager_system.domain.medicalCenter.Dosing import Dosing
 from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
