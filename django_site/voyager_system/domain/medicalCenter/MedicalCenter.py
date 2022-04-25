@@ -16,7 +16,6 @@ class MedicalCenter:
         self.object_mapper: IMapper = mapper
         self.db = db_proxy
         self.logger = Logger.get_logger('Domain','MedicalCenter')
-        self.logger.debug("here!!")
         pass
 
 
@@ -32,16 +31,17 @@ class MedicalCenter:
             consumer = await self.object_mapper.get_consumer(consumer_id)
         except DataAccessError as e:
             self.logger.debug(str(e))
-            err_str = f'Error: consumer [{consumer_id}] is not registered in the system.'
+            err_str = f'Error: consumer [id : {consumer_id}] is not registered in the system.'
             self.logger.info(err_str)
             raise AppOperationError(err_str)
         if not consumer:
-            err_str = f'Error: consumer [{consumer_id}] is not registered in the system.'
+            err_str = f'Error: consumer [id : {consumer_id}] is not registered in the system.'
             raise AppOperationError(err_str)
+        self.logger.debug(f' retrieved consumer [id : {consumer_id}] from db proxy')
         return consumer
 
 
-    async def get_consumer_history(self, consumer_id, filters):
+    async def get_consumer_dosing_history(self, consumer_id, filters=None):
         """retrieves the dosing history of the consumer (consumer_id)
 
         :param consumer_id: id of the consumer
@@ -52,6 +52,8 @@ class MedicalCenter:
 
         consumer = await self.get_consumer(consumer_id)
         history = await consumer.get_dosage_history(filters)
+        # log changes
+        self.logger.debug(f"retrieved consumer's [id : {consumer_id}] dosing history")
         return history
 
 
@@ -69,16 +71,12 @@ class MedicalCenter:
                 if dosing was not possible with the given parameters (pod_id, amount)
         """
         consumer = await self.get_consumer(consumer_id)
-        # try:
         await consumer.dose(pod_id=pod_id, amount=amount, location=location)
-        # except AppOperationError as e:
-        #     self.logger.debug(str(e))
-        #     err_str = f'Error: consumer [{consumer_id}] unable to dose from pod [{pod_id}] - with amount [{amount}].'
-        #     self.logger.error(err_str)
-        #     raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
+        self.logger.info(f"consumer [id : {consumer_id}] dosed from pod [pod_id : {pod_id}] - with amount [{amount}]")
 
-    async def consumer_get_consumer_pods(self,consumer_id):
+
+    async def get_consumer_pods(self,consumer_id):
         """retrieves a shallow copy of all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
@@ -87,6 +85,7 @@ class MedicalCenter:
         """
         consumer = await self.get_consumer(consumer_id)
         pods = await consumer.get_pods()
+        self.logger.debug(f"retrieved consumer's [id : {consumer_id}] registered pods")
         return pods
 
 
@@ -143,7 +142,7 @@ class MedicalCenter:
         try:
             recommendation_res = await consumer.get_recommendation(None)
         except Exception as e:
-            err_str = f'Error: consumer [{consumer_id}] unable to get recommendation.'
+            err_str = f'Error: consumer [id : {consumer_id}] unable to get recommendation.'
             self.logger.error(err_str)
             raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)

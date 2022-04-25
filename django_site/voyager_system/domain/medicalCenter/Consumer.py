@@ -40,7 +40,7 @@ class Consumer(User):
         dosing_time = datetime.now()
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
         dosing_id = randint(1, 100000)
-        new_dosing = Dosing(pod_id=pod_id, dosing_id=dosing_id,amount=amount, time=dosing_time, location=location)
+        new_dosing = Dosing(dosing_id=dosing_id, pod_id=pod_id, pod_type_id= pod.type.type_id, amount=amount, time=dosing_time, location=location)
         self.dosing_history.insert(0, new_dosing)
 
     # private helper method. returns boolean!

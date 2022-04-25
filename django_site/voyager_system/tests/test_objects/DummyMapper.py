@@ -17,7 +17,6 @@ class DummyMapper(IMapper):
     # methods
     async def get_consumer(self,consumer_id):
         print("DummyMapper: get_consumer was called")
-        print(f"Here is consumer #{consumer_id}!")
 
         # failure example
         # if False:

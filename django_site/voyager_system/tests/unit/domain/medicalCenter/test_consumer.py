@@ -17,8 +17,8 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         print('\nset up unit test')
-        dosings = [Dosing(dosing_id=i, pod_id=i // 2, amount=20, time=None, location=None) for i in range(10)]
         pod_type_1 = PodType(type_id=111, capacity=100, description="None")
+        dosings = [Dosing(dosing_id=i, pod_id=i // 2,pod_type_id=pod_type_1.type_id, amount=20, time=None, location=None) for i in range(10)]
         pods = [Pod(pod_id=i, pod_type=pod_type_1) for i in range(5)]
         self.consumer1.dosing_history = dosings
         self.consumer1.pods = pods
@@ -84,7 +84,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         print(f'Test: dose - fail')
         print(f'\tdosing amount too large')
         with self.assertRaises(AppOperationError):
-            await self.consumer1.dose(pod_id=1000, amount=1000, location='here')
+            await self.consumer1.dose(pod_id=1, amount=1000, location='here')
 
     # Unit Test Symbol: 1.4
     async def test_get_dosing_history(self):
@@ -126,7 +126,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(AppOperationError):
             await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
                                                   feedback_description=description)
-            
+
     # Unit Test Symbol: 1.6
     async def test_provide_feedback_to_dose_fail_2(self):
         print(f'Test: add feedback to dose - fail:')
