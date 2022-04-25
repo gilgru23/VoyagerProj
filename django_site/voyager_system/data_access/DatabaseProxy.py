@@ -1,11 +1,12 @@
 
-# import voyager_system.data_access.database as database
+# import voyager_system.data_access.database
+
 from voyager_system.data_access.IStorage import IStorage
 
 
 class DatabaseProxy(IStorage):
-
     def __init__(self, db_impl):
+        super().__init__()
         self.db = db_impl
 
     def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):

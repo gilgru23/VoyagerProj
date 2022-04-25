@@ -4,22 +4,22 @@ from voyager_system.data_access import IStorage
 from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 
-from voyager_system.data_access.DatabaseProxy import DatabaseProxy as db
-
 from common import Logger
 
+# imports for test purposes
+from voyager_system.data_access.DatabaseProxy import DatabaseProxy
+import voyager_system.data_access.database as database
 
 
 class MedicalCenter:
 
-    def __init__(self,mapper:IMapper, db_proxy: IStorage) -> None:
+    def __init__(self, mapper: IMapper, db_proxy: IStorage) -> None:
         self.object_mapper: IMapper = mapper
         self.db = db_proxy
-        self.logger = Logger.get_logger('Domain','MedicalCenter')
+        self.logger = Logger.get_logger('Domain', 'MedicalCenter')
         pass
 
-
-# consumer related interface
+    # consumer related interface
     async def get_consumer(self, consumer_id):
         """retrieves a consumer from database (or cache) by id
 
@@ -40,7 +40,6 @@ class MedicalCenter:
         self.logger.debug(f' retrieved consumer [id : {consumer_id}] from db proxy')
         return consumer
 
-
     async def get_consumer_dosing_history(self, consumer_id, filters=None):
         """retrieves the dosing history of the consumer (consumer_id)
 
@@ -56,8 +55,7 @@ class MedicalCenter:
         self.logger.debug(f"retrieved consumer's [id : {consumer_id}] dosing history")
         return history
 
-
-    async def consumer_dose(self,consumer_id, pod_id, amount: float, location):
+    async def consumer_dose(self, consumer_id, pod_id, amount: float, location):
         """updates a dosing of the consumer-
 
         adds dosing to history and changes the remainder of the relevant pod
@@ -75,8 +73,7 @@ class MedicalCenter:
         await self.object_mapper.update_consumer(consumer)
         self.logger.info(f"consumer [id : {consumer_id}] dosed from pod [pod_id : {pod_id}] - with amount [{amount}]")
 
-
-    async def get_consumer_pods(self,consumer_id):
+    async def get_consumer_pods(self, consumer_id):
         """retrieves a shallow copy of all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
@@ -87,7 +84,6 @@ class MedicalCenter:
         pods = await consumer.get_pods()
         self.logger.debug(f"retrieved consumer's [id : {consumer_id}] registered pods")
         return pods
-
 
     async def consumer_provide_feedback(self, consumer_id, dosing_id, feedback_rating, feedback_description):
         """update the feedback of a consumer's past dosing-
@@ -105,7 +101,6 @@ class MedicalCenter:
         await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
         await self.object_mapper.update_consumer(consumer)
 
-
     async def consumer_register_pod(self, consumer_id, pod_id, pod_type):
         """
 
@@ -118,7 +113,6 @@ class MedicalCenter:
         consumer = await self.get_consumer(consumer_id)
         await consumer.register_pod(pod_id=pod_id, pod_type=pod_type)
         await self.object_mapper.update_consumer(consumer)
-
 
     async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
         """registers a dispenser of the specified serial number to the consumer
@@ -133,9 +127,10 @@ class MedicalCenter:
         await self.object_mapper.update_consumer(consumer)
 
     # deprecated - to be removed
-    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
-        return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
-
+    @staticmethod
+    def consumer_register_dispenser(consumer_id, dispenser_serial_number):
+        new_db = DatabaseProxy(database)
+        return new_db.set_dispenser_consumer(dispenser_serial_number=dispenser_serial_number, consumer_id=consumer_id)
 
     async def consumer_get_recommendation(self, consumer_id):
         consumer = await self.get_consumer(consumer_id)
@@ -147,7 +142,6 @@ class MedicalCenter:
             raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
         return recommendation_res
-
 
     async def register_consumer(self, user_id: int):
         # @TODO: Check if User(!) already registered
