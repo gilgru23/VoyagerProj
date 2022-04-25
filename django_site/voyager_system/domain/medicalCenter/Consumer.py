@@ -44,8 +44,13 @@ class Consumer(User):
         self.dosing_history.insert(0, new_dosing)
 
     # private helper method. returns boolean!
-    # checks if a consumer can use a specific pod for dosing
     async def can_dose(self, pod_id, amount: float):
+        """checks if a consumer can use a specific pod for dosing
+
+        :param pod_id:
+        :param amount:
+        :return: True if consumer can dose, else False.
+        """
         pod = await self.get_pod_by_id(pod_id)
         if pod is None:
             return False
