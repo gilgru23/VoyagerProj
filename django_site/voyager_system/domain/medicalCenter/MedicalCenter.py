@@ -42,13 +42,13 @@ class MedicalCenter:
 
     async def consumer_dose(self,consumer_id, pod_id, amount: float, location):
         consumer = await self.get_consumer(consumer_id)
-        try:
-            await consumer.dose(pod_id=pod_id, amount=amount, location=location)
-        except ValueError as e:
-            self.logger.debug(str(e))
-            err_str = f'Error: consumer [{consumer_id}] unable to dose from pod [{pod_id}] - with amount [{amount}].'
-            self.logger.error(err_str)
-            raise AppOperationError(err_str)
+        # try:
+        await consumer.dose(pod_id=pod_id, amount=amount, location=location)
+        # except ValueError as e:
+        #     self.logger.debug(str(e))
+        #     err_str = f'Error: consumer [{consumer_id}] unable to dose from pod [{pod_id}] - with amount [{amount}].'
+        #     self.logger.error(err_str)
+        #     raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
 
 
@@ -59,34 +59,34 @@ class MedicalCenter:
 
     async def consumer_provide_feedback(self, consumer_id, dosing_id, feedback_rating, feedback_description):
         consumer = await self.get_consumer(consumer_id)
-        try:
-            await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
-        except ValueError as e:
-            err_str = f'Error: consumer [{consumer_id}] unable to provide feedback for dosing [{dosing_id}].'
-            self.logger.error(err_str)
-            raise AppOperationError(err_str)
+        # try:
+        await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
+        # except ValueError as e:
+        #     err_str = f'Error: consumer [{consumer_id}] unable to provide feedback for dosing [{dosing_id}].'
+        #     self.logger.error(err_str)
+        #     raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
 
 
     async def consumer_register_pod(self, consumer_id, pod_type):
         consumer = await self.get_consumer(consumer_id)
-        try:
-            await consumer.register_pod(pod_type=pod_type)
-        except ValueError as e:
-            err_str = f'Error: consumer [{consumer_id}] unable to register pod.'
-            self.logger.error(err_str)
-            raise AppOperationError(err_str)
+        # try:
+        await consumer.register_pod(pod_type=pod_type)
+        # except ValueError as e:
+        #     err_str = f'Error: consumer [{consumer_id}] unable to register pod.'
+        #     self.logger.error(err_str)
+        #     raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
 
 
     async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
         consumer = await self.get_consumer(consumer_id)
-        try:
-            await consumer.register_dispenser(dispenser_serial_number)
-        except ValueError as e:
-            err_str = f'Error: consumer [{consumer_id}] unable to register dispenser [{dispenser_serial_number}].'
-            self.logger.error(err_str)
-            raise AppOperationError(err_str)
+        # try:
+        await consumer.register_dispenser(dispenser_serial_number)
+        # except ValueError as e:
+        #     err_str = f'Error: consumer [{consumer_id}] unable to register dispenser [{dispenser_serial_number}].'
+        #     self.logger.error(err_str)
+        #     raise AppOperationError(err_str)
         await self.object_mapper.update_consumer(consumer)
 
 

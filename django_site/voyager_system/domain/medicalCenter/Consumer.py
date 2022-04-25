@@ -3,6 +3,7 @@ from datetime import datetime
 from random import randint
 
 from voyager_system.domain.User import User
+from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
 from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *
@@ -28,11 +29,11 @@ class Consumer(User):
     # * adds a 'dosing record' to dosing_history
     # * changes the current state of the relevant pod(?)
     # returns True if successful, otherwise False.
-    # throws ValueError if the given pod_id is wrong or does not have the required amount for the dosing.
+    # throws AppOperationError if the given pod_id is wrong or does not have the required amount for the dosing.
     async def dose(self,pod_id, amount: float, location):
         is_dosing = await self.can_dose(pod_id,amount)
         if not is_dosing:
-            raise ValueError(f"Error: consumer dosing - wrong pod_id [{pod_id}] or amount [{amount}] for consumer [{self.id}]")
+            raise AppOperationError(f"Error: consumer dosing - wrong pod_id [{pod_id}] or amount [{amount}] for consumer [{self.id}]")
         pod = await self.get_pod_by_id(pod_id)
         pod.dose(amount)
         # @TODO: replace datetime.now with a more generic time method
@@ -80,11 +81,11 @@ class Consumer(User):
     # receives receives feedback details and dosing-id and adds a new feedback to the dosing
     # returns True if successful, otherwise False.
     # overrides past feedback for the same dosing!
-    # throws ValueError if the dosing of the given dosing_id is not found in history.
+    # throws AppOperationError if the dosing of the given dosing_id is not found in history.
     async def provide_feedback(self, dosing_id, feedback_rating, feedback_description):
         dosing = await self.get_dosing_by_id(dosing_id)
         if dosing is None:
-            raise ValueError(f"Error: consumer provide feedback - wrong dosing_id [{dosing_id}] for consumer [{self.id}]")
+            raise AppOperationError(f"Error: consumer provide feedback - wrong dosing_id [{dosing_id}] for consumer [{self.id}]")
         # @TODO: replace datetime.now with a more generic time method
         feedback_time = datetime.now()
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
@@ -101,10 +102,11 @@ class Consumer(User):
         return None
 
     # registers a new pod to the consumer. receives a podType arg and adds a new pod to the consumer's pod collection.
+    # throws AppOperationError if the if a pod with the same id was found.
     async def register_pod(self,pod_id, pod_type: PodType):
         filtered_pods = [pod for pod in self.pods if pod.id == pod_id]
         if filtered_pods:
-            raise ValueError(f"Error: consumer register pod - pod id [{pod_id}] already exists for consumer [{self.id}]")
+            raise AppOperationError(f"Error: consumer register pod - pod id [{pod_id}] already exists for consumer [{self.id}]")
         # @TODO: replace ID with an ORM generated id (when adding DAL)
         # if self.pods:
         #     id = 1 + max(pod.id for pod in self.pods)
@@ -115,11 +117,11 @@ class Consumer(User):
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
-    # throws ValueError if the given serial_number conflicts with an existing dispenser of the consumer.
+    # throws AppOperationError if the given serial_number conflicts with an existing dispenser of the consumer.
     async def register_dispenser(self, serial_number):
         filtered_dispensers = [disp for disp in self.dispensers if disp.serial == serial_number]
         if filtered_dispensers:
-            raise ValueError(f"Error: consumer register dispenser - serial number [{serial_number}] already exists for consumer [{self.id}]")
+            raise AppOperationError(f"Error: consumer register dispenser - serial number [{serial_number}] already exists for consumer [{self.id}]")
         # @TODO: replace datetime.now with a more generic time method
         registration_time = datetime.now()
         new_dispenser = Dispenser(serial_number=serial_number,registration_time=registration_time)
