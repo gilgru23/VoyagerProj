@@ -71,7 +71,7 @@ class MedicalCenter:
         """
         consumer = await self.get_consumer(consumer_id)
         await consumer.dose(pod_id=pod_id, amount=amount, location=location)
-        await self.object_mapper.update_consumer(consumer)
+        await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] dosed from pod [pod_id: {pod_id}] - with amount [{amount}]")
 
     async def get_consumer_pods(self, consumer_id):
@@ -100,7 +100,7 @@ class MedicalCenter:
         """
         consumer = await self.get_consumer(consumer_id)
         await consumer.provide_feedback(dosing_id, feedback_rating, feedback_description)
-        await self.object_mapper.update_consumer(consumer)
+        await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
 
     async def consumer_register_pod(self, consumer_id, pod_id, pod_type):

@@ -2,6 +2,7 @@
 from datetime import datetime
 from random import randint
 
+from voyager_system.data_access.dtos import ConsumerDto
 from voyager_system.domain.User import User
 from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
@@ -134,4 +135,9 @@ class Consumer(User):
 
     async def get_recommendation(self, stuff):
         raise NotImplementedError("replace this with an actual method")
+
+    def to_DTO(self):
+        # @TODO: fill dto fields
+        dto = ConsumerDto()
+        return dto
 
