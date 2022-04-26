@@ -33,3 +33,5 @@ class DispenserDto:
         self.version = None
         self.consumer = None
         self.registration_date = None
+
+
