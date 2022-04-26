@@ -30,6 +30,7 @@ export default function Bluetooth({ navigation, route }) {
         buttonPositive: 'OK'
       }
     )
+    console.log(granted)
     return granted === PermissionsAndroid.RESULTS.GRANTED
   }
 

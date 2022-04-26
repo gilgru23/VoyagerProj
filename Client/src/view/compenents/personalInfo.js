@@ -27,6 +27,8 @@ export default function PersonalInfo({ navigation, route }) {
     return output
   }
 
+  const { firstName, lastName } = route.params
+
   function onSubmit() {
     updatePersonalInfo(birthDate, height, weight, gender)
     console.log(route.params.name)

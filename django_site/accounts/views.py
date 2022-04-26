@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpRequest
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 USERNAME = "stupiduser"
@@ -13,6 +14,8 @@ USERNAME_ADMIN = "admin"
 PWD_ADMIN = "whoasked"
 
 # Create your views here.
+
+
 def login_user(request: HttpRequest):
     user = authenticate(request, username=USERNAME_ADMIN, password=PWD_ADMIN)
     if user is not None:
@@ -21,14 +24,16 @@ def login_user(request: HttpRequest):
     else:
         return HttpResponse("Failed to log in")
 
+
 def logout_user(request: HttpRequest):
     logout(request)
     return HttpResponse("logged out")
 
+
 @csrf_exempt
 def register_user(request: HttpRequest):
-    #async def create_account(self, email: str, f_name: str, l_name: str, phone: str, pwd: str) -> str:
-    body = request.POST
+    # async def create_account(self, email: str, f_name: str, l_name: str, phone: str, pwd: str) -> str:
+    body = json.loads(request.body)
     email = body['email']
     pwd = body['pwd']
     if User.objects.filter(username=email).exists():
@@ -36,6 +41,7 @@ def register_user(request: HttpRequest):
 
     user = User.objects.create_user(email, email, pwd)
     return HttpResponse("registerred!")
+
 
 def domain_create_user(email):
     return False

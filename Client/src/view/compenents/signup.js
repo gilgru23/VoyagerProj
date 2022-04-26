@@ -13,12 +13,14 @@ import {
 import { Picker } from '@react-native-picker/picker'
 import { registerUser } from '../../controller/controller'
 import PushNotification from 'react-native-push-notification'
+import { responseStatus } from '../../Config/constants'
 
 export default class Signup extends Component {
   constructor() {
     super()
     this.state = {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       isLoading: false,
@@ -30,14 +32,19 @@ export default class Signup extends Component {
     state[prop] = val
     this.setState(state)
   }
-  register() {
+  async register() {
     const { email, password, role } = this.state
     console.log(email)
-    registerUser(email, password, role)
-    console.log(this.state.name)
-    this.props.navigation.navigate('PersonalInfo', {
-      name: this.state.name
-    })
+    const response = await registerUser(email, password, role)
+    console.log(responseStatus.SUCCESS)
+    if (response.status === responseStatus.SUCCESS) {
+      this.props.navigation.navigate('PersonalInfo', {
+        firstName: this.state.firstName,
+        lastName: this.state.lastName
+      })
+    } else {
+      console.log(response)
+    }
   }
 
   render() {
@@ -53,9 +60,15 @@ export default class Signup extends Component {
         <Image source={require('./assets/voyagerLogo.png')} />
         <TextInput
           style={styles.inputStyle}
-          placeholder="Name"
+          placeholder="First Name"
           value={this.state.name}
-          onChangeText={(val) => this.updateInputVal(val, 'name')}
+          onChangeText={(val) => this.updateInputVal(val, 'firstName')}
+        />
+        <TextInput
+          style={styles.inputStyle}
+          placeholder="Last Name"
+          value={this.state.name}
+          onChangeText={(val) => this.updateInputVal(val, 'lastName')}
         />
         <TextInput
           style={styles.inputStyle}
