@@ -7,17 +7,19 @@ from voyager_system.domain.medicalCenter.Consumer import Consumer
 from common import Logger
 
 # imports for test purposes
-from voyager_system.data_access.DatabaseProxy import DatabaseProxy
-import voyager_system.data_access.database as database
-
+# from voyager_system.data_access.DatabaseProxy import DatabaseProxy
+# import voyager_system.data_access.database as database
 
 class MedicalCenter:
-
-    def __init__(self, mapper: IMapper, db_proxy: IStorage) -> None:
+    # mapper is deprecated
+    def __init__(self, db_proxy: IStorage, mapper: IMapper = None) -> None:
         self.object_mapper: IMapper = mapper
         self.db = db_proxy
+        self.notifier = None
         self.logger = Logger.get_logger('Domain', 'MedicalCenter')
         pass
+
+
 
     # consumer related interface
     async def get_consumer(self, consumer_id):
@@ -127,10 +129,10 @@ class MedicalCenter:
         await self.object_mapper.update_consumer(consumer)
 
     # deprecated - to be removed
-    @staticmethod
-    def consumer_register_dispenser(consumer_id, dispenser_serial_number):
-        new_db = DatabaseProxy(database)
-        return new_db.set_dispenser_consumer(dispenser_serial_number=dispenser_serial_number, consumer_id=consumer_id)
+    # @staticmethod
+    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
+        # new_db = DatabaseProxy(database)
+        return self.db.set_dispenser_consumer(dispenser_serial_number=dispenser_serial_number, consumer_id=consumer_id)
 
     async def consumer_get_recommendation(self, consumer_id):
         consumer = await self.get_consumer(consumer_id)
