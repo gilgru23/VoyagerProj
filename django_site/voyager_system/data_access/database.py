@@ -1,7 +1,7 @@
 from accounts.models import Account
 from consumer_app.models import Consumer, Dispenser
 
-from voyager_system.data_access.dtos import UserDto, ConsumerDto, DispenserDto
+from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto
 
 #region Account
 def has_account_with_email(email):
@@ -11,7 +11,7 @@ def add_account(email, f_name, l_name, phone, dob):
     account = Account.objects.create(email=email, f_name=f_name, l_name=l_name, phone=phone, dob=dob)    
     return account
 
-def add_account(acct_dto: UserDto):
+def add_account(acct_dto: AccountDto):
     # email, phone, f_name, l_name, dob
     account = Account.objects.create(
         email=acct_dto.email, f_name=acct_dto.f_name, l_name=acct_dto.l_name, phone=acct_dto.phone, dob=acct_dto.dob
@@ -24,7 +24,7 @@ def get_account_by_email(email: str) -> Account:
 def get_account_by_id(id: int) -> Account:
     return Account.objects.get(id=id)
 
-def update_account(acct_dto: UserDto):
+def update_account(acct_dto: AccountDto):
     acct: Account = Account.objects.get(id = acct_dto.id)
     acct.email = acct_dto.email
     acct.phone = acct_dto.phone

@@ -1,7 +1,7 @@
 '''
 data classes passed to the database update funtions.
 '''
-class UserDto:
+class AccountDto:
     # def __init__(self, id, email, f_name, l_name, phone, dob, registration_date) -> None:
     def __init__(self) -> None:
         self.id = None #id
