@@ -3,13 +3,16 @@ import unittest
 from voyager_system.dal.Util import DataAccessError
 from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.tests.test_objects.DummyMapper import DummyMapper
-from voyager_system.data_access.DatabaseProxy import *
+from voyager_system.domain.DatabaseProxy import *
 from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 from voyager_system.domain.medicalCenter.Dosing import Dosing
 from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
 from voyager_system.domain.medicalCenter.Pod import *
 
+import os
+
+os.system("echo Hello from the other side!")
 
 class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
     def __init__(self, *args, **kwargs):
@@ -140,3 +143,7 @@ def consumer_factory_bad(consumer_id):
 def consumer_factory_broken(consumer_id):
     print(f"no connection to DB! )-:")
     raise DataAccessError('This is a test error. should be caught')
+
+
+if __name__ == '__main__':
+    unittest.main()

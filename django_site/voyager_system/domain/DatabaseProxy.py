@@ -1,18 +1,17 @@
 
-from voyager_system.data_access.IStorage import IStorage
 
-
-class DatabaseProxy(IStorage):
+class DatabaseProxy:
     def __init__(self, db_impl):
         super().__init__()
         self.db = db_impl
+        self.cache = None
 
     def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
         return self.db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
 
 
     async def get_consumer(self,consumer_id):
-        raise NotImplementedError("Should have implemented this")
+        return self.db.get_consumer(consumer_id)
 
     def get_account_by_id(self, user_id):
         raise NotImplementedError("Should have implemented this")

@@ -2,7 +2,7 @@ import re
 import voyager_system.domain.common.Result as res
 
 from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-from voyager_system.data_access.DatabaseProxy import DatabaseProxy
+from voyager_system.domain.DatabaseProxy import DatabaseProxy
 
 
 #

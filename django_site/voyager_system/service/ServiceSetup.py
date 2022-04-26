@@ -1,4 +1,4 @@
-from voyager_system.data_access.DatabaseProxy import DatabaseProxy
+from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.data_access import database as db
 
 
