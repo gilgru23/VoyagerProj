@@ -11,25 +11,28 @@ import PersonalInfo from './src/view/compenents/personalInfo'
 import PersonalPage from './src/view/compenents/personalPage'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
+import AppCheck from './src/CommCheck/src/AppCheck'
+// import MyList from './src/CommCheck/src/MyList'
 
 const Stack = createNativeStackNavigator()
 
 function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Bluetooth" component={Bluetooth} />
-        <Stack.Screen name="signUp" component={Signup} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Communication" component={Communication} />
-        <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
-        <Stack.Screen name="PersonalPage" component={PersonalPage} />
-        <Stack.Screen name="PersonalPods" component={PersonalPods} />
-        <Stack.Screen name="Current Pod" component={CurrPod} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
+  return <AppCheck/>
+  // return (
+  //   <NavigationContainer>
+  //     <Stack.Navigator initialRouteName="Home">
+  //       <Stack.Screen name="Home" component={HomeScreen} />
+  //       <Stack.Screen name="Bluetooth" component={Bluetooth} />
+  //       <Stack.Screen name="signUp" component={Signup} />
+  //       <Stack.Screen name="Login" component={Login} />
+  //       <Stack.Screen name="Communication" component={Communication} />
+  //       <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
+  //       <Stack.Screen name="PersonalPage" component={PersonalPage} />
+  //       <Stack.Screen name="PersonalPods" component={PersonalPods} />
+  //       <Stack.Screen name="Current Pod" component={CurrPod} />
+  //     </Stack.Navigator>
+  //   </NavigationContainer>
+  // )
 }
 
 export default App
