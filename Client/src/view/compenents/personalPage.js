@@ -18,7 +18,7 @@ export default function PersonalPage({ route, navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Image source={require('./assets/voyagerLogo.png')} />
-        <Text>{`Hello ${route.params.name} you are connected to the dispenser:${route.params.device.name}`}</Text>
+        <Text>{`Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`}</Text>
       </View>
       <Text>Explore:</Text>
       <View style={styles.menu}>

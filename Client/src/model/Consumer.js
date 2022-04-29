@@ -1,6 +1,5 @@
 export class Consumer {
-  constructor(userName, email, firstName, lastName, birthDate) {
-    this.userName = userName
+  constructor(email, firstName, lastName, birthDate) {
     this.email = email
     this.firstName = firstName
     this.lastName = lastName

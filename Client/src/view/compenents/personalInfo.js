@@ -1,24 +1,18 @@
 // components/login.js
 import React, { useState } from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  Alert,
-  ActivityIndicator,
-  Header
-} from 'react-native'
+import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import DatePicker from 'react-native-date-picker'
-import { updatePersonalInfo } from '../../controller/controller'
+import { createConsumerProfile } from '../../controller/controller'
+import { responseStatus } from '../../Config/constants'
+import { alert } from '../../utils'
 export default function PersonalInfo({ navigation, route }) {
   const [birthDate, setBirthDate] = useState(new Date())
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [height, setHeight] = useState(100)
   const [weight, setWeight] = useState(30)
   const [gender, setGender] = useState('Male')
+  const [residence, setResidence] = useState(0)
 
   function range(start, end) {
     const output = Array(end - start + 1)
@@ -27,14 +21,24 @@ export default function PersonalInfo({ navigation, route }) {
     return output
   }
 
-  const { firstName, lastName } = route.params
-
-  function onSubmit() {
-    updatePersonalInfo(birthDate, height, weight, gender)
-    console.log(route.params.name)
-    navigation.navigate('Bluetooth', {
-      name: route.params.name
-    })
+  async function onSubmit() {
+    const response = await createConsumerProfile(
+      residence,
+      height,
+      weight,
+      'KG',
+      gender,
+      'N/A',
+      birthDate,
+      route.params
+    )
+    if (response.status === responseStatus.SUCCESS) {
+      navigation.navigate('Bluetooth', {
+        consumer: response.content
+      })
+    } else {
+      alert(response.content)
+    }
   }
 
   return (
@@ -47,6 +51,7 @@ export default function PersonalInfo({ navigation, route }) {
           title={birthDate.toDateString()}
         />
       </View>
+
       <View style={styles.option}>
         <Text>Pick your height</Text>
         <Picker
@@ -90,14 +95,18 @@ export default function PersonalInfo({ navigation, route }) {
           <Picker.Item label={'Female'} value={'Female'} />
         </Picker>
       </View>
-      <Button
-        title="Submit"
-        onPress={(e) =>
-          onSubmit(navigation.navigate('Bluetooth'), {
-            name: route.params.name
-          })
-        }
-      />
+      <View style={styles.option}>
+        <Text>Enter you zip</Text>
+        <TextInput
+          style={styles.inputStyle}
+          value={residence}
+          placeholder={'1234'}
+          onChangeText={(val) => setResidence(val)}
+          keyboardType="numeric"
+          maxLength={6}
+        />
+      </View>
+      <Button title="Submit" onPress={(e) => onSubmit()} />
       <DatePicker
         modal
         open={dateModalOpen}

@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import { registerUser } from '../../controller/controller'
-import PushNotification from 'react-native-push-notification'
 import { responseStatus } from '../../Config/constants'
+import { alert } from '../../utils'
 
 export default class Signup extends Component {
   constructor() {
@@ -33,17 +33,18 @@ export default class Signup extends Component {
     this.setState(state)
   }
   async register() {
-    const { email, password, role } = this.state
+    const { email, password, firstName, lastName } = this.state
     console.log(email)
-    const response = await registerUser(email, password, role)
+    const response = await registerUser(email, password, firstName, lastName)
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
       this.props.navigation.navigate('PersonalInfo', {
         firstName: this.state.firstName,
-        lastName: this.state.lastName
+        lastName: this.state.lastName,
+        email: this.state.email
       })
     } else {
-      console.log(response)
+      alert(response.content)
     }
   }
 
@@ -84,7 +85,7 @@ export default class Signup extends Component {
           maxLength={15}
           secureTextEntry={true}
         />
-        <Picker
+        {/* <Picker
           selectedValue={this.state.role}
           onValueChange={(itemValue, itemIndex) =>
             this.setState({ role: itemValue })
@@ -94,7 +95,7 @@ export default class Signup extends Component {
           <Picker.Item label="Consumer" value="Consumer" />
           <Picker.Item label="Voyager Manager" value="Voyager Manager" />
           <Picker.Item label="Care Giver" value="Care Giver" />
-        </Picker>
+        </Picker> */}
 
         <Button
           color="#3740FE"

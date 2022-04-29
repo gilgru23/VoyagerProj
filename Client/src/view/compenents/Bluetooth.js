@@ -30,7 +30,6 @@ export default function Bluetooth({ navigation, route }) {
         buttonPositive: 'OK'
       }
     )
-    console.log(granted)
     return granted === PermissionsAndroid.RESULTS.GRANTED
   }
 
@@ -104,12 +103,13 @@ export default function Bluetooth({ navigation, route }) {
       {selctedDevice ? (
         <TouchableOpacity
           style={styles.submitBtn}
-          onPress={() =>
+          onPress={() => (
+            console.log(route.params),
             navigation.navigate('PersonalPage', {
-              name: route.params.name,
+              consumer: route.params.consumer,
               device: { name: selctedDevice.name, id: selctedDevice.id }
             })
-          }
+          )}
         >
           <Text style={{ color: 'white' }}>
             {`move to your personal with the dispenser ${selctedDevice.name}`}

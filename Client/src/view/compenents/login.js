@@ -12,7 +12,8 @@ import {
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import { loginUser } from '../../controller/controller'
-
+import { responseStatus } from '../../Config/constants'
+import { alert } from '../../utils'
 export default class Login extends Component {
   constructor() {
     super()
@@ -27,10 +28,16 @@ export default class Login extends Component {
     state[prop] = val
     this.setState(state)
   }
-  userLogin = () => {
+  userLogin = async () => {
     const { email, password, role } = this.state
-    loginUser(email, password, role)
-    this.props.navigation.navigate('Bluetooth')
+    const response = await loginUser(email, password, role)
+    if (response.status === responseStatus.SUCCESS) {
+      this.props.navigation.navigate('Bluetooth', {
+        consumer: response.content
+      })
+    } else {
+      alert(response.content)
+    }
   }
   render() {
     if (this.state.isLoading) {
