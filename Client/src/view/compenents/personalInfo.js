@@ -2,7 +2,6 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import DatePicker from 'react-native-date-picker'
 import { createConsumerProfile } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
@@ -44,14 +43,6 @@ export default function PersonalInfo({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Personal Information</Text>
-      <View style={styles.option}>
-        <Text>Pick Year Of Birth</Text>
-        <Button
-          onPress={() => setDateModalOpen(true)}
-          title={birthDate.toDateString()}
-        />
-      </View>
-
       <View style={styles.option}>
         <Text>Pick your height</Text>
         <Picker
@@ -107,17 +98,6 @@ export default function PersonalInfo({ navigation, route }) {
         />
       </View>
       <Button title="Submit" onPress={(e) => onSubmit()} />
-      <DatePicker
-        modal
-        open={dateModalOpen}
-        date={birthDate}
-        onConfirm={(date) => {
-          setBirthDate(date)
-        }}
-        onCancel={() => {
-          setDateModalOpen(setDateModalOpen(false))
-        }}
-      />
     </View>
   )
 }

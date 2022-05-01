@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker'
 import { registerUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 export default class Signup extends Component {
   constructor() {
@@ -24,7 +25,9 @@ export default class Signup extends Component {
       email: '',
       password: '',
       isLoading: false,
-      role: 'Consumer'
+      role: 'Consumer',
+      dateModalOpen: false,
+      birthDate: new Date()
     }
   }
   updateInputVal = (val, prop) => {
@@ -33,9 +36,15 @@ export default class Signup extends Component {
     this.setState(state)
   }
   async register() {
-    const { email, password, firstName, lastName } = this.state
+    const { email, password, firstName, lastName, birthDate } = this.state
     console.log(email)
-    const response = await registerUser(email, password, firstName, lastName)
+    const response = await registerUser(
+      email,
+      password,
+      firstName,
+      lastName,
+      birthDate
+    )
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
       this.props.navigation.navigate('PersonalInfo', {
@@ -46,6 +55,12 @@ export default class Signup extends Component {
     } else {
       alert(response.content)
     }
+  }
+
+  onChangeDatePicker = (event, selectedDate) => {
+    console.log(selectedDate)
+    this.setState({ birthDate: selectedDate })
+    this.setState({ dateModalOpen: false })
   }
 
   render() {
@@ -85,6 +100,26 @@ export default class Signup extends Component {
           maxLength={15}
           secureTextEntry={true}
         />
+        <View style={styles.inputStyle}>
+          <Text>Enter your Year Of Birth</Text>
+          <Button
+            onPress={() => (
+              console.log(this.state.dateModalOpen),
+              this.setState({ dateModalOpen: true })
+            )}
+            title={this.state.birthDate.toDateString()}
+          />
+        </View>
+        {this.state.dateModalOpen && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={this.state.birthDate}
+            mode={'date'}
+            onChange={(event, selectedDate) =>
+              this.onChangeDatePicker(event, selectedDate)
+            }
+          />
+        )}
         {/* <Picker
           selectedValue={this.state.role}
           onValueChange={(itemValue, itemIndex) =>

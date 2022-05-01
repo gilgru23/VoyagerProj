@@ -9,8 +9,20 @@ import { Dispenser } from './dispenser.js'
 
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj } from '../utilsFunctions.js'
-export const registerUser = async (userName, password) => {
-  const response = await userRegistrationRequest(userName, password)
+export const registerUser = async (
+  email,
+  password,
+  firstName,
+  lastName,
+  birthDate
+) => {
+  const response = await userRegistrationRequest(
+    email,
+    password,
+    firstName,
+    lastName,
+    birthDate
+  )
   return response
 }
 

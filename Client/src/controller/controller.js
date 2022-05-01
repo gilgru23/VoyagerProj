@@ -19,14 +19,20 @@ import { createResponseObj } from '../utilsFunctions.js'
 const checkTheParametersIsValid = (...args) =>
   args.every((arg) => (console.log(args), arg !== ''))
 
-export const registerUser = async (email, password, firstName, lastName) => {
+export const registerUser = async (
+  email,
+  password,
+  firstName,
+  lastName,
+  birthDate
+) => {
   if (!checkTheParametersIsValid(email, password)) {
     return {
       status: responseStatus.FAILURE,
       content: 'email or password is empty'
     }
   }
-  return registerUserInModel(email, password)
+  return registerUserInModel(email, password, firstName, lastName, birthDate)
 }
 
 export const createConsumerProfile = async (

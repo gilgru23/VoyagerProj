@@ -2,13 +2,20 @@ import axios from 'axios'
 import { baseURL, responseStatus } from '../Config/constants.js'
 import { createResponseObj } from '../utilsFunctions.js'
 
-export const registerUser = async (email, password, firstName, lastName) => {
+export const registerUser = async (
+  email,
+  password,
+  firstName,
+  lastName,
+  birthDate
+) => {
   try {
     const response = await axios.post(`${baseURL}/accounts/register_user`, {
       email: email,
       pwd: password,
-      firstName: firstName,
-      lastName: lastName
+      f_name: firstName,
+      l_name: lastName,
+      dob: birthDate
     })
     if (response) {
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
