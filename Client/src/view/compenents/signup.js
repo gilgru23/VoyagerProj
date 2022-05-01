@@ -13,7 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker'
 import { registerUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
-import { alert } from '../../utils'
+import { alert } from './utils'
 
 export default class Signup extends Component {
   constructor() {

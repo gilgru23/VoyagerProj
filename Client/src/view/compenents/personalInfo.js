@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker'
 import DatePicker from 'react-native-date-picker'
 import { createConsumerProfile } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
-import { alert } from '../../utils'
+import { alert } from './utils'
 export default function PersonalInfo({ navigation, route }) {
   const [birthDate, setBirthDate] = useState(new Date())
   const [dateModalOpen, setDateModalOpen] = useState(false)

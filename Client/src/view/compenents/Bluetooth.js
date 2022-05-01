@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { registerDispenser } from '../../controller/controller'
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic'
@@ -33,40 +34,15 @@ export default function Bluetooth({ navigation, route }) {
     return granted === PermissionsAndroid.RESULTS.GRANTED
   }
 
-  const connect = async (device) => {
-    console.log(device)
-    try {
-      let connection = await device.isConnected()
-      if (!connection) {
-        console.log({
-          data: `Attempting connection to ${device.address}`,
-          timestamp: new Date(),
-          type: 'error'
-        })
-        connection = await device.connect()
-
-        console.log({
-          data: 'Connection successful',
-          timestamp: new Date(),
-          type: 'info'
-        })
-      } else {
-        console.log({
-          data: `Connected to ${device.address}`,
-          timestamp: new Date(),
-          type: 'error'
-        })
-      }
-
-      navigation.navigate('Communication', {
-        device: device
+  const registerDevice = async (selectedDevice) => {
+    await registerDispenser(selectedDevice.id, selctedDevice.name)
+    if (response.status === responseStatus.SUCCESS) {
+      navigation.navigate('PersonalPage', {
+        consumer: route.params.consumer,
+        device: response.content
       })
-    } catch (error) {
-      console.log({
-        data: `Connection failed: ${error.message}`,
-        timestamp: new Date(),
-        type: 'error'
-      })
+    } else {
+      alert(response.content)
     }
   }
 
@@ -103,13 +79,7 @@ export default function Bluetooth({ navigation, route }) {
       {selctedDevice ? (
         <TouchableOpacity
           style={styles.submitBtn}
-          onPress={() => (
-            console.log(route.params),
-            navigation.navigate('PersonalPage', {
-              consumer: route.params.consumer,
-              device: { name: selctedDevice.name, id: selctedDevice.id }
-            })
-          )}
+          onPress={() => registerDevice(selctedDevice)}
         >
           <Text style={{ color: 'white' }}>
             {`move to your personal with the dispenser ${selctedDevice.name}`}

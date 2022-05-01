@@ -1,12 +1,9 @@
 import axios from 'axios'
-import { AppRegistry } from 'react-native'
 import { baseURL, responseStatus } from '../Config/constants.js'
-import Consumer from '../model/Consumer.js'
-axios.defaults.withCredentials = true
+import { createResponseObj } from '../utilsFunctions.js'
 
 export const registerUser = async (email, password, firstName, lastName) => {
   try {
-    console.log('sending request')
     const response = await axios.post(`${baseURL}/accounts/register_user`, {
       email: email,
       pwd: password,
@@ -14,12 +11,11 @@ export const registerUser = async (email, password, firstName, lastName) => {
       lastName: lastName
     })
     if (response) {
-      return responseObj(responseStatus.SUCCESS, 'registration succeeded')
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
-    console.log(e)
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
 
@@ -32,7 +28,6 @@ export const createConsumerProfile = async (
   goal
 ) => {
   try {
-    console.log('sending request')
     const response = await axios.post(
       `${baseURL}/accounts/create_consumer_profile`,
       {
@@ -45,16 +40,15 @@ export const createConsumerProfile = async (
       }
     )
     if (response) {
-      return responseObj(responseStatus.SUCCESS, 'registration succeeded')
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
-    console.log(e)
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
 
-export const login = async (email, pwd) => {
+export const loginUser = async (email, pwd) => {
   try {
     console.log('sending request')
     const response = await axios.post(`${baseURL}/accounts/login_user`, {
@@ -62,16 +56,27 @@ export const login = async (email, pwd) => {
       pwd
     })
     if (response) {
-      return responseObj(responseStatus.SUCCESS, 'registration succeeded')
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
-    console.log(e)
-    return responseObj(responseStatus.FAILURE, 'Registeration failed')
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
 
-const responseObj = (status, content) => ({
-  status: status,
-  content: content
-})
+export const registerDispenser = async (address) => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/consumers/register_dispenser`,
+      {
+        address
+      }
+    )
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}

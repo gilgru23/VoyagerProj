@@ -13,7 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker'
 import { loginUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
-import { alert } from '../../utils'
+import { alert } from './utils'
 export default class Login extends Component {
   constructor() {
     super()

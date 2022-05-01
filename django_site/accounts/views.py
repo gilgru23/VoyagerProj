@@ -16,6 +16,7 @@ PWD_ADMIN = "whoasked"
 # Create your views here.
 
 
+@csrf_exempt
 def login_user(request: HttpRequest):
     user = authenticate(request, username=USERNAME_ADMIN, password=PWD_ADMIN)
     if user is not None:

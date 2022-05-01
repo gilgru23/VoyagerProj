@@ -1,11 +1,12 @@
 import {
-  registerUser as registerUserInServer,
-  createConsumerProfile as createConsumerProfileInServer,
-  login
-} from '../Communication/ApiRequests'
-import { Consumer } from '../model/Consumer'
-import PushNotification from 'react-native-push-notification'
-import { responseStatus } from '../Config/constants'
+  registerUser as registerUserInModel,
+  createConsumerProfile as createConsumerProfileInModel,
+  loginUser as loginUserInModel,
+  registerDispenser as registerDispenserInModel
+} from '../model/model.js'
+import { Consumer } from '../model/Consumer.js'
+import { responseStatus } from '../Config/constants.js'
+import { createResponseObj } from '../utilsFunctions.js'
 
 // const handleNotification = (data) => {
 //   PushNotification.localNotification({
@@ -19,21 +20,13 @@ const checkTheParametersIsValid = (...args) =>
   args.every((arg) => (console.log(args), arg !== ''))
 
 export const registerUser = async (email, password, firstName, lastName) => {
-  if (email === '' || password === '') {
+  if (!checkTheParametersIsValid(email, password)) {
     return {
       status: responseStatus.FAILURE,
       content: 'email or password is empty'
     }
   }
-  const response = await registerUserInServer(
-    email,
-    password,
-    firstName,
-    lastName
-  )
-  console.log(response)
-  return response
-  // handleNotification(response)
+  return registerUserInModel(email, password)
 }
 
 export const createConsumerProfile = async (
@@ -47,7 +40,7 @@ export const createConsumerProfile = async (
   userCradentials
 ) => {
   if (
-    checkTheParametersIsValid(
+    !checkTheParametersIsValid(
       residence,
       height,
       weight,
@@ -58,50 +51,26 @@ export const createConsumerProfile = async (
       userCradentials
     )
   ) {
-    const response = await createConsumerProfileInServer(
-      residence,
-      height,
-      weight,
-      units,
-      gender,
-      goal
-    )
-    if (response.status === responseStatus.SUCCESS) {
-      return {
-        status: responseStatus.SUCCESS,
-        content: new Consumer(
-          userCradentials.email,
-          userCradentials.firstName,
-          userCradentials.lastName,
-          birthDate
-        )
-      }
-    }
-    return {
-      status: responseStatus.FAILURE,
-      content: 'Server error'
-    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
-  return {
-    status: responseStatus.FAILURE,
-    content: 'one of the parameters is empty'
-  }
+  return await createConsumerProfileInModel(
+    residence,
+    height,
+    weight,
+    units,
+    gender,
+    goal
+  )
 }
 
 export const loginUser = async (email, password) => {
-  if (checkTheParametersIsValid(email, password)) {
-    const response = await login(email, password)
-    if (response.status === responseStatus.SUCCESS) {
-      return {
-        status: responseStatus.SUCCESS,
-        content: new Consumer(email, 'Gil', 'Gruber', new Date())
-      }
-    }
+  if (!checkTheParametersIsValid(email, password)) {
+    return createResponseObj(
+      responseStatus.FAILURE,
+      'one of the parameters is empty'
+    )
   }
-  return {
-    status: responseStatus.FAILURE,
-    content: 'one of the parameters is empty'
-  }
+  return await loginUserInModel(email, password)
 }
 
 export const updatePersonalInfo = (birthDate, height, weight, gender) => {
@@ -110,4 +79,8 @@ export const updatePersonalInfo = (birthDate, height, weight, gender) => {
 
 export const getPodsPerDispenser = (dispenserId) => {
   return ['pod1', 'pod2', ' pod3']
+}
+
+export const registerDispenser = async (id, name) => {
+  return await registerDispenserInModel(id, name)
 }
