@@ -12,13 +12,14 @@ import {
   TouchableOpacity,
   PermissionsAndroid
 } from 'react-native'
-import { getPodsPerDispenser } from '../../controller/controller'
+// import { getPodsPerDispenser } from '../../controller/controller'
 
 export default function PersonalPods({ route, navigation }) {
+  const [controller, setConroller] = useState(route.params.controller)
+
   const [pods, setPods] = useState([])
   useEffect(() => {
-    console.log(getPodsPerDispenser(route.params.device.id))
-    setPods(getPodsPerDispenser(route.params.device.id))
+    setPods(controller.getPodsPerDispenser(route.params.device.id))
   }, [])
 
   return (

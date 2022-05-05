@@ -1,5 +1,5 @@
 // components/signup.js
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -11,34 +11,42 @@ import {
   Image
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import { registerUser } from '../../controller/controller'
+// import { registerUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-export default class Signup extends Component {
-  constructor() {
-    super()
-    this.state = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      isLoading: false,
-      role: 'Consumer',
-      dateModalOpen: false,
-      birthDate: new Date()
-    }
-  }
-  updateInputVal = (val, prop) => {
-    const state = this.state
-    state[prop] = val
-    this.setState(state)
-  }
-  async register() {
-    const { email, password, firstName, lastName, birthDate } = this.state
-    console.log(email)
-    const response = await registerUser(
+export default function Signup({ navigation, route }) {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState('Consumer')
+  const [dateModalOpen, setDateModalOpen] = useState(false)
+  const [birthDate, setBirthDate] = useState(new Date())
+  const [controller, setConroller] = useState(route.params.controller)
+
+  // constructor() {
+  //   super()
+  //   this.state = {
+  //     firstName: '',
+  //     lastName: '',
+  //     email: '',
+  //     password: '',
+  //     isLoading: false,
+  //     role: 'Consumer',
+  //     dateModalOpen: false,
+  //     birthDate: new Date(),
+  //     controller: this.props.conroller
+  //   }
+  // }
+  // updateInputVal = (val, prop) => {
+  //   const state = this.state
+  //   state[prop] = val
+  //   this.setState(state)
+  // }
+  async function register() {
+    const response = await controller.registerUser(
       email,
       password,
       firstName,
@@ -47,80 +55,69 @@ export default class Signup extends Component {
     )
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
-      this.props.navigation.navigate('PersonalInfo', {
-        firstName: this.state.firstName,
-        lastName: this.state.lastName,
-        email: this.state.email
+      navigation.navigate('PersonalInfo', {
+        firstName: firstName,
+        lastName: lastName,
+        email: email
       })
     } else {
       alert(response.content)
     }
   }
 
-  onChangeDatePicker = (event, selectedDate) => {
+  const onChangeDatePicker = (event, selectedDate) => {
     console.log(selectedDate)
-    this.setState({ birthDate: selectedDate })
-    this.setState({ dateModalOpen: false })
+    setBirthDate(selectedDate)
+    setDateModalOpen(false)
   }
 
-  render() {
-    if (this.state.isLoading) {
-      return (
-        <View style={styles.preloader}>
-          <ActivityIndicator size="large" color="#9E9E9E" />
-        </View>
-      )
-    }
-    return (
-      <View style={styles.container}>
-        <Image source={require('./assets/voyagerLogo.png')} />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="First Name"
-          value={this.state.name}
-          onChangeText={(val) => this.updateInputVal(val, 'firstName')}
+  return (
+    <View style={styles.container}>
+      <Image source={require('./assets/voyagerLogo.png')} />
+      <TextInput
+        style={styles.inputStyle}
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={(val) => setFirstName(val)}
+      />
+      <TextInput
+        style={styles.inputStyle}
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={(val) => setLastName(val)}
+      />
+      <TextInput
+        style={styles.inputStyle}
+        placeholder="Email"
+        value={email}
+        onChangeText={(val) => setEmail(val)}
+      />
+      <TextInput
+        style={styles.inputStyle}
+        placeholder="Password"
+        value={password}
+        onChangeText={(val) => setPassword(val)}
+        maxLength={15}
+        secureTextEntry={true}
+      />
+      <View style={styles.inputStyle}>
+        <Text>Enter your Year Of Birth</Text>
+        <Button
+          onPress={() => setDateModalOpen(true)}
+          title={birthDate.toDateString()}
         />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Last Name"
-          value={this.state.name}
-          onChangeText={(val) => this.updateInputVal(val, 'lastName')}
+      </View>
+      {dateModalOpen && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={birthDate}
+          mode={'date'}
+          onChange={(event, selectedDate) =>
+            onChangeDatePicker(event, selectedDate)
+          }
         />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Email"
-          value={this.state.email}
-          onChangeText={(val) => this.updateInputVal(val, 'email')}
-        />
-        <TextInput
-          style={styles.inputStyle}
-          placeholder="Password"
-          value={this.state.password}
-          onChangeText={(val) => this.updateInputVal(val, 'password')}
-          maxLength={15}
-          secureTextEntry={true}
-        />
-        <View style={styles.inputStyle}>
-          <Text>Enter your Year Of Birth</Text>
-          <Button
-            onPress={() => (
-              console.log(this.state.dateModalOpen),
-              this.setState({ dateModalOpen: true })
-            )}
-            title={this.state.birthDate.toDateString()}
-          />
-        </View>
-        {this.state.dateModalOpen && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={this.state.birthDate}
-            mode={'date'}
-            onChange={(event, selectedDate) =>
-              this.onChangeDatePicker(event, selectedDate)
-            }
-          />
-        )}
-        {/* <Picker
+      )}
+      {/* <Picker
           selectedValue={this.state.role}
           onValueChange={(itemValue, itemIndex) =>
             this.setState({ role: itemValue })
@@ -132,21 +129,17 @@ export default class Signup extends Component {
           <Picker.Item label="Care Giver" value="Care Giver" />
         </Picker> */}
 
-        <Button
-          color="#3740FE"
-          title="Signup"
-          onPress={() => this.register()}
-        />
-        <Text
-          style={styles.loginText}
-          onPress={() => this.props.navigation.navigate('Login')}
-        >
-          Already Registered? Click here to login
-        </Text>
-      </View>
-    )
-  }
+      <Button color="#3740FE" title="Signup" onPress={() => register()} />
+      <Text
+        style={styles.loginText}
+        onPress={() => navigation.navigate('Login')}
+      >
+        Already Registered? Click here to login
+      </Text>
+    </View>
+  )
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

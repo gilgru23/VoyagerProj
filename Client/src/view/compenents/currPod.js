@@ -12,13 +12,13 @@ import {
   TouchableOpacity,
   PermissionsAndroid
 } from 'react-native'
-import { getPodsPerDispenser } from '../../controller/controller'
+// import { getPodsPerDispenser } from '../../controller/controller'
 
-export default function CurrPod({ route }) {
+export default function CurrPod({ route, controller }) {
   const [pod, setPod] = useState('')
   useEffect(() => {
     console.log(route.params.pod)
-    setPod(getPodsPerDispenser(route.params.pod))
+    setPod(controller.getPodsPerDispenser(route.params.pod))
   }, [])
 
   return (

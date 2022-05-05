@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { registerDispenser } from '../../controller/controller'
+// import { registerDispenser } from '../../controller/controller'
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic'
@@ -17,6 +17,7 @@ import {
 export default function Bluetooth({ navigation, route }) {
   const [bondedDevices, setBondedDevices] = useState([])
   const [selctedDevice, setSelectedDevice] = useState()
+  const [controller, setConroller] = useState(route.params.controller)
 
   const requestAccessFineLocationPermission = async () => {
     const granted = await PermissionsAndroid.request(
@@ -35,7 +36,7 @@ export default function Bluetooth({ navigation, route }) {
   }
 
   const registerDevice = async (selectedDevice) => {
-    await registerDispenser(selectedDevice.id, selctedDevice.name)
+    await controller.registerDispenser(selectedDevice.id, selctedDevice.name)
     if (response.status === responseStatus.SUCCESS) {
       navigation.navigate('PersonalPage', {
         consumer: route.params.consumer,

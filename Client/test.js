@@ -1,8 +1,19 @@
 import assert from 'assert'
 import { registerUser, loginUser } from './src/model/model.js'
 import { responseStatus } from './src/Config/constants.js'
+import mockyeah from '@mockyeah/test-server-mocha'
+import supertest from 'supertest'
+import http from 'http'
+const request = supertest(mockyeah)
 
 describe('registration', async function () {
+  it('should create a mock service that returns JSON', (done) => {
+    // create service mock that returns json data
+    mockyeah.get('/wondrous', { json: { foo: 'bar' } })
+
+    // assert service mock is working
+    request.get('/wondrous').expect(200, { foo: 'bar' }, done)
+  })
   it('registiration success scenario', async function () {
     const response = await registerUser('Gil@gmail.com', '1234')
     assert.equal(response.status, responseStatus.SUCCESS)

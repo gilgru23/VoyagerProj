@@ -15,10 +15,7 @@ import {
 import { NavigationActions, withNavigation } from 'react-navigation'
 import PushNotification from 'react-native-push-notification'
 
-export default function HomeScreen({ navigation }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
+export default function HomeScreen({ navigation, test }) {
   useEffect(() => {
     createChannels()
   }, [])

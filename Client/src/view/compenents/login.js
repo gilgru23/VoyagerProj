@@ -11,16 +11,17 @@ import {
   Image
 } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import { loginUser } from '../../controller/controller'
+// import { loginUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
 export default class Login extends Component {
-  constructor() {
+  constructor(props) {
     super()
     this.state = {
       email: '',
       password: '',
-      isLoading: false
+      isLoading: false,
+      controller: props.route.params.controller
     }
   }
   updateInputVal = (val, prop) => {
@@ -30,7 +31,11 @@ export default class Login extends Component {
   }
   userLogin = async () => {
     const { email, password, role } = this.state
-    const response = await loginUser(email, password, role)
+    const response = await this.state.controller.loginUser(
+      email,
+      password,
+      role
+    )
     if (response.status === responseStatus.SUCCESS) {
       this.props.navigation.navigate('Bluetooth', {
         consumer: response.content

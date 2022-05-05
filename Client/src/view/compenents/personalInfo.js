@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
-import { createConsumerProfile } from '../../controller/controller'
+// import { createConsumerProfile } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
 export default function PersonalInfo({ navigation, route }) {
@@ -12,6 +12,7 @@ export default function PersonalInfo({ navigation, route }) {
   const [weight, setWeight] = useState(30)
   const [gender, setGender] = useState('Male')
   const [residence, setResidence] = useState(0)
+  const [controller, setConroller] = useState(route.params.controller)
 
   function range(start, end) {
     const output = Array(end - start + 1)
@@ -21,7 +22,7 @@ export default function PersonalInfo({ navigation, route }) {
   }
 
   async function onSubmit() {
-    const response = await createConsumerProfile(
+    const response = await controller.createConsumerProfile(
       residence,
       height,
       weight,

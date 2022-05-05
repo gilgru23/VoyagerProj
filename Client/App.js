@@ -11,22 +11,57 @@ import PersonalInfo from './src/view/compenents/personalInfo'
 import PersonalPage from './src/view/compenents/personalPage'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
+import { MockServer } from './src/Communication/mockServer'
+import { Controller } from './src/controller/controller'
 
 const Stack = createNativeStackNavigator()
 
 function App() {
+  const controller = new Controller()
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Bluetooth" component={Bluetooth} />
-        <Stack.Screen name="signUp" component={Signup} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Communication" component={Communication} />
-        <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
-        <Stack.Screen name="PersonalPage" component={PersonalPage} />
-        <Stack.Screen name="PersonalPods" component={PersonalPods} />
-        <Stack.Screen name="Current Pod" component={CurrPod} />
+        <Stack.Screen
+          name="Bluetooth"
+          component={Bluetooth}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="signUp"
+          component={Signup}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Communication"
+          component={Communication}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="PersonalInfo"
+          component={PersonalInfo}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="PersonalPage"
+          component={PersonalPage}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="PersonalPods"
+          component={PersonalPods}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Current Pod"
+          component={CurrPod}
+          initialParams={{ controller: controller }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   )
