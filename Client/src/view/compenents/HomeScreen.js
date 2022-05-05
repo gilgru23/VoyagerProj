@@ -31,29 +31,6 @@ export default function HomeScreen({ navigation, test }) {
     <View style={styles.container}>
       <Image source={require('./assets/voyagerLogo.png')} />
       <Image source={require('./assets/dispenser.png')} />
-
-      {/* <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Email."
-          placeholderTextColor="#003f5c"
-          onChangeText={(email) => setEmail(email)}
-        />
-      </View>
- 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Password."
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-      </View> */}
-
-      {/* <TouchableOpacity>
-        <Text style={styles.forgot_button}>Forgot Password?</Text>
-      </TouchableOpacity> */}
       <View style={styles.buttonLayout}>
         <TouchableOpacity
           style={styles.loginBtn}

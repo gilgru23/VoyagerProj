@@ -14,8 +14,10 @@ import {
 } from 'react-native'
 // import { getPodsPerDispenser } from '../../controller/controller'
 
-export default function CurrPod({ route, controller }) {
+export default function CurrPod({ route }) {
   const [pod, setPod] = useState('')
+  const [controller, setConroller] = useState(route.params.controller)
+
   useEffect(() => {
     console.log(route.params.pod)
     setPod(controller.getPodsPerDispenser(route.params.pod))

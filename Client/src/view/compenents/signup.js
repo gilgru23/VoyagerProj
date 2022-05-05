@@ -26,25 +26,6 @@ export default function Signup({ navigation, route }) {
   const [birthDate, setBirthDate] = useState(new Date())
   const [controller, setConroller] = useState(route.params.controller)
 
-  // constructor() {
-  //   super()
-  //   this.state = {
-  //     firstName: '',
-  //     lastName: '',
-  //     email: '',
-  //     password: '',
-  //     isLoading: false,
-  //     role: 'Consumer',
-  //     dateModalOpen: false,
-  //     birthDate: new Date(),
-  //     controller: this.props.conroller
-  //   }
-  // }
-  // updateInputVal = (val, prop) => {
-  //   const state = this.state
-  //   state[prop] = val
-  //   this.setState(state)
-  // }
   async function register() {
     const response = await controller.registerUser(
       email,
