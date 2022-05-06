@@ -13,18 +13,23 @@ import {
   PermissionsAndroid
 } from 'react-native'
 import { NavigationActions, withNavigation } from 'react-navigation'
-import PushNotification from 'react-native-push-notification'
 
 export default function HomeScreen({ navigation, test }) {
-  useEffect(() => {
-    createChannels()
-  }, [])
-
-  const createChannels = () => {
-    PushNotification.createChannel({
-      channelId: 'test-channel',
-      channelName: 'Test channel'
-    })
+  const requestAccessFineLocationPermission = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.SCHEDULE_EXACT_ALARM,
+      {
+        title: 'Access fine location required for discovery',
+        message:
+          'In order to perform discovery, you must enable/allow ' +
+          'fine location access.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK'
+      }
+    )
+    console.log(granted)
+    return granted === PermissionsAndroid.RESULTS.GRANTED
   }
 
   return (

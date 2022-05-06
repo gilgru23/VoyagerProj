@@ -11,6 +11,7 @@ import PersonalInfo from './src/view/compenents/personalInfo'
 import PersonalPage from './src/view/compenents/personalPage'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
+import Schedule from './src/view/compenents/Schedule'
 import { MockServer } from './src/Communication/mockServer'
 import { Controller } from './src/controller/controller'
 
@@ -60,6 +61,11 @@ function App() {
         <Stack.Screen
           name="Current Pod"
           component={CurrPod}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Scheduler"
+          component={Schedule}
           initialParams={{ controller: controller }}
         />
       </Stack.Navigator>

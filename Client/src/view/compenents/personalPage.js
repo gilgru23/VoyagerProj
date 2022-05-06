@@ -65,8 +65,8 @@ export default function PersonalPage({ route, navigation }) {
         <TouchableOpacity
           style={styles.submitBtn}
           onPress={() =>
-            navigation.navigate('SchedulePage', {
-              device: route.params.device
+            navigation.navigate('Scheduler', {
+              consumerId: route.params.consumer.email
             })
           }
         >

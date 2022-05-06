@@ -37,7 +37,7 @@ export default function PersonalInfo({ navigation, route }) {
         consumer: response.content
       })
     } else {
-      alert(response.content)
+      alert('Error', response.content)
     }
   }
 

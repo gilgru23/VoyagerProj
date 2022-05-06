@@ -7,15 +7,22 @@ import App from './App.js'
 import { name as appName } from './app.json'
 import PushNotification from 'react-native-push-notification'
 
-// PushNotification.configure({
-//   // (required) Called when a remote is received or opened, or local notification is opened
-//   onNotification: function (notification) {
-//     console.log('NOTIFICATION:', notification)
-//   },
+// Must be outside of any component LifeCycle (such as `componentDidMount`).
+PushNotification.configure({
+  // (optional) Called when Token is generated (iOS and Android)
+  onRegister: function (token) {
+    console.log('TOKEN:', token)
+  },
 
-//   // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+  // (required) Called when a remote is received or opened, or local notification is opened
+  onNotification: function (notification) {
+    console.log('NOTIFICATION:', notification)
 
-//   requestPermissions: true
-// })
+    // process the notification
+
+    // (required) Called when a remote is received or opened, or local notification is opened
+  },
+  requestPermissions: Platform.OS === 'ios'
+})
 
 AppRegistry.registerComponent(appName, () => App)

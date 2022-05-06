@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   PermissionsAndroid
 } from 'react-native'
+import { Dispenser } from '../../model/dispenser'
 
 export default function Bluetooth({ navigation, route }) {
   const [bondedDevices, setBondedDevices] = useState([])
@@ -36,15 +37,19 @@ export default function Bluetooth({ navigation, route }) {
   }
 
   const registerDevice = async (selectedDevice) => {
-    await controller.registerDispenser(selectedDevice.id, selctedDevice.name)
-    if (response.status === responseStatus.SUCCESS) {
-      navigation.navigate('PersonalPage', {
-        consumer: route.params.consumer,
-        device: response.content
-      })
-    } else {
-      alert(response.content)
-    }
+    // await controller.registerDispenser(selectedDevice.id, selctedDevice.name)
+    // if (response.status === responseStatus.SUCCESS) {
+    //   navigation.navigate('PersonalPage', {
+    //     consumer: route.params.consumer,
+    //     device: response.content
+    //   })
+    // } else {
+    //   alert('Error', response.content)
+    // }
+    navigation.navigate('PersonalPage', {
+      consumer: route.params.consumer,
+      device: new Dispenser(selectedDevice.id, selectedDevice.name)
+    })
   }
 
   const bluetoothScan = async () => {

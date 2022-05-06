@@ -41,7 +41,7 @@ export default class Login extends Component {
         consumer: response.content
       })
     } else {
-      alert(response.content)
+      alert('Error', response.content)
     }
   }
   render() {

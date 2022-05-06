@@ -2,7 +2,6 @@
   "name": "VoyagerApp",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "adb -s RFCRC1DX2AW reverse tcp:8000 tcp:8000 && react-native run-android",
     "android": "react-native run-android",

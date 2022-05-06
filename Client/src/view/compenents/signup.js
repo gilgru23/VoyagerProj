@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import PushNotification from 'react-native-push-notification'
 
 export default function Signup({ navigation, route }) {
   const [firstName, setFirstName] = useState('')
@@ -36,15 +37,30 @@ export default function Signup({ navigation, route }) {
     )
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
+      const responseLogin = await controller.loginUser(email, password)
+      createChannel(email)
       navigation.navigate('PersonalInfo', {
         firstName: firstName,
         lastName: lastName,
         email: email
       })
     } else {
-      alert(response.content)
+      alert('Error', response.content)
     }
   }
+
+  const createChannel = (consumerId) =>
+    PushNotification.createChannel(
+      {
+        channelId: consumerId, // (required)
+        channelName: 'Test channe', // (required)
+        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
+        playSound: false, // (optional) default: true
+        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+        vibrate: true // (optional) default: true. Creates the default vibration pattern if true.
+      },
+      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    )
 
   const onChangeDatePicker = (event, selectedDate) => {
     console.log(selectedDate)

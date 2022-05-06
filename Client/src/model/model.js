@@ -4,12 +4,7 @@ import {
   createConsumerProfile as createConsumerProfileRequest,
   registerDispenser as registerDispenserRequest
 } from '../Communication/ApiRequests.js'
-// import {
-//   registerUser as userRegistrationMock,
-//   loginUser as loginUserRequestMock,
-//   createConsumerProfile as createConsumerProfileRequestMock,
-//   registerDispenser as registerDispenserRequestMock
-// } from '../Communication/ApiRequests.js'
+
 import { Consumer } from './Consumer.js'
 import { Dispenser } from './dispenser.js'
 import { MockServer } from '../Communication/mockServer.js'
