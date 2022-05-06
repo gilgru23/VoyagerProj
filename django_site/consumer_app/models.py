@@ -33,59 +33,75 @@ class Dispenser(models.Model):
 
     def __str__(self):
         return self.serial_num
-# class Pod(models.Model):
-#     serial_num = models.CharField(max_length=100, unique=True)
-#     consumer = models.ForeignKey(Consumer)
-#     pod_type = models.ForeignKey(PodType)
-#     remainder = models.IntegerField()
 
-# class Regimen(models.Model):
-#     consumer = models.OneToOneField(Consumer)
-#     pod_type = models.ForeignKey(PodType)
-#     day = models.IntegerField()
-#     time = models.TimeField()
-#     amount = models.FloatField
+#Company
+class Business(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    docs_path = models.CharField(max_length=200)
+    # first_rep = models.ForeignKey('Representative')
+    def __str__(self):
+        return "Business: " + self.name
 
-# class Dosing(models.Model):
-#     pod = models.ForeignKey(Pod)
-#     time = models.DateTimeField()
-#     latitude = models.FloatField()
-#     longitude = models.FloatField()
+class Representative(models.Model):
+    account = models.OneToOneField(Account, primary_key=True, on_delete=models.CASCADE)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE)
+    can_appoint_reps = models.BooleanField()
 
-# class Feedback(models.Model):
-#     dosing = models.OneToOneField(Dosing)
-#     rating = models.IntegerField()
-#     comment = models.CharField(max_length=200)
+    def __str__(self):
+        return str(self.pk)
 
-# class FeedbackReminder(models.Model):
-#     dosing = models.OneToOneField(Dosing)
-#     time = models.DateTimeField()
+class Company(models.Model):
+    business = models.OneToOneField(Business, primary_key=True, on_delete=models.CASCADE)
 
-# #Company
-# class Business(models.Model):
-#     name = models.CharField(max_length=50)
-#     docs_path = models.CharField(max_length=200)
-#     # first_rep = models.ForeignKey('Representative')
+    def __str__(self):
+        return str(self.pk)
 
-# class Representative(models.Model):
-#     account = models.OneToOneField(Account, primary_key=True)
-#     business = models.ForeignKey(Business)
-#     can_appoint_reps = models.BooleanField()
+class PodType(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, unique=True)
+    substance = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
+    url = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Pod(models.Model):
+    serial_num = models.CharField(max_length=100, unique=True)
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE)
+    pod_type = models.ForeignKey(PodType, on_delete=models.CASCADE)
+    remainder = models.IntegerField()
+
+    def __str__(self):
+        return str(self.pod_type) + " " + self.serial_num
+
+class Regimen(models.Model):
+    consumer = models.OneToOneField(Consumer, on_delete=models.CASCADE)
+    pod_type = models.ForeignKey(PodType, on_delete=models.CASCADE)
+    day = models.IntegerField()
+    time = models.TimeField()
+    amount = models.FloatField
+
+    def __str__(self):
+        return str(self.consumer) + " regimen"
+
+class Dosing(models.Model):
+    pod = models.ForeignKey(Pod, on_delete=models.CASCADE)
+    time = models.DateTimeField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+class Feedback(models.Model):
+    dosing = models.OneToOneField(Dosing, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.CharField(max_length=200)
+
+class FeedbackReminder(models.Model):
+    dosing = models.OneToOneField(Dosing, on_delete=models.CASCADE)
+    time = models.DateTimeField()
 
 
-# class Company(models.Model):
-#     business = models.OneToOneField(Business, primary_key=True)
-
-
-# class PodType(models.Model):
-#     company = models.ForeignKey(Company)
-#     name = models.CharField(max_length=100)
-#     substance = models.CharField(max_length=100)
-#     description = models.CharField(max_length=500)
-#     url = models.CharField(max_length=100)
-
-
-# #Voyager Manager
+#Voyager Manager
 # class VoyagerManager(models.Model):
 #     account = models.OneToOneField(Account, primary_key=True)
 #     can_appoint = models.BooleanField()
