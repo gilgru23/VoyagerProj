@@ -37,6 +37,7 @@ from voyager_system.domain.DatabaseProxy import DatabaseProxy
 # def is_consumer(id: int) -> bool:
 #     return False
 
+# TODO:: go from 'res' pattern to error raising
 
 class SystemManagement:
 

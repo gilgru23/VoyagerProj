@@ -6,7 +6,7 @@ from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *
 
 """
-    Unit Test Symbol corresponds to the enumeration in the Application design document.
+    Unit Test Symbol corresponds to the enumeration in the Application Design Document.
     For example, 'Unit Test Symbol: 1.2' in this file (test_can_dose_[success/fail]) refers to the description
     of 'Unit 1: Consumer, Test 2: can-dose' in document   
 """
