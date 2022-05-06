@@ -1,7 +1,7 @@
 from typing import List
 from accounts.models import Account
 from consumer_app.models import Consumer, Dispenser
-from django_site.voyager_system.data_access.dtos import FeedbackDto, FeedbackReminderDto
+from voyager_system.data_access.dtos import FeedbackDto, FeedbackReminderDto
 
 from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto, PodTypeDto, PodDto, DosingDto, RegimenDto
 
