@@ -70,6 +70,7 @@ class SystemManagement:
         if self.is_email_registered(email):
             return res.failure("email already registered")
         self.db_proxy.add_account(email, phone, f_name, l_name, dob)
+
         return res.success()
 
     def create_consumer_profile(self, id: int, residence: str, height: int, weight: int, units: str, gender: str,

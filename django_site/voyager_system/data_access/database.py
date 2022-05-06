@@ -16,7 +16,7 @@ def add_account(email, f_name, l_name, phone, dob):
     return account
 
 
-def add_account(acct_dto: AccountDto):
+def add_account_from_dto(acct_dto: AccountDto):
     # email, phone, f_name, l_name, dob
     account = Account.objects.create(
         email=acct_dto.email, f_name=acct_dto.f_name, l_name=acct_dto.l_name, phone=acct_dto.phone, dob=acct_dto.dob

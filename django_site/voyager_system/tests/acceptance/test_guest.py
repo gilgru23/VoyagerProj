@@ -1,22 +1,15 @@
-
 from django.test import TestCase
 
-import time
-
 from voyager_system.service import ServiceSetup
-
+import voyager_system.domain.common.Result as Res
 
 """
     testing the functionality of the entire Guest API 
 """
 
-class TestGuest(TestCase):
-    # guest_service = ServiceSetup.get_guest_service()
 
-    # def __init__(self, *args, **kwargs):
-    #     super(TestGuest, self).__init__(*args, **kwargs)
-    #     # run_server_command()
-    #     pass
+class TestGuest(TestCase):
+    guest_service = ServiceSetup.get_guest_service()
 
     def setUp(self):
         print('\nset up acceptance test')
@@ -27,19 +20,16 @@ class TestGuest(TestCase):
 
     # Acceptance Test Symbol: ?.?
     def test_register_user_success(self):
-        # self.guest_service.create_account(email="1@here.com",phone="999999",f_name="john",l_name="john",dob="1/1/2000")
-        # time.sleep(10)
-        print('skipping tests')
-        self.skipTest("method 'request_dosing_reminder' not implemented")
+        print(f'Test: register user - success:')
+        result = self.guest_service.create_account(email="name@place.com", phone="999999", f_name="john",
+                                                   l_name="john", dob="2000-01-01")
+        self.assertTrue(Res.is_successful(result))
 
-
-
-def run_server_command():
-    # os.system("python manage.py runserver")
-    print("python manage.py runserver")
-
-
-
-def close_server_command():
-    raise NotImplementedError("Should have implemented this")
+    # Acceptance Test Symbol: ?.?
+    def test_register_user_fail(self):
+        print(f'Test: register user - fail:')
+        print(f'\t illegal email format')
+        result = self.guest_service.create_account(email="1@here.com", phone="999999", f_name="john", l_name="john",
+                                                   dob="2000-01-01")
+        self.assertTrue(Res.is_failure(result))
 
