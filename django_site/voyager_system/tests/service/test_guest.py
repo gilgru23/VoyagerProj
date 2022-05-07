@@ -21,10 +21,10 @@ class TestGuest(TestCase):
                  'goal': 'pam'}
 
     def setUp(self):
-        print('\nset up acceptance test')
-        result = self.guest_service.create_account(email=self.account1['email'], phone=self.account1['phone'],
-                                          f_name=self.account1['f_name'],
-                                          l_name=self.account1['l_name'], dob=self.account1['dob'])
+        print('\nset up guest service test')
+        self.guest_service.create_account(email=self.account1['email'], phone=self.account1['phone'],
+                                                   f_name=self.account1['f_name'],
+                                                   l_name=self.account1['l_name'], dob=self.account1['dob'])
         self.guest_service.create_account(email=self.account2['email'], phone=self.account2['phone'],
                                           f_name=self.account2['f_name'],
                                           l_name=self.account2['l_name'], dob=self.account2['dob'])
@@ -39,17 +39,15 @@ class TestGuest(TestCase):
         self.consumer2['id'] = account.id
 
     def tearDown(self):
-        print('tear down acceptance test')
+        print('tear down service test')
         pass
 
-    # Acceptance Test Symbol: ?.?
     def test_register_user_success(self):
         print(f'Test: register user - success:')
         result = self.guest_service.create_account(email="dwight@dundermifflin.com", phone="7777777", f_name="dwight",
                                                    l_name="schrute", dob="1966-01-01")
         self.assertTrue(Res.is_successful(result))
 
-    # Acceptance Test Symbol: ?.?
     def test_register_user_fail1(self):
         print(f'Test: register user - fail:')
         print(f'\t illegal email format')
@@ -57,7 +55,6 @@ class TestGuest(TestCase):
                                                    l_name="john", dob="2000-01-01")
         self.assertTrue(Res.is_failure(result))
 
-    # Acceptance Test Symbol: ?.?
     def test_register_user_fail2(self):
         print(f'Test: register user - fail:')
         print(f'\t account already exists')
@@ -66,7 +63,6 @@ class TestGuest(TestCase):
                                                    f_name=a1['f_name'], l_name=a1['l_name'], dob=a1['dob'])
         self.assertTrue(Res.is_failure(result))
 
-    # Acceptance Test Symbol: ?.?
     def test_create_consumer_profile_success(self):
         print(f'Test: create consumer profile - success:')
         c2 = self.consumer2
@@ -76,14 +72,12 @@ class TestGuest(TestCase):
         ans = self.guest_service.system_management.is_consumer(c2['id'])
         self.assertTrue(ans)
 
-    # Acceptance Test Symbol: ?.?
     def test_create_consumer_profile_fail1(self):
         print(f'Test: create consumer profile - fail:')
         print(f'\t account does not exist')
         result = self.guest_service.create_consumer_profile(3, "nowhere", 160, 60, 1, 1, None)
         self.assertTrue(Res.is_failure(result))
 
-    # Acceptance Test Symbol: ?.?
     def test_create_consumer_profile_fail2(self):
         print(f'Test: create consumer profile - fail:')
         print(f'\t account is already a consumer')

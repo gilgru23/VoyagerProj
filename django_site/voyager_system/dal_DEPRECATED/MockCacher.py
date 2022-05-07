@@ -1,7 +1,7 @@
 
 from voyager_system.dal_DEPRECATED.ICacher import ICacher
 from voyager_system.common.ErrorTypes import DataAccessError
-from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.domain.medical_center.Consumer import Consumer
 
 
 class MockCacher(ICacher):

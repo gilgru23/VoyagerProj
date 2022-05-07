@@ -3,7 +3,8 @@ from accounts.models import Account
 from consumer_app.models import Consumer, Dispenser
 from voyager_system.data_access.dtos import FeedbackDto, FeedbackReminderDto
 
-from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto, PodTypeDto, PodDto, DosingDto, RegimenDto
+from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto, PodTypeDto, PodDto, DosingDto, \
+    RegimenDto
 
 
 # region Account
@@ -100,86 +101,113 @@ def update_dispenser(dispenser_dto: DispenserDto):
     disp.consumer = dispenser_dto.consumer
     disp.registration_date = dispenser_dto.registration_date
     disp.save()
+
+
 # endregion Consumer
 
 
-#region Pod Type
+# region Pod Type
 def add_pod_type(company_name: str, pod_type_dto: PodTypeDto):
     pass
+
 
 def get_pod_type(pod_type_name: str) -> PodTypeDto:
     pass
 
+
 def update_pod_type(pod_type_dto: PodTypeDto):
     pass
 
+
 def get_pod_types_by_company(company_name: str) -> List[PodTypeDto]:
     pass
-#endregion Pod Type
 
 
-#region Pod
+# endregion Pod Type
+
+
+# region Pod
 def add_pod(consumer_id: int, pod_dto: PodDto):
     pass
+
 
 def get_pods_by_account(account_id: int) -> List[PodDto]:
     pass
 
+
 def get_pods_by_email(email: str) -> List[PodDto]:
     pass
+
 
 def update_pod(pod_dto: PodDto, consumer_id: int):
     pass
 
+
 def update_pod(pod_dto: PodDto, consumer_email: str):
     pass
-#endregion Pod
 
 
-#region Dosing
+# endregion Pod
+
+
+# region Dosing
 def add_dosing(dosing_dto: DosingDto):
     pass
+
 
 def get_dosings_for_consumer_by_id(consumer_id: int) -> List[DosingDto]:
     pass
 
+
 def get_dosings_for_consumer_by_email(consumer_email: str) -> List[DosingDto]:
     pass
 
+
 def get_dosings_for_pod(pod_dto: PodDto) -> List[DosingDto]:
     pass
-#endregion Dosing
 
 
-#region Regimen
+# endregion Dosing
+
+
+# region Regimen
 # type,day,time,amount
 def add_to_regimen_with_id(consumer_id: int, pod_type_name: str, day: int, time: int, amount: float):
     pass
 
+
 def add_to_regimen_with_email(consumer_email: str, pod_type_name: str, day: int, time: int, amount: float):
     pass
+
 
 def get_regimen_by_consumer_id(consumer_id: int) -> RegimenDto:
     pass
 
+
 def get_regimen_by_consumer_email(consumer_email: str) -> RegimenDto:
     pass
-#endregion Regimen
 
 
-#region Feedback
+# endregion Regimen
+
+
+# region Feedback
 def add_feedback(feedback_dto: FeedbackDto):
     pass
 
+
 def get_feedbacks_for_consumer(consumer_id: int) -> List[FeedbackDto]:
     pass
-#endregion Feedback
 
 
-#region Feedback Reminder
+# endregion Feedback
+
+
+# region Feedback Reminder
 def add_feedback_reminder(feedback_reminder_dto: FeedbackReminderDto):
     pass
 
+
 def get_all_feedback_reminders_in_time_window(from_time, until_time) -> List[FeedbackReminderDto]:
     pass
-#endregion Feedback Reminder
+# endregion Feedback Reminder

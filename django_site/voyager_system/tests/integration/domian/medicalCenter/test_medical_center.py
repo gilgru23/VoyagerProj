@@ -4,10 +4,10 @@ from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.tests.test_objects.DummyMapper import DummyMapper
 from voyager_system.domain.DatabaseProxy import *
 from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
-from voyager_system.domain.medicalCenter.Consumer import Consumer
-from voyager_system.domain.medicalCenter.Dosing import Dosing
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-from voyager_system.domain.medicalCenter.Pod import *
+from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Dosing import Dosing
+from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
+from voyager_system.domain.medical_center.Pod import *
 
 import os
 

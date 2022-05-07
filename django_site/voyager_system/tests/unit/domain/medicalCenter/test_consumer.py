@@ -1,9 +1,9 @@
 import unittest
 
 from voyager_system.common.ErrorTypes import AppOperationError
-from voyager_system.domain.medicalCenter.Consumer import Consumer
-from voyager_system.domain.medicalCenter.Dosing import *
-from voyager_system.domain.medicalCenter.Pod import *
+from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Dosing import *
+from voyager_system.domain.medical_center.Pod import *
 
 """
     Unit Test Symbol corresponds to the enumeration in the Application Design Document.

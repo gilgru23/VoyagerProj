@@ -1,6 +1,5 @@
 
-import voyager_system.common.Result as Res
-
+from voyager_system.common import Result
 from voyager_system.domain.system_management.SystemManagement import SystemManagement
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 
@@ -13,19 +12,19 @@ class GuestService:
     def create_account(self, email: str, phone: str, f_name: str, l_name: str, dob: str) -> str:
         try:
             self.system_management.create_account(email, phone, f_name, l_name, dob)
-            return Res.success()
+            return Result.success()
         except AppOperationError as e:
-            return Res.failure(e.__str__())
+            return Result.failure(e.__str__())
         except DataAccessError as e:
-            return Res.failure("Unable to complete the operation")
+            return Result.failure("Unable to complete the operation")
 
 
     def create_consumer_profile(self, consumer_id: int, residence: str, height: int, weight: int, units, gender,
                                 goal: any) -> str:
         try:
             self.system_management.create_consumer_profile(consumer_id, residence, height, weight, units, gender, goal)
-            return Res.success()
+            return Result.success()
         except AppOperationError as e:
-            return Res.failure(e.__str__())
+            return Result.failure(e.__str__())
         except DataAccessError as e:
-            return Res.failure("Unable to complete the operation")
+            return Result.failure("Unable to complete the operation")

@@ -1,7 +1,7 @@
 from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
-from voyager_system.domain.medicalCenter.Consumer import Consumer
+from voyager_system.domain.medical_center.Consumer import Consumer
 
 from voyager_system.common import Logger
 
@@ -9,6 +9,7 @@ from voyager_system.common import Logger
 # imports for test purposes
 # from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 # import voyager_system.data_access.database as database
+
 
 class MedicalCenter:
     # mapper is deprecated
@@ -19,8 +20,9 @@ class MedicalCenter:
         self.logger = Logger.get_logger('Domain', 'MedicalCenter')
         pass
 
+    # region Consumer
     # consumer related interface
-    async def get_consumer(self, consumer_id):
+    async def get_consumer2(self, consumer_id):
         """retrieves a consumer from database (or cache) by id
 
         :param consumer_id: id of the consumer
@@ -36,6 +38,26 @@ class MedicalCenter:
             raise AppOperationError(err_str)
         if not consumer:
             err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
+            raise AppOperationError(err_str)
+        self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
+        return consumer
+
+    def get_consumer(self, consumer_id) -> Consumer:
+        """retrieves a consumer from database (or cache) by id
+
+        :param consumer_id: id of the consumer
+        :return: Consumer object.
+        :raise  AppOperationError: throws exception if consumer was not found
+        """
+        try:
+            consumer = self.object_mapper.get_consumer(consumer_id)
+        except DataAccessError as e:
+            self.logger.debug(str(e))
+            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] .\n' + e.__str__()
+            self.logger.info(err_str)
+            raise e
+        if not consumer:
+            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] is not registered in the system.'
             raise AppOperationError(err_str)
         self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
         return consumer
@@ -102,11 +124,11 @@ class MedicalCenter:
         await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
 
-    async def consumer_register_pod(self, consumer_id, pod_id, pod_type):
-        """
+    async def consumer_register_pod(self, consumer_id: int, pod_id: int, pod_type: str):
+        """registers a pod of the specified id and type to the consumer
 
-        :param consumer_id: id of the consumer
-        :param pod_id: id of the consumer from which a dose is taken
+        :param consumer_id: int - id of the consumer
+        :param pod_id: int - id of the consumer from which a dose is taken
         :param pod_type: the type of the pod (PodType object)
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
@@ -153,3 +175,6 @@ class MedicalCenter:
         result = await self.object_mapper.add_consumer(new_consumer)
         # @TODO: check that adding consumer was successful
         return result
+
+    # endregion Consumer
+

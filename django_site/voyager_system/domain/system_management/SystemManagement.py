@@ -1,7 +1,7 @@
 import re
 from voyager_system.common.ErrorTypes import AppOperationError
 
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
+from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 
 
