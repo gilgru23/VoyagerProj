@@ -1,6 +1,6 @@
 import unittest
 
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *

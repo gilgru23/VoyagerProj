@@ -48,6 +48,7 @@ def update_account(acct_dto: AccountDto):
 
 # endregion Account
 
+
 # region Consumer
 def add_consumer(id: int, residence: str, height: int, weight: int, units: int, gender: int, goal: any):
     return Consumer.objects.create(
@@ -116,6 +117,7 @@ def get_pod_types_by_company(company_name: str) -> List[PodTypeDto]:
     pass
 #endregion Pod Type
 
+
 #region Pod
 def add_pod(consumer_id: int, pod_dto: PodDto):
     pass
@@ -133,6 +135,7 @@ def update_pod(pod_dto: PodDto, consumer_email: str):
     pass
 #endregion Pod
 
+
 #region Dosing
 def add_dosing(dosing_dto: DosingDto):
     pass
@@ -147,7 +150,9 @@ def get_dosings_for_pod(pod_dto: PodDto) -> List[DosingDto]:
     pass
 #endregion Dosing
 
-#region Regimen type,day,time,amount
+
+#region Regimen
+# type,day,time,amount
 def add_to_regimen_with_id(consumer_id: int, pod_type_name: str, day: int, time: int, amount: float):
     pass
 
@@ -160,6 +165,7 @@ def get_regimen_by_consumer_id(consumer_id: int) -> RegimenDto:
 def get_regimen_by_consumer_email(consumer_email: str) -> RegimenDto:
     pass
 #endregion Regimen
+
 
 #region Feedback
 def add_feedback(feedback_dto: FeedbackDto):

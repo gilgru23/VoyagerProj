@@ -2,16 +2,6 @@ import unittest
 
 import os
 
-from voyager_system.dal.Util import DataAccessError
-from voyager_system.domain.common.Util import AppOperationError
-from voyager_system.tests.test_objects.DummyMapper import DummyMapper
-from voyager_system.domain.DatabaseProxy import *
-from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
-from voyager_system.domain.medicalCenter.Consumer import Consumer
-from voyager_system.domain.medicalCenter.Dosing import Dosing
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-from voyager_system.domain.medicalCenter.Pod import *
-
 
 class TestDatabaseProxy(unittest.IsolatedAsyncioTestCase):
     def __init__(self, *args, **kwargs):

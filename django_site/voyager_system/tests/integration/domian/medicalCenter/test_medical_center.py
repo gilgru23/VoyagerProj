@@ -1,7 +1,6 @@
 import unittest
 
-from voyager_system.dal.Util import DataAccessError
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.tests.test_objects.DummyMapper import DummyMapper
 from voyager_system.domain.DatabaseProxy import *
 from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase

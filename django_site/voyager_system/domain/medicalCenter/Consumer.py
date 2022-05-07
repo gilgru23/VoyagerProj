@@ -3,8 +3,8 @@ from datetime import datetime
 from random import randint
 
 from voyager_system.data_access.dtos import ConsumerDto
-from voyager_system.domain.Account import Account
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.domain.system_management.Account import Account
+from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
 from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *

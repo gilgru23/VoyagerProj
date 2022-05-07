@@ -1,5 +1,5 @@
 import asyncio
-from voyager_system.dal.IMapper import IMapper
+from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.medicalCenter.Consumer import *
 
 

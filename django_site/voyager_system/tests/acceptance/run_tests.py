@@ -1,11 +1,6 @@
 import sys
 
-from django.test import runner
-
-
 import manage
-
-from voyager_system.tests.acceptance import *
 
 
 

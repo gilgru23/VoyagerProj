@@ -1,6 +1,6 @@
 
-from voyager_system.dal.ICacher import ICacher
-from voyager_system.dal.Util import DataAccessError
+from voyager_system.dal_DEPRECATED.ICacher import ICacher
+from voyager_system.common.ErrorTypes import DataAccessError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 
 

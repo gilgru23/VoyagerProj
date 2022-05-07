@@ -1,2 +1,0 @@
-class DataAccessError(Exception):
-    pass

@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from voyager_system.service import ServiceSetup
-import voyager_system.domain.common.Result as Res
+import voyager_system.common.Result as Res
 
 """
     testing the functionality of the entire Guest API 

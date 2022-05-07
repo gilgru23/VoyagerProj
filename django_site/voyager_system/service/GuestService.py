@@ -1,9 +1,8 @@
 
-import voyager_system.domain.common.Result as Res
-from voyager_system.dal.Util import DataAccessError
+import voyager_system.common.Result as Res
 
-from voyager_system.domain.SystemManagement import SystemManagement
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.domain.system_management.SystemManagement import SystemManagement
+from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 
 
 class GuestService:

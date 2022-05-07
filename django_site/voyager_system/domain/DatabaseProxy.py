@@ -1,4 +1,4 @@
-from voyager_system.dal.Util import DataAccessError
+from voyager_system.common.ErrorTypes import DataAccessError
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
 
 # TODO:: convert every object returned from DB to Domain Layer object

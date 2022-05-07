@@ -1,10 +1,9 @@
-from voyager_system.dal.IMapper import IMapper
-from voyager_system.dal.Util import DataAccessError
+from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 from voyager_system.domain.medicalCenter.Consumer import Consumer
 
-from common import Logger
+from voyager_system.common import Logger
 
 
 # imports for test purposes
