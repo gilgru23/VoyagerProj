@@ -21,10 +21,11 @@ class Consumer(Account):
 
         # personal info
         self.residence = ""
-        self.height = None
-        self.weight = None
-        self.gender = ""
-        self.goal = ""
+        self.height = -1
+        self.weight = -1
+        self.gender = -1
+        self.units = -1
+        self.goal = None
 
     # add a consumer dosing occurrence when a dosing is performed.
     # * adds a 'dosing record' to dosing_history

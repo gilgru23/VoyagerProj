@@ -14,7 +14,7 @@ class GuestService:
             self.system_management.create_account(email, phone, f_name, l_name, dob)
             return Result.success()
         except AppOperationError as e:
-            return Result.failure(e.__str__())
+            return Result.failure(str(e))
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
@@ -25,6 +25,6 @@ class GuestService:
             self.system_management.create_consumer_profile(consumer_id, residence, height, weight, units, gender, goal)
             return Result.success()
         except AppOperationError as e:
-            return Result.failure(e.__str__())
+            return Result.failure(str(e))
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")

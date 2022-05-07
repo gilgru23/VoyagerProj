@@ -6,3 +6,4 @@ class Account:
         self.first_name = ""
         self.last_name = ""
         self.date_of_birth = None
+        self.registration_date = None

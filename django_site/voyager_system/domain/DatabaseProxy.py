@@ -1,9 +1,14 @@
 from voyager_system.common.ErrorTypes import DataAccessError
+from voyager_system.data_access.dtos import *
+from voyager_system.domain.medical_center.Consumer import Consumer
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 import voyager_system.data_access.database as db
-
+from django.core.exceptions import ObjectDoesNotExist
 
 # TODO:: convert every object returned from DB to Domain Layer object
+from voyager_system.domain.system_management.Account import Account
+
+
 class DatabaseProxy:
     def __init__(self, db_impl, object_cache=None):
         super().__init__()
@@ -13,20 +18,32 @@ class DatabaseProxy:
     # region Account
     def get_account_by_id(self, account_id):
         try:
-            return db.get_account_by_id(account_id)
+            dto = db.get_account_by_id(account_id)
+            # return self.dto_to_account(dto)
+            return dto
+        except ObjectDoesNotExist as e:
+            return None
         except Exception as e:
-            err_str = e.__str__()
-            raise DataAccessError(f"Unable to retrieve account from db, with id {account_id}." + "\n" + err_str)
+            err_str = f"Unable to retrieve account from db, with id [{account_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
 
     def get_account_by_email(self, email):
-        return db.get_account_by_email(email)
+        try:
+            dto = db.get_account_by_email(email)
+            # return self.dto_to_account(dto)
+            return dto
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve account from db, with email [{email}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
 
     def add_account(self, email, phone, first_name, last_name, date_of_birth):
         try:
             return db.add_account(email=email, f_name=first_name, l_name=last_name, phone=phone, dob=date_of_birth)
         except Exception as e:
-            err_str = e.__str__()
-            raise DataAccessError(f"Unable to add a new account to db, with email {email}" + "\n" + err_str)
+            err_str = f"Unable to add a new account to db, with email [{email}]" + "\n" + str(e)
+            raise DataAccessError(err_str)
 
     def has_account_with_email(self, email):
         return db.has_account_with_email(email)
@@ -37,13 +54,22 @@ class DatabaseProxy:
     # endregion Account
 
     # region Consumer
-    def get_consumer_by_id(self, consumer_id):
-        return db.get_consumer(consumer_id)
+    def get_consumer(self, consumer_id: int):
+        try:
+            dto = db.get_consumer(consumer_id)
+            # return self.dto_to_consumer(dto)
+            return dto
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
 
     def has_consumer(self, consumer_id):
         return db.has_consumer(consumer_id)
 
     def add_consumer(self, consumer_id, residence, height, weight, units, gender, goal):
+        # Todo:: make a transaction
         return db.add_consumer(consumer_id, residence, height, weight, units, gender, goal)
 
     def update_consumer(self, consumer):
@@ -58,7 +84,47 @@ class DatabaseProxy:
 
     # region DTO conversion
 
-    def get_dispenser_dto(self, dispenser: Dispenser):
+    def account_to_dto(self, account: Account):
+        dto = AccountDto()
+        dto.id = account.id
+        dto.email = account.email
+        dto.f_name = account.first_name
+        dto.l_name = account.last_name
+        dto.dob = account.dob
+        dto.registration_date = account.registration_date
+        return dto
+
+    def dto_to_account(self, account_dto: AccountDto):
+        account = Account()
+        account.id = account_dto.id
+        account.email = account_dto.email
+        account.f_name = account_dto.f_name
+        account.l_name = account_dto.l_name
+        account.dob = account_dto.dob
+        account.registration_date = account_dto.registration_date
+        return account
+
+    def consumer_to_dto(self, consumer: Consumer):
+        dto = ConsumerDto()
+        dto.residence = consumer.residence
+        dto.height = consumer.height
+        dto.weight = consumer.weight
+        dto.gender = consumer.gender
+        # dto.units = consumer.units
+        dto.goal = consumer.goal
+
+    def dto_to_consumer(self, consumer_dto: ConsumerDto):
+        consumer = Consumer()
+        consumer.residence = consumer_dto.residence
+        consumer.height = consumer_dto.height
+        consumer.weight = consumer_dto.weight
+        consumer.gender = consumer_dto.gender
+        # consumer.units = consumer_dto.units
+        consumer.goal = consumer_dto.goal
+        return consumer
+
+
+    def dispenser_to_dto(self, dispenser: Dispenser):
         raise NotImplementedError("method not implemented yet")
 
     # endregion DTO conversion

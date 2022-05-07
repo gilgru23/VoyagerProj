@@ -7,7 +7,7 @@ class PodType:
 
 
 class Pod:
-    def __init__(self, pod_id, pod_type: PodType) -> None:
+    def __init__(self, pod_id: int, pod_type: PodType) -> None:
         self.id = pod_id
         self.type = pod_type
         self.remainder = pod_type.capacity

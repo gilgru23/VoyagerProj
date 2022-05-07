@@ -39,6 +39,7 @@ class SystemManagement:
         if self.is_email_registered(email):
             #  log f"There already exits an account with email: [{email}]"
             raise AppOperationError(f"There already exits an account with email: [{email}]")
+        # Todo: add registration date as an arg to db
         self.db_proxy.add_account(email, phone, f_name, l_name, dob)
 
 

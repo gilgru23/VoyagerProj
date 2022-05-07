@@ -44,5 +44,5 @@ class TestConsumer(TestCase):
         pass
 
     def test_get_consumer(self):
-        consumer = self.db_proxy.get_consumer_by_id(self.consumer1['id'])
+        consumer = self.db_proxy.get_consumer(57)
         self.skipTest("not implemented")

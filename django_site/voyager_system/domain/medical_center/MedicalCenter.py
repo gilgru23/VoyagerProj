@@ -2,6 +2,7 @@ from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Pod import *
 
 from voyager_system.common import Logger
 
@@ -22,25 +23,27 @@ class MedicalCenter:
 
     # region Consumer
     # consumer related interface
-    async def get_consumer2(self, consumer_id):
-        """retrieves a consumer from database (or cache) by id
 
-        :param consumer_id: id of the consumer
-        :return: Consumer object.
-        :raise  AppOperationError: throws exception if consumer was not found
-        """
-        try:
-            consumer = await self.object_mapper.get_consumer(consumer_id)
-        except DataAccessError as e:
-            self.logger.debug(str(e))
-            err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
-            self.logger.info(err_str)
-            raise AppOperationError(err_str)
-        if not consumer:
-            err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
-            raise AppOperationError(err_str)
-        self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
-        return consumer
+
+    # async def get_consumer2(self, consumer_id):
+    #     """retrieves a consumer from database (or cache) by id
+    #
+    #     :param consumer_id: id of the consumer
+    #     :return: Consumer object.
+    #     :raise  AppOperationError: throws exception if consumer was not found
+    #     """
+    #     try:
+    #         consumer = await self.object_mapper.get_consumer(consumer_id)
+    #     except DataAccessError as e:
+    #         self.logger.debug(str(e))
+    #         err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
+    #         self.logger.info(err_str)
+    #         raise AppOperationError(err_str)
+    #     if not consumer:
+    #         err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
+    #         raise AppOperationError(err_str)
+    #     self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
+    #     return consumer
 
     def get_consumer(self, consumer_id) -> Consumer:
         """retrieves a consumer from database (or cache) by id
@@ -50,10 +53,10 @@ class MedicalCenter:
         :raise  AppOperationError: throws exception if consumer was not found
         """
         try:
-            consumer = self.object_mapper.get_consumer(consumer_id)
+            consumer = self.db.get_consumer(consumer_id)
         except DataAccessError as e:
             self.logger.debug(str(e))
-            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] .\n' + e.__str__()
+            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] .\n' + str(e)
             self.logger.info(err_str)
             raise e
         if not consumer:
@@ -177,4 +180,15 @@ class MedicalCenter:
         return result
 
     # endregion Consumer
+
+
+    # region Pods
+    def get_pod_type_from_typeId(self, type_id: int):
+        return PodType(-1,-1,"Nothing")
+    # todo: check in MarketPlace
+    def validate_pod(self, pod_id: int):
+        return Pod(-1,self.get_pod_type_from_typeId(-1))
+
+    # endregion Pods
+
 
