@@ -18,7 +18,7 @@ class ConsumerService:
 
 
     def register_pod_to_consumer(self, consumer_id: int, pod_id: int, pod_type: str):
-        self.med_center.consumer_register_dispenser(self, consumer_id, pod_id, pod_type)
+        self.med_center.consumer_register_pod(self, consumer_id, pod_id, pod_type)
 
 
 # - dose

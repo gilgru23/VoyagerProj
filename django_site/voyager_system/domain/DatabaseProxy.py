@@ -1,6 +1,8 @@
 from voyager_system.common.ErrorTypes import DataAccessError
 from voyager_system.data_access.dtos import *
 from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Dosing import *
+from voyager_system.domain.medical_center.Pod import *
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 import voyager_system.data_access.database as db
 from django.core.exceptions import ObjectDoesNotExist
@@ -72,11 +74,39 @@ class DatabaseProxy:
         # Todo:: make a transaction
         return db.add_consumer(consumer_id, residence, height, weight, units, gender, goal)
 
-    def update_consumer(self, consumer):
+    def update_consumer(self, consumer: Consumer):
+        consumer_dto = self.consumer_to_dto(consumer)
+        # pod_dots = [self.pod_to_dto(p) for p in consumer.pods]
+        # dispenser_dots = [self.dispenser_to_dto(d) for d in consumer.dispensers]
+        # dosing_dots = [self.dosing_to_dto(d) for d in consumer.dosing_history]
+        # reminders_dots = [self.dosing_reminder_to_dto(r) for r in consumer.dosing_reminders]
+
         pass
 
-    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
-        return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
+    def consumer_add_pod(self, consumer: Consumer, pod: Pod):
+        pod_dto = self.pod_to_dto(pod)
+        try:
+            db.update_pod(pod_dto=pod_dto, consumer_id=consumer.id)
+        except Exception as e:
+            err_str = f"Unable to add a pod [{pod.id}] to consumer [{consumer.id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+    def consumer_update_pod(self, consumer: Consumer, pod: Pod):
+        pod_dto = self.pod_to_dto(pod)
+        try:
+            db.update_pod(pod_dto=pod_dto, consumer_id=consumer.id)
+        except Exception as e:
+            err_str = f"Unable to add a pod [{pod.id}] to consumer [{consumer.id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+    def consumer_add_dispenser(self, consumer: Consumer, dispenser: Dispenser):
+        disp_dto = self.dispenser_to_dto(dispenser)
+        try:
+            db.update_dispenser(dispenser_dto=disp_dto, consumer_id=consumer.id)
+        except Exception as e:
+            err_str = f"Unable to add a pod [{dispenser.serial_number}] to consumer [{consumer.id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+        # return db.set_dispenser_consumer(dispenser_serial_number, consumer_id)
         # dto = self.get_dispenser_dto(dispenser_serial_number)
         # return db.update_dispenser(dto)
 
@@ -90,7 +120,7 @@ class DatabaseProxy:
         dto.email = account.email
         dto.f_name = account.first_name
         dto.l_name = account.last_name
-        dto.dob = account.dob
+        dto.dob = account.date_of_birth
         dto.registration_date = account.registration_date
         return dto
 
@@ -112,6 +142,7 @@ class DatabaseProxy:
         dto.gender = consumer.gender
         # dto.units = consumer.units
         dto.goal = consumer.goal
+        return dto
 
     def dto_to_consumer(self, consumer_dto: ConsumerDto):
         consumer = Consumer()
@@ -125,6 +156,15 @@ class DatabaseProxy:
 
 
     def dispenser_to_dto(self, dispenser: Dispenser):
+        raise NotImplementedError("method not implemented yet")
+
+    def pod_to_dto(self, pod: Pod):
+        raise NotImplementedError("method not implemented yet")
+
+    def dosing_to_dto(self, dosing: Dosing):
+        raise NotImplementedError("method not implemented yet")
+
+    def dosing_reminder_to_dto(self, reminder: DosingReminder):
         raise NotImplementedError("method not implemented yet")
 
     # endregion DTO conversion

@@ -18,6 +18,7 @@ class Consumer(Account):
         self.dispensers = []                    # 1-to-n (?)
         self.pods = []                          # 1-to-n
         self.dosing_history = []                # 1-to-n
+        self.dosing_reminders = []                     # 1-to-n
 
         # personal info
         self.residence = ""

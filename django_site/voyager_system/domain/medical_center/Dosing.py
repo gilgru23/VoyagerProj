@@ -21,5 +21,11 @@ class Feedback:
         self.time = time
 
 
+class DosingReminder:
+    pass
+
+
+class FeedbackReminder:
+    pass
 
 

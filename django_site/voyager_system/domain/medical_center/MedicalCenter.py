@@ -127,7 +127,7 @@ class MedicalCenter:
         await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
 
-    async def consumer_register_pod(self, consumer_id: int, pod_id: int, pod_type: str):
+    def consumer_register_pod(self, consumer_id: int, pod_id: int, pod_type: int):
         """registers a pod of the specified id and type to the consumer
 
         :param consumer_id: int - id of the consumer
@@ -136,9 +136,10 @@ class MedicalCenter:
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         """
-        consumer = await self.get_consumer(consumer_id)
-        await consumer.register_pod(pod_id=pod_id, pod_type=pod_type)
-        await self.object_mapper.update_consumer(consumer)
+        consumer = self.get_consumer(consumer_id)
+        ptype = self.get_pod_type_from_typeId(pod_type)
+        await consumer.register_pod(pod_id=pod_id, pod_type=ptype)
+        self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [id: {pod_id}]")
 
     async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
@@ -183,10 +184,10 @@ class MedicalCenter:
 
 
     # region Pods
-    def get_pod_type_from_typeId(self, type_id: int):
+    def get_pod_type_from_typeId(self, type_id: int) -> PodType:
         return PodType(-1,-1,"Nothing")
     # todo: check in MarketPlace
-    def validate_pod(self, pod_id: int):
+    def validate_pod(self, pod_id: int) -> Pod:
         return Pod(-1,self.get_pod_type_from_typeId(-1))
 
     # endregion Pods
