@@ -11,6 +11,10 @@ def has_account_with_email(email):
     return Account.objects.filter(email=email).exists()
 
 
+def has_account_with_id(id):
+    return Account.objects.filter(id=id).exists()
+
+
 def add_account(email, f_name, l_name, phone, dob):
     account = Account.objects.create(email=email, f_name=f_name, l_name=l_name, phone=phone, dob=dob)
     return account
@@ -45,7 +49,7 @@ def update_account(acct_dto: AccountDto):
 # endregion Account
 
 # region Consumer
-def add_consumer(id: int, residence: str, height: int, weight: int, units: str, gender: str, goal: any):
+def add_consumer(id: int, residence: str, height: int, weight: int, units: int, gender: int, goal: any):
     return Consumer.objects.create(
         account=Account.objects.get(id=id),
         residence=residence, height=height, weight=weight,
@@ -55,6 +59,10 @@ def add_consumer(id: int, residence: str, height: int, weight: int, units: str, 
 
 def get_consumer(account_id: int) -> Consumer:
     return Consumer.objects.get(account=account_id)
+
+
+def has_consumer(id):
+    return Consumer.objects.filter(account_id=id).exists()
 
 
 def update_consumer(consumer_dto: ConsumerDto):

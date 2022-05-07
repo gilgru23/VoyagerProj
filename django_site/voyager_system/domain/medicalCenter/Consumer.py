@@ -3,14 +3,14 @@ from datetime import datetime
 from random import randint
 
 from voyager_system.data_access.dtos import ConsumerDto
-from voyager_system.domain.User import User
+from voyager_system.domain.Account import Account
 from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.domain.medicalCenter.Dispenser import Dispenser
 from voyager_system.domain.medicalCenter.Dosing import *
 from voyager_system.domain.medicalCenter.Pod import *
 
 
-class Consumer(User):
+class Consumer(Account):
 
     def __init__(self) -> None:
         super().__init__()
