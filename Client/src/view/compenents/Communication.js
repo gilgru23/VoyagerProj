@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic'
@@ -14,65 +14,64 @@ import {
 } from 'react-native'
 import { Buffer } from 'buffer'
 
-export default function Communication({ navigation, device, route }) {
+export default function Communication({ navigation, route }) {
   const [dataToSend, setDataSend] = useState('')
+  const [connectedDevice, setConnectedDevice] = useState()
   const [controller, setConroller] = useState(route.params.controller)
 
+  async function getConnections() {
+    try {
+      const connectedDevice = await RNBluetoothClassic.getConnectedDevices()
+      console.log(connectedDevice)
+      if (connectedDevice.length > 0) setConnectedDevice(connectedDevice[0])
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  acceptConnections = async () => {
+    try {
+      let device = await RNBluetoothClassic.accept({ delimiter: '\r' })
+      if (device) {
+        setConnectedDevice(device)
+        // setConnectedDevice(device)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const sendData = async () => {
     try {
-      await RNBluetoothClassic.writeToDevice(device.address, dataToSend)
-
-      console.log({
-        timestamp: new Date(),
-        data: dataToSend,
-        type: 'sent'
-      })
-
+      let message = dataToSend + '\r'
+      await RNBluetoothClassic.writeToDevice(connectedDevice.address, message)
+      console.log('---wrote 1')
       let data = Buffer.alloc(10, 0xef)
-      await device.write(dataToSend)
-
-      console.log({
-        timestamp: new Date(),
-        data: `Byte array: ${dataToSend.toString()}`,
-        type: 'sent'
-      })
+      await connectedDevice.write(data)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const performRead = async () => {
-    while (true) {
-      try {
-        console.log('Polling for available messages')
-        let available = await device.available()
-        console.log(`There is data available [${available}], attempting read`)
-
-        if (available > 0) {
-          for (let i = 0; i < available; i++) {
-            console.log(`reading ${i}th time`)
-            let data = await device.read()
-
-            console.log(`Read data ${data}`)
-            console.log(data)
-          }
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  }
-
   return (
     <View style={styles.container}>
+      {connectedDevice ? (
+        <Text>{`You are connected to ${connectedDevice.name}`}</Text>
+      ) : null}
       <TextInput
         style={styles.inputStyle}
         placeholder="Send data"
         value={dataToSend}
-        onChangeText={(val) => this.setDataSend(val)}
+        onChangeText={(val) => setDataSend(val)}
+      />
+      <Button
+        title="Accept connections"
+        onPress={async () => await acceptConnections()}
       />
       <Button title="Send Data" onPress={() => sendData()} />
       <Button title="Get Data" onPress={() => performRead()} />
+      <Button
+        title="Get connection devices"
+        onPress={async () => await getConnections()}
+      />
     </View>
   )
 }

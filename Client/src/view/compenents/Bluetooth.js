@@ -19,7 +19,8 @@ export default function Bluetooth({ navigation, route }) {
   const [bondedDevices, setBondedDevices] = useState([])
   const [selctedDevice, setSelectedDevice] = useState()
   const [controller, setConroller] = useState(route.params.controller)
-
+  const [connectedDevice, setConnectedDevice] = useState()
+  const [polling, setPolling] = useState(false)
   const requestAccessFineLocationPermission = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
@@ -36,6 +37,41 @@ export default function Bluetooth({ navigation, route }) {
     return granted === PermissionsAndroid.RESULTS.GRANTED
   }
 
+  const onReceivedData = (event) => {
+    event.timestamp = new Date()
+    console.log(event)
+  }
+
+  const initializeRead = (device) => {
+    if (polling) {
+      const readInterval = setInterval(() => this.performRead(), 5000)
+    } else {
+      const readSubscription = device.onDataReceived((data) =>
+        onReceivedData(data)
+      )
+      // console.log(readSubscription)
+    }
+  }
+  const connect = async (device) => {
+    try {
+      let connection = await device.isConnected()
+      if (!connection) {
+        connection = await device.connect()
+      } else {
+        const connectedDevices = await RNBluetoothClassic.getConnectedDevices()
+        console.log(connectedDevices)
+        connectedDevices.forEach((deviceConnectedBefore) => {
+          if (device.address === deviceConnectedBefore.address) {
+            setConnectedDevice(deviceConnectedBefore)
+          }
+          initializeRead(device)
+        })
+      }
+      // this.initializeRead();
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const registerDevice = async (selectedDevice) => {
     // await controller.registerDispenser(selectedDevice.id, selctedDevice.name)
     // if (response.status === responseStatus.SUCCESS) {
@@ -60,7 +96,6 @@ export default function Bluetooth({ navigation, route }) {
       })
       setBondedDevices(devices)
       // const pairedDevices = await RNBluetoothClassic.getConnectedDevices();
-      console.log(devices)
     } catch (err) {
       console.log(err)
     }
@@ -72,6 +107,9 @@ export default function Bluetooth({ navigation, route }) {
         style={styles.dispenserImg}
         source={require('./assets/dispenser.png')}
       />
+      {connectedDevice ? (
+        <Text>{`You are already connected to ${connectedDevice.name}`}</Text>
+      ) : null}
       <Button title="Show bonded Dispensers" onPress={() => bluetoothScan()} />
       <Text>Bonded Devices List:</Text>
       {bondedDevices.map((device) => (
@@ -85,10 +123,10 @@ export default function Bluetooth({ navigation, route }) {
       {selctedDevice ? (
         <TouchableOpacity
           style={styles.submitBtn}
-          onPress={() => registerDevice(selctedDevice)}
+          onPress={() => connect(selctedDevice)}
         >
           <Text style={{ color: 'white' }}>
-            {`move to your personal with the dispenser ${selctedDevice.name}`}
+            {`connect to ${selctedDevice.name}`}
           </Text>
         </TouchableOpacity>
       ) : null}
