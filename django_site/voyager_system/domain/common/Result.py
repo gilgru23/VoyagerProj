@@ -17,7 +17,7 @@ def is_failure(res: tuple) -> bool:
 
 
 def get_value(res: tuple):
-    if (not res) or (res[0] is not True):
+    if (not res) or (is_failure(res)):
         raise ValueError(f"wrong argument type received {res}")
     else:
         return res[1]

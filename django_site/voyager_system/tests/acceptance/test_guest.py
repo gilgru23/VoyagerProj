@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from voyager_system.domain.common.Util import AppOperationError
 from voyager_system.service import ServiceSetup
 import voyager_system.domain.common.Result as Res
 
@@ -23,7 +22,7 @@ class TestGuest(TestCase):
 
     def setUp(self):
         print('\nset up acceptance test')
-        self.guest_service.create_account(email=self.account1['email'], phone=self.account1['phone'],
+        result = self.guest_service.create_account(email=self.account1['email'], phone=self.account1['phone'],
                                           f_name=self.account1['f_name'],
                                           l_name=self.account1['l_name'], dob=self.account1['dob'])
         self.guest_service.create_account(email=self.account2['email'], phone=self.account2['phone'],

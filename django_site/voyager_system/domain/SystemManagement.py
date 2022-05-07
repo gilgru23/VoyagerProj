@@ -5,7 +5,7 @@ from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 
 
-
+# @TODO:: add logs
 class SystemManagement:
 
     def __init__(self, medical_center: MedicalCenter, db_proxy: DatabaseProxy) -> None:
@@ -18,6 +18,20 @@ class SystemManagement:
 
     # todo: handle phone number
     def create_account(self, email, phone, f_name, l_name, dob) -> str:
+        """
+        creates a new account in the system
+
+        :param email: string - valid email address
+        :param phone: string - user's phone number
+        :param f_name: string - user's first name
+        :param l_name: string - user's last name
+        :param dob: string - user's date of birth. format - YYYY-MM-DD
+        :return: None
+        :raise AppOperationError: throws if any of the following occur:
+                1. there already exist an account with the same id
+                2. any of the parameters is invalid
+        :raise DataAccessError: throws if db operation fails
+        """
         if not re.search(self.EMAIL_REGEX, email):
             raise AppOperationError(f"Invalid parameters")
         if not (email and phone and f_name and l_name and dob):
@@ -31,15 +45,15 @@ class SystemManagement:
     def create_consumer_profile(self, consumer_id: int, residence: str, height: int, weight: int,
                                 units, gender, goal: any):
         """
-        creates a new Consumer for an Account in the system
+        creates a new Consumer profile for an Account in the system
 
-        :param consumer_id: id of the account
-        :param residence: string describing consumer's place of residence
-        :param height: int describing the height of the consumer
-        :param weight: int describing the weight of the consumer
-        :param units: (pre defined) string describing the units of the measurements
-        :param gender: string describing consumer's gender
-        :param goal: string describing consumer goals for using the system
+        :param consumer_id: int - id of the account
+        :param residence: string - text describing consumer's place of residence
+        :param height: int - height of the consumer
+        :param weight: int - weight of the consumer
+        :param units: int - the units of the measurements (enum)
+        :param gender: int - consumer's gender (enum)
+        :param goal: string - consumer goals for using the system
         :return: None
         :raise AppOperationError: throws if any of the following occur:
                 1. an account with the same id doesnt exit
