@@ -35,3 +35,37 @@ class DispenserDto:
         self.registration_date = None
 
 
+class PodTypeDto:
+    def __init__(self) -> None:
+        self.name = None
+        self.substance = None
+        self.description = None
+        self.url = None
+
+class PodDto:
+    def __init__(self) -> None:
+        self.serial_num = None
+        self.pod_type = PodTypeDto()
+        self.remainder = None
+
+class DosingDto:
+    def __init__(self) -> None:
+        self.pod = PodDto()
+        self.time = None
+        self.latitude = None
+        self.longitude = None
+
+class RegimenDto:
+    def __init__(self) -> None:
+        self.schedule = dict()#podType -> (day, time) -> ammount
+
+class FeedbackDto:
+    def __init__(self) -> None:
+        self.dosing = DosingDto()
+        self.rating = None
+        self.comment = None
+
+class FeedbackReminderDto:
+    def __init__(self) -> None:
+        self.dosing = DosingDto()
+        self.time = None

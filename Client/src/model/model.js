@@ -56,7 +56,8 @@ export class Model {
     weight,
     units,
     gender,
-    goal
+    goal,
+    userCradentials
   ) => {
     const response = await this.createConsumerProfileReq(
       residence,
@@ -67,13 +68,14 @@ export class Model {
       goal
     )
     if (response.status === responseStatus.SUCCESS) {
+      console.log('In model', userCradentials)
       return createResponseObj(
         responseStatus.SUCCESS,
         new Consumer(
           userCradentials.email,
           userCradentials.firstName,
           userCradentials.lastName,
-          birthDate
+          userCradentials.birthDate
         )
       )
     }

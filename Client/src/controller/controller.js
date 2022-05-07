@@ -40,7 +40,6 @@ export class Controller {
     units,
     gender,
     goal,
-    birthDate,
     userCradentials
   ) => {
     if (
@@ -51,7 +50,6 @@ export class Controller {
         units,
         gender,
         goal,
-        birthDate,
         userCradentials
       )
     ) {
@@ -63,7 +61,8 @@ export class Controller {
       weight,
       units,
       gender,
-      goal
+      goal,
+      userCradentials
     )
   }
 

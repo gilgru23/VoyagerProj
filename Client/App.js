@@ -23,7 +23,7 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="BluetoothScreen">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Connection"

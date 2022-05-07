@@ -15,7 +15,8 @@ export const registerUser = async (
       pwd: password,
       f_name: firstName,
       l_name: lastName,
-      dob: birthDate
+      dob: birthDate,
+      phone: '0527484595'
     })
     if (response) {
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')

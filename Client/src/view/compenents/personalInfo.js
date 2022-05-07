@@ -26,13 +26,13 @@ export default function PersonalInfo({ navigation, route }) {
       residence,
       height,
       weight,
-      'KG',
-      gender,
+      1,
+      1,
       'N/A',
-      birthDate,
       route.params
     )
     if (response.status === responseStatus.SUCCESS) {
+      console.log(response.content)
       navigation.navigate('BluetoothScreen', {
         consumer: response.content
       })

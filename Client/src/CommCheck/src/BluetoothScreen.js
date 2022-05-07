@@ -1,18 +1,7 @@
 import React from 'react'
-
-// import {
-//   Root,
-//   StyleProvider,
-// } from 'native-base';
-// import View from 'react-native';
 import { Text, View, StyleSheet, ScrollView } from 'react-native'
 
 import RNBluetoothClassic from 'react-native-bluetooth-classic'
-// import getTheme from '../../native-base-theme/components';
-// import platform from '../../native-base-theme/variables/platform';
-// import ConnectionScreen from './src/connection/ConnectionScreen';
-// import DeviceListScreen from './src/device-list/DeviceListScreen';
-// import ConnectionScreen from './connection/ConnectionScreen'
 import DeviceListScreen from './device-list/DeviceListScreen'
 import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
@@ -36,7 +25,6 @@ export default class BluetoothScreen extends React.Component {
    * @param device the BluetoothDevice selected or connected
    */
   selectDevice = (device) => {
-    console.log('App::selectDevice() called with: ', device)
     this.setState({ device })
   }
 

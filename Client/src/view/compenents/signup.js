@@ -33,17 +33,23 @@ export default function Signup({ navigation, route }) {
       password,
       firstName,
       lastName,
-      birthDate
+      birthDate.toISOString().split('T')[0]
     )
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
       const responseLogin = await controller.loginUser(email, password)
-      createChannel(email)
-      navigation.navigate('PersonalInfo', {
-        firstName: firstName,
-        lastName: lastName,
-        email: email
-      })
+      if (responseLogin.status === responseStatus.SUCCESS) {
+        console.log('email for notification', email)
+        createChannel(email)
+        navigation.navigate('PersonalInfo', {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          birthDate: birthDate.toISOString().split('T')[0]
+        })
+      } else {
+        alert('Error', response.content)
+      }
     } else {
       alert('Error', response.content)
     }
@@ -63,7 +69,6 @@ export default function Signup({ navigation, route }) {
     )
 
   const onChangeDatePicker = (event, selectedDate) => {
-    console.log(selectedDate)
     setBirthDate(selectedDate)
     setDateModalOpen(false)
   }

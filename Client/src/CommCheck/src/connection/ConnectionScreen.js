@@ -71,21 +71,9 @@ export default class ConnectionScreen extends React.Component {
    */
   componentDidMount() {
     setTimeout(() => this.connect(), 0)
-    this.createChannel(this.props.consumer.email)
+    // this.createChannel(this.props.consumer.email)
   }
 
-  createChannel = (consumerId) =>
-    PushNotification.createChannel(
-      {
-        channelId: consumerId, // (required)
-        channelName: 'Test channe', // (required)
-        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
-        playSound: false, // (optional) default: true
-        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
-        vibrate: true // (optional) default: true. Creates the default vibration pattern if true.
-      },
-      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
-    )
   async connect() {
     try {
       let connection = await this.props.device.isConnected()
@@ -212,19 +200,12 @@ export default class ConnectionScreen extends React.Component {
 
   async addData(message) {
     console.log('message received: ' + JSON.stringify(message))
-    // console.log(this.props.consumer.email)
-    // PushNotification.localNotification({
-    //   channelId:
-    //     // this.props.consumer.email ||
-    //     'gilgu@gmail.com',
-    //   title: `Message from dispneser ${this.props.device.name}`,
-    //   message: 'pod is running low' // (required)
-    // })
     this.setState({ data: [message, ...this.state.data] })
   }
 
   async addDataMessage(message) {
     console.log('message received: ' + JSON.stringify(message))
+    console.log(this.props.consumer.email)
     PushNotification.localNotification({
       channelId: this.props.consumer.email || 'gilgu@gmail.com',
       title: `Message from dispneser ${this.props.device.name}`,
@@ -253,14 +234,6 @@ export default class ConnectionScreen extends React.Component {
 
       let data = Buffer.alloc(10, 0xef)
       await this.props.device.write(data)
-      console.log('---wrote 2')
-
-      this.addData({
-        timestamp: new Date(),
-        data: `Byte array: ${data.toString()}`,
-        type: 'sent'
-      })
-      console.log('---added data 2')
 
       this.setState({ text: undefined })
     } catch (error) {

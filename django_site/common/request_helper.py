@@ -4,8 +4,11 @@ from accounts.models import Account
 import voyager_system.service.ManagerService as manager_service
 import json
 
+BAD_REQUEST_STATUS_CODE = 400
 
-#todo: implement better
+
+
+#todo: implement better, holding a dictionary of email to id, rather than referencing db
 def get_acount_id(request: HttpRequest) -> int:
     email = request.user.username
     acct: Account = Account.objects.get(email=email)
@@ -18,4 +21,11 @@ def keys_to_values(request: HttpRequest, keys):
     body = json.loads(request.body)
     # body = request.POST
     return [body[key] for key in keys]
+
+def result_to_response(res):
+    (succeeded, val) = res
+    if succeeded:
+        return HttpResponse(val)
+    else:
+        return HttpResponse(val, status=BAD_REQUEST_STATUS_CODE)
 

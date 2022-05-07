@@ -2,8 +2,9 @@ import logging
 import pathlib
 
 import os
+
 ROOT_DIR = os.path.abspath(os.curdir)
-print(f'ROOT_DIR: {ROOT_DIR}')
+print(f'\nROOT_DIR: {ROOT_DIR}')
 
 
 def get_logger(namespace: str,class_name: str):
