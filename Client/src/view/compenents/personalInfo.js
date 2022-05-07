@@ -33,7 +33,7 @@ export default function PersonalInfo({ navigation, route }) {
       route.params
     )
     if (response.status === responseStatus.SUCCESS) {
-      navigation.navigate('Bluetooth', {
+      navigation.navigate('BluetoothScreen', {
         consumer: response.content
       })
     } else {

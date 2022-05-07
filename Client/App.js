@@ -14,6 +14,8 @@ import CurrPod from './src/view/compenents/currPod'
 import Schedule from './src/view/compenents/Schedule'
 import { MockServer } from './src/Communication/mockServer'
 import { Controller } from './src/controller/controller'
+import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
+import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -21,8 +23,18 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Communication">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="Connection"
+          component={ConnectionScreen}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="BluetoothScreen"
+          component={BluetoothScreen}
+          initialParams={{ controller: controller }}
+        />
         <Stack.Screen
           name="Bluetooth"
           component={Bluetooth}

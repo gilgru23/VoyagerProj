@@ -37,7 +37,7 @@ export default class Login extends Component {
       role
     )
     if (response.status === responseStatus.SUCCESS) {
-      this.props.navigation.navigate('Bluetooth', {
+      this.props.navigation.navigate('BluetoothScreen', {
         consumer: response.content
       })
     } else {
