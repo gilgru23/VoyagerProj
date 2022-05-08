@@ -20,6 +20,7 @@ class AccountDto:
         self.phone = phone
         self.dob = dob
         self.registration_date = registration_date
+        return self
 
 
 
@@ -41,6 +42,7 @@ class ConsumerDto:
         self.gender = gender
         self.units = units
         self.goal = goal
+        return self
 
 class DispenserDto:
     def __init__(self) -> None:
@@ -54,6 +56,7 @@ class DispenserDto:
         self.version = version
         self.consumer = consumer
         self.registration_date = registration_date
+        return self
 
 
 class PodTypeDto:
@@ -72,6 +75,7 @@ class PodTypeDto:
         self.capacity = capacity
         self.description = description
         self.url = url
+        return self
 
 class PodDto:
     def __init__(self) -> None:
@@ -83,6 +87,7 @@ class PodDto:
         self.serial_num = serial_num
         self.pod_type = pod_type
         self.remainder = remainder
+        return self
 
 class DosingDto:
     def __init__(self) -> None:
@@ -98,6 +103,7 @@ class DosingDto:
         self.time = time
         self.latitude = latitude
         self.longitude = longitude
+        return self
 
 class RegimenDto:
     def __init__(self) -> None:
@@ -105,6 +111,7 @@ class RegimenDto:
 
     def build(self, schedule):
         self.schedule = schedule
+        return self
 
 class FeedbackDto:
     def __init__(self) -> None:
@@ -116,6 +123,7 @@ class FeedbackDto:
         self.dosing = dosing
         self.rating = rating
         self.comment = comment
+        return self
 
 class FeedbackReminderDto:
     def __init__(self) -> None:
@@ -125,3 +133,4 @@ class FeedbackReminderDto:
     def build(self, dosing, time):
         self.dosing = dosing
         self.time = time
+        return self

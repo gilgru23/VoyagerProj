@@ -18,4 +18,8 @@ https://stackoverflow.com/questions/17769430/command-django-admin-py-startprojec
 4)commands:
 run the server from VoyagerProject/django_site with the command python manage.py runserver 
 
+to apply migrations, from VoyagerProj/django_site, run these 2 commands
+python manage.py makemigrations
+pythons manage.py migrate
+
 tzuri-mrvoyager

@@ -81,7 +81,8 @@ def add_consumer(id: int, residence: str, height: int, weight: int, units: int, 
 
 def get_consumer(account_id: int) -> ConsumerDto:
     consumer = Consumer.objects.get(account=account_id)
-    dto = ConsumerDto()
+    dto: ConsumerDto = ConsumerDto()
+    dto.id = account_id
     dto.residence = consumer.residence
     dto.height = consumer.height
     dto.weight = consumer.weight
@@ -107,26 +108,28 @@ def update_consumer(consumer_dto: ConsumerDto):
 
 #region dispenser
 def add_dispenser(dispenser_dto: DispenserDto):
-    return Dispenser.objects.create(serial_num=dispenser_dto.serial_num,
-                                    version=dispenser_dto.version)
+    consumer: Consumer = None
+    if dispenser_dto.consumer:
+        consumer = Consumer.objects.get(account = dispenser_dto.consumer)
+    return Dispenser.objects.create(
+        serial_num=dispenser_dto.serial_num,
+        version=dispenser_dto.version,
+        consumer=consumer,
+        registration_date = dispenser_dto.registration_date)
 
 
 def get_dispenser(serial_num: str) -> Dispenser:
     return Dispenser.objects.get(serial_num=serial_num)
 
 
-# todo: depreciate, use update_dispenser instead
-def set_dispenser_consumer(serial_num: str, consumer_id: int):
-    dispenser = Dispenser.objects.get(serial_num=serial_num)
-    dispenser.consumer_id = consumer_id
-    dispenser.save()
+def update_dispenser(dispenser_dto: DispenserDto):
+    consumer: Consumer = None
+    if dispenser_dto.consumer:
+        consumer = Consumer.objects.get(account = dispenser_dto.consumer)
 
-
-def update_dispenser(dispenser_dto: DispenserDto, consumer_id: int):
     disp: Dispenser = Dispenser.objects.get(serial_num=dispenser_dto.serial_num)
-
     disp.version = dispenser_dto.version
-    disp.consumer = Consumer.objects.get(account_id=consumer_id)
+    disp.consumer = consumer
     disp.registration_date = dispenser_dto.registration_date
     disp.save()
 #endregion dispenser
