@@ -8,12 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 import voyager_system.service.ServiceSetup as service
 import common.request_helper as rh
 
-
+#todo: fix. if password is weak then account exists without user!!
 @csrf_exempt
 def register_user(request: HttpRequest):
     keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
     email, pwd, phone, f_name, l_name, dob = rh.keys_to_values(request, keys)
     res = service.get_guest_service().create_account(email, phone, f_name, l_name, dob)
+    if res[0] == False:
+        return rh.result_to_response(res)
     User.objects.create_user(email, email, pwd)
     return rh.result_to_response(res)
 
