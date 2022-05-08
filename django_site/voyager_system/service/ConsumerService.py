@@ -1,7 +1,6 @@
+from voyager_system.common import Result
 
-
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-# import voyager_system.domain.medicalCenter.MedicalCenter
+from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 
 
 class ConsumerService:
@@ -9,12 +8,18 @@ class ConsumerService:
         self.med_center = med_center
         pass
 
-    def register_dispenser(self, consumer_id: int, dispenser_serial_num: str):
+    def update_personal_info(self, consumer_id: int, residence: str, height: int,
+                             weight: int, units, gender, goal: any):
+        pass
+
+    def register_dispenser_to_consumer(self, consumer_id: int, dispenser_serial_num: str):
         self.med_center.consumer_register_dispenser(consumer_id, dispenser_serial_num)
 
-    async def update_personal_info(self, user_id: int, info):
-        pass
+    def register_pod_to_consumer(self, consumer_id: int, pod_serial_num: str, pod_type: str):
+        self.med_center.consumer_register_pod(consumer_id=consumer_id,
+                                              pod_serial_num=pod_serial_num,
+                                              pod_type_name=pod_type)
 
-    async def define_goals(self, user_id: int, goals) -> str:
-        pass
-
+# - dose
+# - get consumer's pods
+# - set dosing reminder

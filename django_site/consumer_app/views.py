@@ -14,5 +14,5 @@ def register_dispenser(request: HttpRequest):
     account_id = rh.get_acount_id(request)
     keys = ['serial_num']
     serial_num, = rh.keys_to_values(request, keys)
-    res = service.get_consumer_service().register_dispenser(account_id, serial_num)
+    res = service.get_consumer_service().register_dispenser_to_consumer(account_id, serial_num)
     return rh.result_to_response(res)

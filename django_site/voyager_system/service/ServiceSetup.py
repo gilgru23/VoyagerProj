@@ -2,8 +2,8 @@ from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.data_access import database as db
 
 
-from voyager_system.domain.SystemManagement import SystemManagement
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
+from voyager_system.domain.system_management.SystemManagement import SystemManagement
+from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 from voyager_system.service.ConsumerService import ConsumerService
 from voyager_system.service.GuestService import GuestService
 

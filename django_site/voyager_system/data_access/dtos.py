@@ -19,12 +19,13 @@ class ConsumerDto:
         # self.dispensers = []                    # 1-to-n (?)
         # self.pods = []                          # 1-to-n
         # self.dosing_history = []                # 1-to-n
-
+        self.id = None
         # personal info
         self.residence = None
         self.height = None
         self.weight = None
         self.gender = None
+        self.units = None
         self.goal = None
 
 class DispenserDto:
@@ -38,7 +39,9 @@ class DispenserDto:
 class PodTypeDto:
     def __init__(self) -> None:
         self.name = None
+        self.company = None
         self.substance = None
+        self.capacity = None
         self.description = None
         self.url = None
 
