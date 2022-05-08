@@ -9,7 +9,7 @@ class GuestService:
         self.system_management = sys_management
 
 
-    def create_account(self, email: str, phone: str, f_name: str, l_name: str, dob: str) -> str:
+    def create_account(self, email: str, phone: str, f_name: str, l_name: str, dob: str):
         try:
             self.system_management.create_account(email, phone, f_name, l_name, dob)
             return Result.success()
@@ -20,7 +20,7 @@ class GuestService:
 
 
     def create_consumer_profile(self, consumer_id: int, residence: str, height: int, weight: int, units, gender,
-                                goal: any) -> str:
+                                goal: any):
         try:
             self.system_management.create_consumer_profile(consumer_id, residence, height, weight, units, gender, goal)
             return Result.success()
@@ -28,3 +28,6 @@ class GuestService:
             return Result.failure(str(e))
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
+
+    def get_consumer_profile(self, consumer_id: int):
+        return {'first_name:':"f",'last_name:':"l",'date_of_birth':"dob"}
