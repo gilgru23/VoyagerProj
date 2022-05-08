@@ -10,7 +10,7 @@ import { Dispenser } from './dispenser.js'
 import { MockServer } from '../Communication/mockServer.js'
 
 import { responseStatus } from '../Config/constants.js'
-import { createResponseObj } from '../utilsFunctions.js'
+import { createResponseObj, toDateString } from '../utilsFunctions.js'
 
 export class Model {
   constructor(testMode) {
@@ -44,7 +44,7 @@ export class Model {
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(
         responseStatus.SUCCESS,
-        new Consumer(email, 'Gil', 'Gruber', new Date())
+        new Consumer(email, 'Gil', 'Gruber', toDateString(new Date()))
       )
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
@@ -67,6 +67,7 @@ export class Model {
       gender,
       goal
     )
+    console.log(response)
     if (response.status === responseStatus.SUCCESS) {
       console.log('In model', userCradentials)
       return createResponseObj(

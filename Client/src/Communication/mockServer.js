@@ -1,4 +1,6 @@
 import { responseStatus } from '../Config/constants.js'
+import { Consumer } from '../model/Consumer.js'
+import { Dispenser } from '../model/dispenser.js'
 import {
   createResponseObj,
   validateEmail,
@@ -37,7 +39,13 @@ export class MockServer {
     }
 
     if (this.users.every((user) => user.email !== email)) {
-      this.users.push({ email: email, pwd: password })
+      this.users.push({
+        email: email,
+        pwd: password,
+        firstName: firstName,
+        lastName: lastName,
+        birthDate: birthDate
+      })
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
     return createResponseObj(responseStatus.FAILURE, 'User already exists')
@@ -68,15 +76,45 @@ export class MockServer {
     return createResponseObj(responseStatus.FAILURE, 'User not found')
   }
 
-  registerDispenser = (address) => {
-    if (!this.dispensers.includes(address)) {
-      this.dispensers.push(address)
-      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+  registerDispenser = (id, name) => {
+    if (!checkTheParametersAreValid(id, name)) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    if (!this.dispensers.includes(id)) {
+      this.dispensers.push(id)
+      return createResponseObj(responseStatus.SUCCESS, new Dispenser(id, name))
     }
     return createResponseObj(responseStatus.FAILURE, 'User already exists')
   }
 
   createConsumerProfile = (residence, height, weight, units, gender, goal) => {
-    return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    if (
+      !checkTheParametersAreValid(
+        residence,
+        height,
+        weight,
+        units,
+        gender,
+        goal
+      )
+    ) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    const email = this.users[0].email
+    return createResponseObj(
+      responseStatus.SUCCESS,
+      new Consumer(
+        this.users[0].email,
+        this.users[0].firstName,
+        this.users[0].lastName,
+        this.users[0].birthDate
+      )
+    )
   }
 }
