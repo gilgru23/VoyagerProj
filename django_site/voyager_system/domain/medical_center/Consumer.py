@@ -111,17 +111,11 @@ class Consumer(Account):
 
     # registers a new pod to the consumer. receives a podType arg and adds a new pod to the consumer's pod collection.
     # throws AppOperationError if the if a pod with the same id was found.
-    async def register_pod(self,pod_id, pod_type: PodType):
-        filtered_pods = [pod for pod in self.pods if pod.id == pod_id]
+    def register_pod(self,pod: Pod):
+        filtered_pods = [p for p in self.pods if p.serial_number == pod.serial_number]
         if filtered_pods:
-            raise AppOperationError(f"Error: consumer register pod - pod id [{pod_id}] already exists for consumer [{self.id}]")
-        # @TODO: replace ID with an ORM generated id (when adding DAL)
-        # if self.pods:
-        #     id = 1 + max(pod.id for pod in self.pods)
-        # else:
-        #     id = 1
-        new_pod = Pod(pod_id=pod_id, pod_type=pod_type)
-        self.pods.insert(0, new_pod)
+            raise AppOperationError(f"Error: consumer register pod - pod serial_number [{pod.serial_number}] already registered to consumer [{self.id}]")
+        self.pods.insert(0, pod)
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
@@ -137,9 +131,4 @@ class Consumer(Account):
 
     async def get_recommendation(self, stuff):
         raise NotImplementedError("replace this with an actual method")
-
-    def to_DTO(self):
-        # @TODO: fill dto fields
-        dto = ConsumerDto()
-        return dto
 

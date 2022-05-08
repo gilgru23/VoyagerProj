@@ -24,7 +24,6 @@ class MedicalCenter:
     # region Consumer
     # consumer related interface
 
-
     # async def get_consumer2(self, consumer_id):
     #     """retrieves a consumer from database (or cache) by id
     #
@@ -50,7 +49,8 @@ class MedicalCenter:
 
         :param consumer_id: id of the consumer
         :return: Consumer object.
-        :raise  AppOperationError: throws exception if consumer was not found
+        :raise  AppOperationError: throws exception if the consumer is not registered
+        :raise DataAccessError: throws exception if db was not able to get consumer
         """
         try:
             consumer = self.db.get_consumer(consumer_id)
@@ -127,20 +127,21 @@ class MedicalCenter:
         await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
 
-    def consumer_register_pod(self, consumer_id: int, pod_id: int, pod_type: int):
+    def consumer_register_pod(self, consumer_id: int, pod_serial_num: str, pod_type_name: str):
         """registers a pod of the specified id and type to the consumer
 
         :param consumer_id: int - id of the consumer
-        :param pod_id: int - id of the consumer from which a dose is taken
-        :param pod_type: the type of the pod (PodType object)
+        :param pod_serial_num: string - serial-number of the pod from which a dose is taken
+        :param pod_type_name: string - the type of the pod (PodType object)
         :return: None
-        :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
+        :raise AppOperationError: throws exception if the consumer is not registered
+        :raise DataAccessError: throws exception if db was not able to get consumer
         """
         consumer = self.get_consumer(consumer_id)
-        ptype = self.get_pod_type_from_typeId(pod_type)
-        await consumer.register_pod(pod_id=pod_id, pod_type=ptype)
-        self.db.update_consumer(consumer)
-        self.logger.info(f"consumer [id: {consumer_id}] registered pod [id: {pod_id}]")
+        pod = self.validate_pod(pod_serial_num, pod_type_name)
+        consumer.register_pod(pod=pod)
+        self.db.update_pod(pod=pod, consumer=consumer)
+        self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
 
     async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
         """registers a dispenser of the specified serial number to the consumer
@@ -182,14 +183,12 @@ class MedicalCenter:
 
     # endregion Consumer
 
-
     # region Pods
-    def get_pod_type_from_typeId(self, type_id: int) -> PodType:
-        return PodType(-1,-1,"Nothing")
+    def get_pod_type_from_typeId(self, pod_type_name: str) -> PodType:
+        return PodType(name=pod_type_name, substance="Nothing",description="even less")
+
     # todo: check in MarketPlace
-    def validate_pod(self, pod_id: int) -> Pod:
-        return Pod(-1,self.get_pod_type_from_typeId(-1))
+    def validate_pod(self, pod_serial_num: str, pod_type_name: str) -> Pod:
+        return Pod(pod_serial_num, self.get_pod_type_from_typeId(pod_type_name))
 
     # endregion Pods
-
-

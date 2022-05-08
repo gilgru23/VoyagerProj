@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from voyager_system.domain.medical_center.Dispenser import Dispenser
+from voyager_system.domain.medical_center.Pod import PodType, Pod
 from voyager_system.service import ServiceSetup
 import voyager_system.common.Result as Res
 
@@ -20,6 +22,9 @@ class TestConsumer(TestCase):
                 'l_name': "halpert", 'dob': "1979-01-01"}
     consumer2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                  'goal': 'pam'}
+    pod_type = {"name":"corpDrops"}
+    pod1 = {"serial_number":"1_1"}
+    pod2 = {"serial_number":"1_2"}
 
     def setUp(self):
         print('\nset up acceptance test')
@@ -38,11 +43,54 @@ class TestConsumer(TestCase):
         account = self.db_proxy.get_account_by_email(self.account2['email'])
         self.account2['id'] = account.id
         self.consumer2['id'] = account.id
-
+        self.db_proxy.add_company("E-corp")
+        pod_type = PodType(name=self.pod_type['name'], capacity=40, substance="secret", description="done")
+        self.db_proxy.add_pod_type(pod_type)
+        real_consumer1 = self.db_proxy.get_consumer(self.consumer1['id'])
+        self.db_proxy.add_pod(Pod(self.pod1['serial_number'],pod_type),real_consumer1)
+        self.db_proxy.add_pod(Pod(self.pod2['serial_number'],pod_type),real_consumer1)
     def tearDown(self):
         print('tear down acceptance test')
         pass
 
-    def test_get_consumer(self):
-        consumer = self.db_proxy.get_consumer(57)
+    def test_register_pod_to_consumer(self):
+        c2 = self.consumer2
+        self.guest_service.create_consumer_profile(c2['id'], c2['residence'], c2['height'], c2['weight'], c2['units'],
+                                                   c2['gender'], c2['goal'])
+        real_consumer2 = self.db_proxy.get_consumer(self.consumer2['id'])
+        self.consumer_service.register_pod_to_consumer(real_consumer2.id, self.pod1['serial_number'],self.pod_type['name'])
+        # check if pod is related to consumer
         self.skipTest("not implemented")
+
+
+
+    def test_get_consumer_and_some_other_stuff(self):
+        # c2 = self.consumer2
+        # self.guest_service.create_consumer_profile(c2['id'], c2['residence'], c2['height'], c2['weight'], c2['units'],
+        #                                            c2['gender'], c2['goal'])
+        #
+        # # consumer = self.db_proxy.get_consumer(57)
+        # self.db_proxy.add_company("E-corp")
+        # pod_type = PodType(name="corpDrops", capacity=40, substance="secret", description="done")
+        # self.db_proxy.add_pod_type(pod_type)
+
+        # pod1 = Pod("1_1",pod_type)
+        # pod2 = Pod("1_2",pod_type)
+        # self.db_proxy.add_pod(pod1,consumer2)
+        # self.db_proxy.add_pod(pod2,consumer2)
+        #
+        # dispenser = Dispenser()
+        # dispenser.serial_number = "111"
+        # dispenser.version = "mk1"
+        # self.db_proxy.add_dispenser(dispenser)
+        # consumer1 = self.db_proxy.get_consumer(self.consumer1['id'])
+        # self.db_proxy.update_dispenser(dispenser,consumer1)
+        # consumer1.register_pod(pod1)
+        # consumer1.register_pod(pod2)
+        # self.db_proxy.update_pod(pod1, consumer1)
+        # self.db_proxy.update_pod(pod2, consumer1)
+        # flag = True
+        # consumer2again = self.db_proxy.get_consumer(consumer2.id)
+        # consumer1again = self.db_proxy.get_consumer(consumer1.id)
+        self.skipTest("not implemented")
+

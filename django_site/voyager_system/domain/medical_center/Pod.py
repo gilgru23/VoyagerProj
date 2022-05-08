@@ -1,18 +1,18 @@
-
 class PodType:
-    def __init__(self, type_id, capacity: float, description: str) -> None:
-        self.type_id = type_id
+    def __init__(self, name: str = None, capacity: float = 20,
+                 substance: str = None, description: str = None) -> None:
+        self.name = name
         self.capacity = capacity
+        self.substance = substance
         self.description = description
+        self.url = "None"
 
 
 class Pod:
-    def __init__(self, pod_id: int, pod_type: PodType) -> None:
-        self.id = pod_id
+    def __init__(self, serial_number: str = None, pod_type: PodType = None) -> None:
+        self.serial_number = serial_number
         self.type = pod_type
         self.remainder = pod_type.capacity
 
     def dose(self, amount):
         self.remainder -= amount
-
-

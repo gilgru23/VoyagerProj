@@ -12,14 +12,13 @@ class ConsumerService:
                              weight: int, units, gender, goal: any):
         pass
 
-
     def register_dispenser_to_consumer(self, consumer_id: int, dispenser_serial_num: str):
         self.med_center.consumer_register_dispenser(consumer_id, dispenser_serial_num)
 
-
-    def register_pod_to_consumer(self, consumer_id: int, pod_id: int, pod_type: str):
-        self.med_center.consumer_register_pod(self, consumer_id, pod_id, pod_type)
-
+    def register_pod_to_consumer(self, consumer_id: int, pod_serial_num: str, pod_type: str):
+        self.med_center.consumer_register_pod(consumer_id=consumer_id,
+                                              pod_serial_num=pod_serial_num,
+                                              pod_type_name=pod_type)
 
 # - dose
 # - get consumer's pods
