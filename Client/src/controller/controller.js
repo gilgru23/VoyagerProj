@@ -8,9 +8,7 @@ import { Consumer } from '../model/Consumer.js'
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj } from '../utilsFunctions.js'
 import { Model } from '../model/model.js'
-
-const checkTheParametersIsValid = (...args) =>
-  args.every((arg) => (console.log(args), arg !== ''))
+import { checkTheParametersAreValid } from '../utilsFunctions.js'
 
 export class Controller {
   constructor() {
@@ -18,7 +16,7 @@ export class Controller {
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
-    if (!checkTheParametersIsValid(email, password)) {
+    if (!checkTheParametersAreValid(email, password)) {
       return {
         status: responseStatus.FAILURE,
         content: 'email or password is empty'

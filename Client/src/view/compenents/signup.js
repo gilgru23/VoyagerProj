@@ -16,6 +16,7 @@ import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import PushNotification from 'react-native-push-notification'
+import { toDateString } from '../../utilsFunctions'
 
 export default function Signup({ navigation, route }) {
   const [firstName, setFirstName] = useState('')
@@ -33,7 +34,7 @@ export default function Signup({ navigation, route }) {
       password,
       firstName,
       lastName,
-      birthDate.toISOString().split('T')[0]
+      toDateString(birthDate)
     )
     console.log(responseStatus.SUCCESS)
     if (response.status === responseStatus.SUCCESS) {
@@ -45,7 +46,7 @@ export default function Signup({ navigation, route }) {
           firstName: firstName,
           lastName: lastName,
           email: email,
-          birthDate: birthDate.toISOString().split('T')[0]
+          birthDate: toDateString(birthDate)
         })
       } else {
         alert('Error', response.content)
