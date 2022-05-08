@@ -20,6 +20,10 @@ class ConsumerService:
                                               pod_serial_num=pod_serial_num,
                                               pod_type_name=pod_type)
 
-# - dose
-# - get consumer's pods
-# - set dosing reminder
+# - dose(consumer_id, pod, amount, units)
+# - get_consumers_pods(consumer_id)
+# - set_dosing_reminder
+# - get_recomendation(consumer_id)
+# - set_regimen(consumer_id)
+# - get_regimen(consumer_id)
+
