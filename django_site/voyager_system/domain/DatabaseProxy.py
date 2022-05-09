@@ -81,7 +81,7 @@ class DatabaseProxy:
             err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n" + str(e)
             raise DataAccessError(err_str)
 
-    def get_consumer_pods(self,consumer_id):
+    def get_consumer_pods(self, consumer_id):
         try:
             pod_dtos = db.get_pods_for_consumer_by_id(consumer_id)
             pods = [self.dto_to_pod(dto) for dto in pod_dtos]
@@ -90,6 +90,17 @@ class DatabaseProxy:
             return []
         except Exception as e:
             err_str = f"Unable to retrieve consumer's pods from db, with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+    def get_consumer_dispensers(self, consumer_id):
+        try:
+            disp_dtos = db.get_dispensers_for_consumer_by_id(consumer_id)
+            disps = [self.dto_to_dispenser(dto) for dto in disp_dtos]
+            return disps
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve consumer's dispensers from db, with id [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)
 
     # endregion Consumer
@@ -143,8 +154,8 @@ class DatabaseProxy:
     # endregion PodType
 
     # region Dispenser
-    def add_dispenser(self, dispenser: Dispenser):
-        dto = self.dispenser_to_dto(dispenser)
+    def add_dispenser(self, dispenser: Dispenser, consumer_id: int = None):
+        dto = self.dispenser_to_dto(dispenser, consumer_id=consumer_id)
         try:
             return db.add_dispenser(dto)
         except Exception as e:
@@ -152,12 +163,13 @@ class DatabaseProxy:
                 e)
             raise DataAccessError(err_str)
 
-    def update_dispenser(self, dispenser: Dispenser, consumer: Consumer):
-        dispenser_dto = self.dispenser_to_dto(dispenser)
+
+    def update_dispenser(self, dispenser: Dispenser, consumer_id: int):
+        dispenser_dto = self.dispenser_to_dto(dispenser,consumer_id=consumer_id)
         try:
             db.update_dispenser(dispenser_dto=dispenser_dto)
         except Exception as e:
-            err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer.id}]." + "\n" + str(
+            err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer_id}]." + "\n" + str(
                 e)
             raise DataAccessError(err_str)
 
@@ -227,8 +239,9 @@ class DatabaseProxy:
         return consumer
 
     @staticmethod
-    def dispenser_to_dto(dispenser: Dispenser):
+    def dispenser_to_dto(dispenser: Dispenser, consumer_id: int = None):
         dto = DispenserDto()
+        dto.consumer = consumer_id
         dto.serial_num = dispenser.serial_number
         dto.version = dispenser.version
         dto.registration_date = dispenser.registration_date
