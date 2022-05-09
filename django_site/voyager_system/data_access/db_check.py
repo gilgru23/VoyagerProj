@@ -30,6 +30,8 @@ CAPCITY = 50
 DESCRIPTION = 'Meet your better self'
 URL = 'www.area51.com/charlotte'
 
+DOSE_AMOUNT = 1
+
 
 def update_uniques():
     global SUFFIX, EMAIL, DISPENSER_SERIAL_NUM, POD_SERIAL_NUM, POD_TYPE_NAME, COMPANY_NAME
@@ -68,9 +70,13 @@ def foo():
     pod_type_dto : PodTypeDto = PodTypeDto().build(POD_TYPE_NAME, COMPANY_NAME, SUBSTANCE, CAPCITY, DESCRIPTION, URL)
     db.add_pod_type(pod_type_dto)
     assert_pod_type(pod_type_dto)
-    
+
     pod_dto: PodDto = PodDto().build(POD_SERIAL_NUM, POD_TYPE_NAME, CAPCITY)
     db.add_pod(pod_dto, acct_id)
+    assert_pod(pod_dto, acct_id)
+
+    pod_dto.remainder -= DOSE_AMOUNT
+    db.update_pod(pod_dto, acct_id)
     assert_pod(pod_dto, acct_id)
 
     

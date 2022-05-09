@@ -215,10 +215,10 @@ def get_pod_by_serial_number(serial_number: str) -> PodDto:
     return dto
 
 
-def update_pod(pod_dto: PodDto, pod_type_name: str, consumer_id: int):
+def update_pod(pod_dto: PodDto, consumer_id: int):
     pod = Pod.objects.get(serial_num=pod_dto.serial_num)
     pod.consumer = Consumer.objects.get(account_id=consumer_id)
-    pod.pod_type_details = PodType.objects.get(name=pod_type_name)
+    pod.pod_type = PodType.objects.get(name=pod_dto.pod_type)
     pod.remainder = pod_dto.remainder
     pod.save()
 
@@ -268,6 +268,11 @@ def get_dosings_for_pod(pod_dto: PodDto) -> List[DosingDto]:
 # region Regimen
 def _regimen_entry_to_tuple(entry: Regimen):
     return (entry.pod_type.name, entry.day, entry.time, entry.amount)
+
+
+def delete_regimens(consumer_id):
+    consumer = Consumer.objects.get(account=consumer_id)
+    Regimen.objects.filter(consumer=consumer).delete()
 
 # type,day,time,amount
 # model -consumer, pod_type, day, time, amount
