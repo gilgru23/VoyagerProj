@@ -118,8 +118,12 @@ def add_dispenser(dispenser_dto: DispenserDto):
         registration_date = dispenser_dto.registration_date)
 
 
-def get_dispenser(serial_num: str) -> Dispenser:
-    return Dispenser.objects.get(serial_num=serial_num)
+def get_dispenser(serial_num: str) -> DispenserDto:
+    disp: Dispenser = Dispenser.objects.get(serial_num=serial_num)
+    consumer_id = disp.consumer_id if disp.consumer else None
+    return DispenserDto().build(
+        disp.serial_num, disp.version, consumer_id, disp.registration_date
+    )
 
 
 def update_dispenser(dispenser_dto: DispenserDto):
@@ -138,10 +142,10 @@ def update_dispenser(dispenser_dto: DispenserDto):
 def _name_to_pod_type(name: str) -> PodType:
     return PodType.objects.get(name=name)
 
-def add_pod_type(company_name: str, pod_type_dto: PodTypeDto):
+def add_pod_type(pod_type_dto: PodTypeDto):
     pod_type = PodType.objects.create(
         name=pod_type_dto.name,
-        company=Company.objects.get(business=Business.objects.get(name=company_name)),
+        company=Company.objects.get(business=Business.objects.get(name=pod_type_dto.company)),
         substance=pod_type_dto.substance,
         description=pod_type_dto.description,
         # capacity=pod_to_dto.capacity,
@@ -188,11 +192,12 @@ def get_pod_types_by_company(company_name: str) -> List[PodTypeDto]:
 # endregion Pod Type
 
 # region Pod
-def add_pod(pod_type_name: str, pod_dto: PodDto,consumer_id = None):
+def add_pod(pod_dto: PodDto, consumer_id = None):
+    consumer = Consumer.objects.get(account_id=consumer_id) if consumer_id else None
     pod: Pod = Pod.objects.create(
         serial_num=pod_dto.serial_num,
-        pod_type=PodType.objects.get(name=pod_type_name),
-        # consumer=Consumer.objects.get(account_id=consumer_id),
+        pod_type=PodType.objects.get(name=pod_dto.pod_type),
+        consumer=consumer,
         remainder=pod_dto.remainder
     )
     return pod
@@ -220,7 +225,7 @@ def update_pod(pod_dto: PodDto, pod_type_name: str, consumer_id: int):
 
 def pod_to_dto(pod):
     dto = PodDto()
-    dto.pod_type = get_pod_type(pod.pod_type_details.name)
+    dto.pod_type = pod.pod_type.name #get_pod_type(pod.pod_type.name)
     dto.serial_num = pod.serial_num
     dto.remainder = pod.remainder
     return dto
