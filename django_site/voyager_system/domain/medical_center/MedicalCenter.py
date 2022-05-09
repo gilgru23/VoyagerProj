@@ -107,7 +107,7 @@ class MedicalCenter:
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
         def pod_to_dict(pod:Pod):
-            return {'serial_number': pod.serial_number, 'remainder': pod.remainder}
+            return {'serial_number': pod.serial_number, 'remainder': pod.remainder, 'type_name':pod.type_name}
         pods = self.db.get_consumer_pods(consumer_id)
         pod_dicts = [pod_to_dict(pod) for pod in pods]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered pods")
