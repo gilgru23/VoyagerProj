@@ -102,15 +102,16 @@ class MedicalCenter:
         """retrieves a shallow copy of all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
-        :return: A List of DTO's representing pods registered to the consumer
+        :return: A List of Dictionaries representing pods registered to the consumer
         :raise AppOperationError: exception if consumer was not found (see get_consumer)
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
-        consumer = self.get_consumer(consumer_id)
-        pods = consumer.get_pods()
-        pod_dtos = [self.db.pod_to_dto(pod) for pod in pods]
+        def pod_to_dict(pod:Pod):
+            return {'serial_number': pod.serial_number, 'remainder': pod.remainder}
+        pods = self.db.get_consumer_pods(consumer_id)
+        pod_dicts = [pod_to_dict(pod) for pod in pods]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered pods")
-        return pod_dtos
+        return pod_dicts
 
     async def consumer_provide_feedback(self, consumer_id, dosing_id, feedback_rating, feedback_description):
         """update the feedback of a consumer's past dosing-
@@ -140,9 +141,10 @@ class MedicalCenter:
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
         consumer = self.get_consumer(consumer_id)
+        consumer.pods = self.db.get_consumer_pods(consumer_id)
         pod = self.validate_pod(pod_serial_num, pod_type_name)
         consumer.register_pod(pod=pod)
-        self.db.update_pod(pod=pod, consumer=consumer)
+        self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
 
     async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
@@ -191,6 +193,9 @@ class MedicalCenter:
 
     # todo: check in MarketPlace
     def validate_pod(self, pod_serial_num: str, pod_type_name: str) -> Pod:
-        return Pod(pod_serial_num, self.get_pod_type_from_typeId(pod_type_name))
+        pod_type = self.get_pod_type_from_typeId(pod_type_name)
+        pod = Pod.from_type(serial_number=pod_serial_num,pod_type=pod_type)
+        return pod
+        # return Pod(serial_number=pod_serial_num,remainder=pod_type.capacity,type_name=pod_type_name)
 
     # endregion Pods

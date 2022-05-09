@@ -43,6 +43,7 @@ class ConsumerService:
             return Result.failure("Unable to complete the operation")
 
 
+
 # - dose(consumer_id, pod, amount, units)
 # - set_dosing_reminder
 # - get_recomendation(consumer_id)
