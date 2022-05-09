@@ -1,7 +1,11 @@
+# from django.utils.datetime_safe import datetime
+
+from datetime import datetime
 from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import *
 
 from voyager_system.common import Logger
@@ -135,7 +139,7 @@ class MedicalCenter:
 
         :param consumer_id: int - id of the consumer
         :param pod_serial_num: string - serial-number of the pod from which a dose is taken
-        :param pod_type_name: string - the type of the pod (PodType object)
+        :param pod_type_name: string - the type of the pod (PodType-objects' name-field)
         :return: None
         :raise AppOperationError: throws exception if the consumer is not registered
         :raise DataAccessError: throws exception if db was not able to get consumer
@@ -147,7 +151,7 @@ class MedicalCenter:
         self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
 
-    async def consumer_register_dispenser2(self, consumer_id, dispenser_serial_number):
+    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
         """registers a dispenser of the specified serial number to the consumer
 
         :param consumer_id: id of the consumer
@@ -155,16 +159,13 @@ class MedicalCenter:
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         """
-        consumer = await self.get_consumer(consumer_id)
-        await consumer.register_dispenser(dispenser_serial_number)
-        await self.object_mapper.update_consumer(consumer)
+        consumer = self.get_consumer(consumer_id)
+        consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
+        dispenser = self.validate_dispenser(serial_num=dispenser_serial_number)
+        consumer.register_dispenser(dispenser)
+        self.db.update_dispenser(dispenser, consumer_id=consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] registered dispenser [serial #: {dispenser_serial_number}]")
 
-    # deprecated - to be removed
-    # @staticmethod
-    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
-        # new_db = DatabaseProxy(database)
-        return self.db.set_dispenser_consumer(dispenser_serial_number=dispenser_serial_number, consumer_id=consumer_id)
 
     async def consumer_get_recommendation(self, consumer_id):
         consumer = await self.get_consumer(consumer_id)
@@ -187,15 +188,23 @@ class MedicalCenter:
 
     # endregion Consumer
 
-    # region Pods
+    # region Marketplace
     def get_pod_type_from_typeId(self, pod_type_name: str) -> PodType:
         return PodType(name=pod_type_name, substance="Nothing",description="even less")
 
     # todo: check in MarketPlace
-    def validate_pod(self, pod_serial_num: str, pod_type_name: str) -> Pod:
+    def validate_pod(self, serial_num: str, pod_type_name: str) -> Pod:
         pod_type = self.get_pod_type_from_typeId(pod_type_name)
-        pod = Pod.from_type(serial_number=pod_serial_num,pod_type=pod_type)
+        pod = Pod.from_type(serial_number=serial_num,pod_type=pod_type)
         return pod
         # return Pod(serial_number=pod_serial_num,remainder=pod_type.capacity,type_name=pod_type_name)
 
-    # endregion Pods
+    def validate_dispenser(self, serial_num: str) -> Dispenser:
+        disp = Dispenser()
+        disp.serial_number = serial_num
+        disp.version = "1.5"
+        disp.registration_date = datetime.now()
+        return disp
+        # return Pod(serial_number=pod_serial_num,remainder=pod_type.capacity,type_name=pod_type_name)
+
+    # endregion Marketplace

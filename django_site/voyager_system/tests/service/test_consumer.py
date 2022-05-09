@@ -26,6 +26,8 @@ class TestConsumer(TestCase):
     consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                          'goal': 'pam'}
     company_details = {'name': "E-corp"}
+    dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
+    dispenser_details2 = {'serial_number': "1212", 'version': "1.5"}
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
     pod_details1 = {"serial_number": "1_1"}
     pod_details2 = {"serial_number": "1_2"}
@@ -66,6 +68,12 @@ class TestConsumer(TestCase):
         self.db_proxy.add_pod(pod2)
         self.db_proxy.add_pod(pod3)
         self.db_proxy.add_pod(pod4)
+        disp = Dispenser()
+        disp.serial_number = self.dispenser_details1['serial_number']
+        disp.version = self.dispenser_details1['version']
+        self.db_proxy.add_dispenser(disp)
+        disp.serial_number = self.dispenser_details2['serial_number']
+        self.db_proxy.add_dispenser(disp)
 
     def tearDown(self) -> None:
         print('\ntear down acceptance test')
@@ -94,6 +102,21 @@ class TestConsumer(TestCase):
         result = self.consumer_service.get_consumer_pods(consumer1_id)
         pod_dicts = Res.get_value(result)
         self.assertEqual(len(pod_dicts), 2)
+
+
+
+    def test_register_dispenser_to_consumer(self):
+        consumer1_id = self.consumer_details1['id']
+        # register dispensers
+        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id, self.dispenser_details1['serial_number'])
+        self.assertTrue(Res.is_successful(result))
+        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id, self.dispenser_details2['serial_number'])
+        self.assertTrue(Res.is_successful(result))
+
+        # check if pods are related to consumer
+        dispensers = self.db_proxy.get_consumer_dispensers(consumer1_id)
+        self.assertEqual(len(dispensers), 2)
+
 
     def test_tests(self):
         print(f"Testing test!!!!!")

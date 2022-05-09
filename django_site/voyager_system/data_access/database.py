@@ -107,6 +107,10 @@ def update_consumer(consumer_dto: ConsumerDto):
 # endregion Consumer
 
 #region dispenser
+def dispenser_to_dto(disp: Dispenser, consumer_id: int):
+    return DispenserDto().build(
+        disp.serial_num, disp.version, consumer_id, disp.registration_date)
+
 def add_dispenser(dispenser_dto: DispenserDto):
     consumer: Consumer = None
     if dispenser_dto.consumer:
@@ -136,6 +140,13 @@ def update_dispenser(dispenser_dto: DispenserDto):
     disp.consumer = consumer
     disp.registration_date = dispenser_dto.registration_date
     disp.save()
+
+
+def get_dispensers_for_consumer_by_id(consumer_id: int) -> List[DispenserDto]:
+    dispensers: List[Dispenser] = Dispenser.objects.filter(consumer=Consumer.objects.get(account_id=consumer_id))
+    dips_dtos = [dispenser_to_dto(disp,consumer_id=consumer_id) for disp in dispensers]
+    return dips_dtos
+
 #endregion dispenser
 
 # region Pod Type

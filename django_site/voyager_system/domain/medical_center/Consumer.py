@@ -120,13 +120,10 @@ class Consumer(Account):
     # registers a new dispenser to the consumer. receives a dispenser serial number arg
     # and adds a new dispenser to the consumer's collection.
     # throws AppOperationError if the given serial_number conflicts with an existing dispenser of the consumer.
-    async def register_dispenser(self, serial_number):
-        filtered_dispensers = [disp for disp in self.dispensers if disp.serial == serial_number]
+    def register_dispenser(self, new_dispenser: Dispenser):
+        filtered_dispensers = [d for d in self.dispensers if d.serial_number == new_dispenser.serial_number]
         if filtered_dispensers:
-            raise AppOperationError(f"Error: consumer register dispenser - serial number [{serial_number}] already exists for consumer [{self.id}]")
-        # @TODO: replace datetime.now with a more generic time method
-        registration_time = datetime.now()
-        new_dispenser = Dispenser(serial_number=serial_number,registration_time=registration_time)
+            raise AppOperationError(f"Error: consumer register dispenser - serial number [{new_dispenser.serial_number}] already exists for consumer [{self.id}]")
         self.dispensers.insert(0, new_dispenser)
 
     async def get_recommendation(self, stuff):
