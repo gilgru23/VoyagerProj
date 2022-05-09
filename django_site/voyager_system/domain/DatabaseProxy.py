@@ -116,7 +116,7 @@ class DatabaseProxy:
     def update_pod(self, pod: Pod, consumer_id: int):
         pod_dto = self.pod_to_dto(pod)
         try:
-            db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id, pod_type_name=pod.type_name)
+            db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id)
         except Exception as e:
             err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)

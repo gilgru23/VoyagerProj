@@ -25,8 +25,8 @@ class TestConsumer(TestCase):
                         'l_name': "halpert", 'dob': "1979-01-01"}
     consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                          'goal': 'pam'}
-    company_details = {'name':"E-corp"}
-    pod_type_details = {"name": "corpDrops",'capacity':40,'company':company_details['name']}
+    company_details = {'name': "E-corp"}
+    pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
     pod_details1 = {"serial_number": "1_1"}
     pod_details2 = {"serial_number": "1_2"}
     pod_details3 = {"serial_number": "1_3"}
@@ -55,7 +55,7 @@ class TestConsumer(TestCase):
                                                    c1['gender'], c1['goal'])
         # register pods
         self.db_proxy.add_company(self.company_details['name'])
-        pod_type = PodType(name=self.pod_type_details['name'], capacity=40,company=self.company_details['name'],
+        pod_type = PodType(name=self.pod_type_details['name'], capacity=40, company=self.company_details['name'],
                            substance="secret", description="done")
         self.db_proxy.add_pod_type(pod_type)
         pod1 = Pod.from_type(self.pod_details1['serial_number'], pod_type)
@@ -73,23 +73,22 @@ class TestConsumer(TestCase):
     def test_register_pod_to_consumer(self):
         real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
         result = self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details1['serial_number'],
-                                                       self.pod_type_details['name'])
+                                                                self.pod_type_details['name'])
         self.assertTrue(Res.is_successful(result))
         result = self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details2['serial_number'],
-                                                       self.pod_type_details['name'])
+                                                                self.pod_type_details['name'])
 
         # check if pods are related to consumer
         pods = self.db_proxy.get_consumer_pods(real_consumer1.id)
         self.assertEqual(len(pods), 2)
 
-
     def test_get_consumer_pods(self):
         consumer1_id = self.consumer_details1['id']
         result = self.consumer_service.register_pod_to_consumer(consumer1_id, self.pod_details1['serial_number'],
-                                                       self.pod_type_details['name'])
+                                                                self.pod_type_details['name'])
         self.assertTrue(Res.is_successful(result))
         result = self.consumer_service.register_pod_to_consumer(consumer1_id, self.pod_details2['serial_number'],
-                                                       self.pod_type_details['name'])
+                                                                self.pod_type_details['name'])
         self.assertTrue(Res.is_successful(result))
         # check if pods are related to consumer
         result = self.consumer_service.get_consumer_pods(consumer1_id)
