@@ -98,17 +98,19 @@ class MedicalCenter:
         await self.db.update_consumer(consumer)
         self.logger.info(f"consumer [id: {consumer_id}] dosed from pod [pod_id: {pod_id}] - with amount [{amount}]")
 
-    async def get_consumer_pods(self, consumer_id):
+    def get_consumer_pods(self, consumer_id):
         """retrieves a shallow copy of all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
-        :return: None
+        :return: A List of DTO's representing pods registered to the consumer
         :raise AppOperationError: exception if consumer was not found (see get_consumer)
+        :raise DataAccessError: throws exception if db was not able to get consumer
         """
-        consumer = await self.get_consumer(consumer_id)
-        pods = await consumer.get_pods()
+        consumer = self.get_consumer(consumer_id)
+        pods = consumer.get_pods()
+        pod_dtos = [self.db.pod_to_dto(pod) for pod in pods]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered pods")
-        return pods
+        return pod_dtos
 
     async def consumer_provide_feedback(self, consumer_id, dosing_id, feedback_rating, feedback_description):
         """update the feedback of a consumer's past dosing-

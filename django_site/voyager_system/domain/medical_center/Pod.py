@@ -12,7 +12,8 @@ class Pod:
     def __init__(self, serial_number: str = None, pod_type: PodType = None) -> None:
         self.serial_number = serial_number
         self.type = pod_type
-        self.remainder = pod_type.capacity
+        if pod_type:
+            self.remainder = pod_type.capacity
 
     def dose(self, amount):
         self.remainder -= amount

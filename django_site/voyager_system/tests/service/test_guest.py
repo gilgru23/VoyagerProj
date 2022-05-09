@@ -85,3 +85,5 @@ class TestGuest(TestCase):
         result = self.guest_service.create_consumer_profile(c1['id'], c1['residence'], c1['height'], c1['weight'],
                                                             c1['units'], c1['gender'], c1['goal'])
         self.assertTrue(Res.is_failure(result))
+
+

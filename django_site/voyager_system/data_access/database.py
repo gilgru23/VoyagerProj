@@ -144,19 +144,20 @@ def add_pod_type(company_name: str, pod_type_dto: PodTypeDto):
         company=Company.objects.get(business=Business.objects.get(name=company_name)),
         substance=pod_type_dto.substance,
         description=pod_type_dto.description,
-        capacity=pod_to_dto.capacity,
+        # capacity=pod_to_dto.capacity,
         url=pod_type_dto.url)
     return pod_type
 
 def _pod_type_to_dto(pod_type: PodType):
-    company_name = pod_type.company.name
+    company_name = pod_type.company.business.name
     pod_dto : PodTypeDto= PodTypeDto().build(
-        pod_type.name,
-        company_name,
-        pod_type.substance,
-        pod_type.capacity,
-        pod_type.description,
-        pod_type.url
+        name=pod_type.name,
+        company=company_name,
+        substance=pod_type.substance,
+        # pod_type.capacity,
+        capacity=40,    # replace with line above when supported
+        description=pod_type.description,
+        url=pod_type.url
     )
     return pod_dto
 
@@ -187,17 +188,18 @@ def get_pod_types_by_company(company_name: str) -> List[PodTypeDto]:
 # endregion Pod Type
 
 # region Pod
-def add_pod(consumer_id, pod_type_name: str, pod_dto: PodDto):
+def add_pod(pod_type_name: str, pod_dto: PodDto,consumer_id = None):
     pod: Pod = Pod.objects.create(
         serial_num=pod_dto.serial_num,
         pod_type=PodType.objects.get(name=pod_type_name),
-        remainder=pod_dto.remainder,
-        consumer=Consumer.objects.get(account_id=consumer_id))
+        # consumer=Consumer.objects.get(account_id=consumer_id),
+        remainder=pod_dto.remainder
+    )
     return pod
 
 
 def get_pods_for_consumer_by_id(consumer_id: int) -> List[PodDto]:
-    pods : List[Pod] = Pod.objects.filter(consumer=Consumer.objects.get(account_id=consumer_id))
+    pods: List[Pod] = Pod.objects.filter(consumer=Consumer.objects.get(account_id=consumer_id))
     pods_dtos = [pod_to_dto(pod) for pod in pods]
     return pods_dtos
 
@@ -211,14 +213,14 @@ def get_pod_by_serial_number(serial_number: str) -> PodDto:
 def update_pod(pod_dto: PodDto, pod_type_name: str, consumer_id: int):
     pod = Pod.objects.get(serial_num=pod_dto.serial_num)
     pod.consumer = Consumer.objects.get(account_id=consumer_id)
-    pod.pod_type = PodType.objects.get(name=pod_type_name)
+    pod.pod_type_details = PodType.objects.get(name=pod_type_name)
     pod.remainder = pod_dto.remainder
     pod.save()
 
 
 def pod_to_dto(pod):
     dto = PodDto()
-    dto.pod_type = get_pod_type(pod.pod_type.name)
+    dto.pod_type = get_pod_type(pod.pod_type_details.name)
     dto.serial_num = pod.serial_num
     dto.remainder = pod.remainder
     return dto

@@ -61,7 +61,7 @@ class DispenserDto:
 
 class PodTypeDto:
     def __init__(self) -> None:
-        self.name = None
+        self.name = None,
         self.company = None
         self.substance = None
         self.capacity = None

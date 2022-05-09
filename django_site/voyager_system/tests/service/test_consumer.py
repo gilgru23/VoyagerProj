@@ -11,58 +11,107 @@ import voyager_system.common.Result as Res
 
 
 class TestConsumer(TestCase):
+    # main units to be tested
     guest_service = ServiceSetup.get_guest_service()
     consumer_service = ServiceSetup.get_consumer_service()
     db_proxy = guest_service.system_management.db_proxy
-    account1 = {'email': "micheal@dundermifflin.com", 'phone': "9999999", 'f_name': "micheal",
-                'l_name': "scott", 'dob': "1962-01-01"}
-    consumer1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
-                 'goal': 'is there?'}
-    account2 = {'email': "jim@dundermifflin.com", 'phone': "8888888", 'f_name': "jim",
-                'l_name': "halpert", 'dob': "1979-01-01"}
-    consumer2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
-                 'goal': 'pam'}
-    pod_type = {"name":"corpDrops"}
-    pod1 = {"serial_number":"1_1"}
-    pod2 = {"serial_number":"1_2"}
+
+    # objects details for setUp
+    account_details1 = {'email': "micheal@dundermifflin.com", 'phone': "9999999", 'f_name': "micheal",
+                        'l_name': "scott", 'dob': "1962-01-01"}
+    consumer_details1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
+                         'goal': 'is there?'}
+    account_details2 = {'email': "jim@dundermifflin.com", 'phone': "8888888", 'f_name': "jim",
+                        'l_name': "halpert", 'dob': "1979-01-01"}
+    consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
+                         'goal': 'pam'}
+    pod_type_details = {"name": "corpDrops"}
+    pod_details1 = {"serial_number": "1_1"}
+    pod_details2 = {"serial_number": "1_2"}
+    pod_details3 = {"serial_number": "1_3"}
+    pod_details4 = {"serial_number": "1_4"}
 
     def setUp(self):
         print('\nset up acceptance test')
-        self.guest_service.create_account(email=self.account1['email'], phone=self.account1['phone'],
-                                          f_name=self.account1['f_name'],
-                                          l_name=self.account1['l_name'], dob=self.account1['dob'])
-        self.guest_service.create_account(email=self.account2['email'], phone=self.account2['phone'],
-                                          f_name=self.account2['f_name'],
-                                          l_name=self.account2['l_name'], dob=self.account2['dob'])
-        account = self.db_proxy.get_account_by_email(self.account1['email'])
-        self.account1['id'] = account.id
-        self.consumer1['id'] = account.id
-        c1 = self.consumer1
+        #  register two accounts
+        self.guest_service.create_account(email=self.account_details1['email'], phone=self.account_details1['phone'],
+                                          f_name=self.account_details1['f_name'],
+                                          l_name=self.account_details1['l_name'], dob=self.account_details1['dob'])
+        self.guest_service.create_account(email=self.account_details2['email'], phone=self.account_details2['phone'],
+                                          f_name=self.account_details2['f_name'],
+                                          l_name=self.account_details2['l_name'], dob=self.account_details2['dob'])
+        # get account id back
+        account = self.db_proxy.get_account_by_email(self.account_details1['email'])
+        self.account_details1['id'] = account.id
+        self.consumer_details1['id'] = account.id
+        c1 = self.consumer_details1
+        account = self.db_proxy.get_account_by_email(self.account_details2['email'])
+        self.account_details2['id'] = account.id
+        self.consumer_details2['id'] = account.id
+
+        # register consumer for account 1
         self.guest_service.create_consumer_profile(c1['id'], c1['residence'], c1['height'], c1['weight'], c1['units'],
                                                    c1['gender'], c1['goal'])
-        account = self.db_proxy.get_account_by_email(self.account2['email'])
-        self.account2['id'] = account.id
-        self.consumer2['id'] = account.id
+        # register pods
         self.db_proxy.add_company("E-corp")
-        pod_type = PodType(name=self.pod_type['name'], capacity=40, substance="secret", description="done")
+        pod_type = PodType(name=self.pod_type_details['name'], capacity=40, substance="secret", description="done")
         self.db_proxy.add_pod_type(pod_type)
-        real_consumer1 = self.db_proxy.get_consumer(self.consumer1['id'])
-        self.db_proxy.add_pod(Pod(self.pod1['serial_number'],pod_type),real_consumer1)
-        self.db_proxy.add_pod(Pod(self.pod2['serial_number'],pod_type),real_consumer1)
-    def tearDown(self):
-        print('tear down acceptance test')
-        pass
+        pod1 = Pod(self.pod_details1['serial_number'], pod_type)
+        pod2 = Pod(self.pod_details2['serial_number'], pod_type)
+        pod3 = Pod(self.pod_details3['serial_number'], pod_type)
+        pod4 = Pod(self.pod_details4['serial_number'], pod_type)
+        self.db_proxy.add_pod(pod1)
+        self.db_proxy.add_pod(pod2)
+        self.db_proxy.add_pod(pod3)
+        self.db_proxy.add_pod(pod4)
+
+    def tearDown(self) -> None:
+        print('\ntear down acceptance test')
 
     def test_register_pod_to_consumer(self):
-        c2 = self.consumer2
-        self.guest_service.create_consumer_profile(c2['id'], c2['residence'], c2['height'], c2['weight'], c2['units'],
-                                                   c2['gender'], c2['goal'])
-        real_consumer2 = self.db_proxy.get_consumer(self.consumer2['id'])
-        self.consumer_service.register_pod_to_consumer(real_consumer2.id, self.pod1['serial_number'],self.pod_type['name'])
-        # check if pod is related to consumer
-        self.skipTest("not implemented")
+        real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details1['serial_number'],
+                                                       self.pod_type_details['name'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details2['serial_number'],
+                                                       self.pod_type_details['name'])
 
+        # check if pods are related to consumer
+        pods = self.db_proxy.get_consumer_pods(real_consumer1.id)
+        self.assertEqual(len(pods), 2)
+        real_consumer1_1 = self.db_proxy.get_consumer(real_consumer1.id)
+        self.assertEqual(len(real_consumer1_1.pods), 2)
 
+    def test_get_consumer_pods(self):
+        real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details1['serial_number'],
+                                                       self.pod_type_details['name'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details2['serial_number'],
+                                                       self.pod_type_details['name'])
+
+        # check if pods are related to consumer
+        pod_dtos = self.consumer_service.get_consumer_pods(real_consumer1.id)
+        self.assertEqual(len(pod_dtos), 2)
+
+    def test_tests(self):
+        print(f"Testing test!!!!!")
+        real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details1['serial_number'],
+                                                       self.pod_type_details['name'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details2['serial_number'],
+                                                       self.pod_type_details['name'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details3['serial_number'],
+                                                       self.pod_type_details['name'])
+        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details4['serial_number'],
+                                                       self.pod_type_details['name'])
+
+        ans = self.guest_service.system_management.account_id_exist(1)
+        self.assertTrue(ans)
+        ans = self.guest_service.system_management.account_id_exist(190)
+        self.assertFalse(ans)
+        ans = self.guest_service.system_management.is_email_registered(self.account_details1['email'])
+        self.assertTrue(ans)
+        ans = self.guest_service.system_management.is_email_registered('no_one@nowhere.nothing')
+        self.assertFalse(ans)
 
     def test_get_consumer_and_some_other_stuff(self):
         # c2 = self.consumer2
@@ -93,4 +142,3 @@ class TestConsumer(TestCase):
         # consumer2again = self.db_proxy.get_consumer(consumer2.id)
         # consumer1again = self.db_proxy.get_consumer(consumer1.id)
         self.skipTest("not implemented")
-

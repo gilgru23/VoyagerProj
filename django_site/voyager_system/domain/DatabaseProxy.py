@@ -64,7 +64,7 @@ class DatabaseProxy:
             err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)
         consumer = self.dto_to_consumer(consumer_dto, account_dto)
-        # consumer.pods = self.get_consumer_pods(consumer_id)
+        consumer.pods = self.get_consumer_pods(consumer_id)
         return consumer
 
     def has_consumer(self, consumer_id):
@@ -82,26 +82,24 @@ class DatabaseProxy:
             err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n" + str(e)
             raise DataAccessError(err_str)
 
-    # def get_consumer_pods(self,consumer_id):
-    #     try:
-    #         pod_dtos = db.get_pods_for_consumer_by_id(consumer_id)
-    #         pods = [self.dto_to_pod(dto) for dto in pod_dtos]
-    #         return pods
-    #     except ObjectDoesNotExist as e:
-    #         return []
-    #     except Exception as e:
-    #         err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n" + str(e)
-    #         raise DataAccessError(err_str)
+    def get_consumer_pods(self,consumer_id):
+        try:
+            pod_dtos = db.get_pods_for_consumer_by_id(consumer_id)
+            pods = [self.dto_to_pod(dto) for dto in pod_dtos]
+            return pods
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve consumer's pods from db, with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
 
     # endregion Consumer
 
     # region Pod
-    def add_pod(self, pod: Pod, consumer):
+    def add_pod(self, pod: Pod):
         dto = self.pod_to_dto(pod)
         try:
-            return db.add_pod(pod_type_name=pod.type.name,
-                              consumer_id=consumer.id,
-                              pod_dto=dto)
+            return db.add_pod(pod_type_name=pod.type.name,pod_dto=dto)
         except Exception as e:
             err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n" + str(e)
             raise DataAccessError(err_str)
@@ -158,7 +156,7 @@ class DatabaseProxy:
     def update_dispenser(self, dispenser: Dispenser, consumer: Consumer):
         dispenser_dto = self.dispenser_to_dto(dispenser)
         try:
-            db.update_dispenser(dispenser_dto=dispenser_dto, consumer_id=consumer.id)
+            db.update_dispenser(dispenser_dto=dispenser_dto)
         except Exception as e:
             err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer.id}]." + "\n" + str(
                 e)
@@ -270,10 +268,10 @@ class DatabaseProxy:
         return dto
 
     @staticmethod
-    def dto_to_pod(pod_dto: PodDto, podtype_dto: PodTypeDto):
+    def dto_to_pod(pod_dto: PodDto):
         pod: Pod = Pod()
         pod.serial_number = pod_dto.serial_num
-        pod.type = DatabaseProxy.dto_to_pod_type(podtype_dto)
+        pod.type = DatabaseProxy.dto_to_pod_type(pod_dto.pod_type)
         pod.remainder = pod_dto.remainder
         return pod
 
