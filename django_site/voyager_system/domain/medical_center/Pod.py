@@ -1,8 +1,9 @@
 class PodType:
-    def __init__(self, name: str = None, capacity: float = 20,
+    def __init__(self, name: str = None, capacity: float = 20,company: str = None,
                  substance: str = None, description: str = None) -> None:
         self.name = name
         self.capacity = capacity
+        self.company = company
         self.substance = substance
         self.description = description
         self.url = "None"

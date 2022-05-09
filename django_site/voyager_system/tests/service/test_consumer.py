@@ -25,7 +25,8 @@ class TestConsumer(TestCase):
                         'l_name': "halpert", 'dob': "1979-01-01"}
     consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                          'goal': 'pam'}
-    pod_type_details = {"name": "corpDrops"}
+    company_details = {'name':"E-corp"}
+    pod_type_details = {"name": "corpDrops",'capacity':40,'company':company_details['name']}
     pod_details1 = {"serial_number": "1_1"}
     pod_details2 = {"serial_number": "1_2"}
     pod_details3 = {"serial_number": "1_3"}
@@ -53,8 +54,9 @@ class TestConsumer(TestCase):
         self.guest_service.create_consumer_profile(c1['id'], c1['residence'], c1['height'], c1['weight'], c1['units'],
                                                    c1['gender'], c1['goal'])
         # register pods
-        self.db_proxy.add_company("E-corp")
-        pod_type = PodType(name=self.pod_type_details['name'], capacity=40, substance="secret", description="done")
+        self.db_proxy.add_company(self.company_details['name'])
+        pod_type = PodType(name=self.pod_type_details['name'], capacity=40,company=self.company_details['name'],
+                           substance="secret", description="done")
         self.db_proxy.add_pod_type(pod_type)
         pod1 = Pod(self.pod_details1['serial_number'], pod_type)
         pod2 = Pod(self.pod_details2['serial_number'], pod_type)

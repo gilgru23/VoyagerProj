@@ -99,7 +99,7 @@ class DatabaseProxy:
     def add_pod(self, pod: Pod):
         dto = self.pod_to_dto(pod)
         try:
-            return db.add_pod(pod_type_name=pod.type.name,pod_dto=dto)
+            return db.add_pod(pod_dto=dto)
         except Exception as e:
             err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n" + str(e)
             raise DataAccessError(err_str)
@@ -128,7 +128,7 @@ class DatabaseProxy:
     def add_pod_type(self, pod_type: PodType):
         dto = self.pod_type_to_dto(pod_type)
         try:
-            return db.add_pod_type("E-corp", dto)
+            return db.add_pod_type(dto)
         except Exception as e:
             err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n" + str(e)
             raise DataAccessError(err_str)
@@ -243,7 +243,7 @@ class DatabaseProxy:
         dto.name = pod_type.name
         dto.substance = pod_type.substance
         # dto.capacity = pod_type.capacity
-        # dto.company = pod_type.company
+        dto.company = pod_type.company
         dto.description = pod_type.description
         dto.url = pod_type.url
         return dto
@@ -254,8 +254,9 @@ class DatabaseProxy:
         pod_type.name = podtype_dto.name
         pod_type.substance = podtype_dto.substance
         # pod_type.capacity = podtype_dto.capacity
-        # pod_type.company = podtype_dto.company
-        pod_type.url = ""
+        pod_type.company = podtype_dto.company
+        pod_type.url = podtype_dto.url
+        # pod_type.url = ""
         pod_type.description = podtype_dto.description
         return pod_type
 
@@ -263,7 +264,7 @@ class DatabaseProxy:
     def pod_to_dto(pod: Pod):
         dto = PodDto
         dto.serial_num = pod.serial_number
-        # self.pod_type = Pod.PodType
+        dto.pod_type = DatabaseProxy.pod_type_to_dto(pod.type)
         dto.remainder = pod.remainder
         return dto
 
