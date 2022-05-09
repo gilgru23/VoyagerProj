@@ -29,5 +29,8 @@ class GuestService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
-    def get_consumer_profile(self, consumer_id: int):
+    def get_account_details(self, account_id: int):
         return {'first_name:':"f",'last_name:':"l",'date_of_birth':"dob"}
+
+    def get_consumer_profile(self, consumer_id: int):
+        return {'residence:':"here",'height:':"180",'weight':"75",'units':1}

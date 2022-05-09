@@ -6,6 +6,9 @@ from voyager_system.domain.DatabaseProxy import DatabaseProxy
 
 
 # @TODO:: add logs
+from voyager_system.domain.system_management.Account import Account
+
+
 class SystemManagement:
 
     def __init__(self, medical_center: MedicalCenter, db_proxy: DatabaseProxy) -> None:
@@ -72,6 +75,14 @@ class SystemManagement:
             raise AppOperationError(f"Account is already a consumer")
         # TODO:: verify height & weight
         self.db_proxy.add_consumer(consumer_id, residence, height, weight, units, gender, goal)
+
+
+
+    def get_account_details(self, account_id: int):
+        account: Account = self.db_proxy.get_account_by_id(account_id=account_id)
+        if not account:
+            raise AppOperationError(f"Invalid account id or email")
+        return {'first_name':account.first_name,'last_name':account.last_name,'date_of_birth':account.date_of_birth}
 
 
     # helper methods
