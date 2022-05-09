@@ -64,7 +64,6 @@ class DatabaseProxy:
             err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)
         consumer = self.dto_to_consumer(consumer_dto, account_dto)
-        consumer.pods = self.get_consumer_pods(consumer_id)
         return consumer
 
     def has_consumer(self, consumer_id):
@@ -99,7 +98,7 @@ class DatabaseProxy:
     def add_pod(self, pod: Pod):
         dto = self.pod_to_dto(pod)
         try:
-            return db.add_pod(pod_type_name=pod.type.name,pod_dto=dto)
+            return db.add_pod(pod_dto=dto)
         except Exception as e:
             err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n" + str(e)
             raise DataAccessError(err_str)
@@ -114,12 +113,12 @@ class DatabaseProxy:
             err_str = f"Unable to retrieve pod from db, with serial number [{serial_number}]." + "\n" + str(e)
             raise DataAccessError(err_str)
 
-    def update_pod(self, pod: Pod, consumer: Consumer):
+    def update_pod(self, pod: Pod, consumer_id: int):
         pod_dto = self.pod_to_dto(pod)
         try:
-            db.update_pod(pod_dto=pod_dto, consumer_id=consumer.id, pod_type_name=pod.type.name)
+            db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id, pod_type_name=pod.type_name)
         except Exception as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer.id}]." + "\n" + str(e)
+            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)
 
     # endregion Pod
@@ -128,7 +127,7 @@ class DatabaseProxy:
     def add_pod_type(self, pod_type: PodType):
         dto = self.pod_type_to_dto(pod_type)
         try:
-            return db.add_pod_type("E-corp", dto)
+            return db.add_pod_type(dto)
         except Exception as e:
             err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n" + str(e)
             raise DataAccessError(err_str)
@@ -165,6 +164,11 @@ class DatabaseProxy:
     # endregion Dispenser
 
     # region DTO conversion
+
+    """
+    No nested DTO's  (except for possibly one specific implementation of Consumer).
+    All fields must be queried separately.      
+    """
 
     @staticmethod
     def account_to_dto(account: Account):
@@ -218,6 +222,7 @@ class DatabaseProxy:
         consumer.first_name = account_dto.f_name
         consumer.last_name = account_dto.l_name
         consumer.date_of_birth = account_dto.dob
+        # consumer.phone = account_dto.phone
         consumer.registration_date = account_dto.registration_date
         return consumer
 
@@ -243,7 +248,7 @@ class DatabaseProxy:
         dto.name = pod_type.name
         dto.substance = pod_type.substance
         # dto.capacity = pod_type.capacity
-        # dto.company = pod_type.company
+        dto.company = pod_type.company
         dto.description = pod_type.description
         dto.url = pod_type.url
         return dto
@@ -254,16 +259,17 @@ class DatabaseProxy:
         pod_type.name = podtype_dto.name
         pod_type.substance = podtype_dto.substance
         # pod_type.capacity = podtype_dto.capacity
-        # pod_type.company = podtype_dto.company
-        pod_type.url = ""
+        pod_type.company = podtype_dto.company
+        pod_type.url = podtype_dto.url
+        # pod_type.url = ""
         pod_type.description = podtype_dto.description
         return pod_type
 
     @staticmethod
     def pod_to_dto(pod: Pod):
-        dto = PodDto
+        dto: PodDto = PodDto()
         dto.serial_num = pod.serial_number
-        # self.pod_type = Pod.PodType
+        dto.pod_type = pod.type_name
         dto.remainder = pod.remainder
         return dto
 
@@ -271,7 +277,15 @@ class DatabaseProxy:
     def dto_to_pod(pod_dto: PodDto):
         pod: Pod = Pod()
         pod.serial_number = pod_dto.serial_num
-        pod.type = DatabaseProxy.dto_to_pod_type(pod_dto.pod_type)
+        pod.type_name = pod_dto.pod_type
+        pod.remainder = pod_dto.remainder
+        return pod
+
+    @staticmethod
+    def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
+        pod: Pod = Pod()
+        pod.serial_number = pod_dto.serial_num
+        pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
         pod.remainder = pod_dto.remainder
         return pod
 
