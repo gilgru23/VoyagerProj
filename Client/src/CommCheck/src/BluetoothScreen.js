@@ -21,11 +21,15 @@ export default class BluetoothScreen extends React.Component {
    * - multiple devices
    * - more advanced state management (redux)
    * - etc
-   *
+   *z  n nmnmji8
    * @param device the BluetoothDevice selected or connected
    */
   selectDevice = (device) => {
     this.setState({ device })
+    this.props.route.params.controller.registerDispenser(
+      device.address,
+      device.name
+    )
   }
 
   /**

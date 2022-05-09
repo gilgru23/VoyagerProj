@@ -72,12 +72,13 @@ export const loginUser = async (email, pwd) => {
   }
 }
 
-export const registerDispenser = async (address) => {
+export const registerDispenser = async (id, name) => {
   try {
     const response = await axios.post(
       `${baseURL}/consumers/register_dispenser`,
       {
-        address
+        address: id,
+        version: name
       }
     )
     if (response) {
