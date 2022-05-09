@@ -5,6 +5,8 @@ import RNBluetoothClassic from 'react-native-bluetooth-classic'
 import DeviceListScreen from './device-list/DeviceListScreen'
 import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
+import { responseStatus } from '../../Config/constants'
+import { alert } from '../../view/compenents/utils'
 export default class BluetoothScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -24,12 +26,17 @@ export default class BluetoothScreen extends React.Component {
    *z  n nmnmji8
    * @param device the BluetoothDevice selected or connected
    */
-  selectDevice = (device) => {
-    this.setState({ device })
-    this.props.route.params.controller.registerDispenser(
+  selectDevice = async(device) => {
+    const response = await this.props.route.params.controller.registerDispenser(
       device.address,
       device.name
     )
+    if(response.status === responseStatus.SUCCESS){
+      this.setState({ device })
+    }
+    else{
+      alert('Error', "Can not connect to the device")
+    }
   }
 
   /**

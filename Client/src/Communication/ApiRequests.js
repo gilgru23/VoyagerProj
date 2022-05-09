@@ -77,7 +77,7 @@ export const registerDispenser = async (id, name) => {
     const response = await axios.post(
       `${baseURL}/consumers/register_dispenser`,
       {
-        address: id,
+        serial_num: id,
         version: name
       }
     )
