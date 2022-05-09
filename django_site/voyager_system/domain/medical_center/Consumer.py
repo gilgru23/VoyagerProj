@@ -33,28 +33,28 @@ class Consumer(Account):
     # * changes the current state of the relevant pod(?)
     # returns True if successful, otherwise False.
     # throws AppOperationError if the given pod_id is wrong or does not have the required amount for the dosing.
-    async def dose(self,pod_id, amount: float, location):
-        is_dosing = await self.can_dose(pod_id,amount)
+    async def dose(self,serial_number, amount: float, location):
+        is_dosing = await self.can_dose(serial_number,amount)
         if not is_dosing:
-            raise AppOperationError(f"Error: consumer dosing - wrong pod_id [{pod_id}] or amount [{amount}] for consumer [{self.id}]")
-        pod = await self.get_pod_by_id(pod_id)
+            raise AppOperationError(f"Error: consumer dosing - wrong pod_id [{serial_number}] or amount [{amount}] for consumer [{self.id}]")
+        pod = await self.get_pod_by_serial_number(serial_number)
         pod.dose(amount)
         # @TODO: replace datetime.now with a more generic time method
         dosing_time = datetime.now()
         # @TODO: replace random.randint with an ORM generated id (when adding DAL)
         dosing_id = randint(1, 100000)
-        new_dosing = Dosing(dosing_id=dosing_id, pod_id=pod_id, pod_type_id= pod.type.type_id, amount=amount, time=dosing_time, location=location)
+        new_dosing = Dosing(dosing_id=dosing_id, pod_id=serial_number, pod_type_id= pod.type.name, amount=amount, time=dosing_time, location=location)
         self.dosing_history.insert(0, new_dosing)
 
     # private helper method. returns boolean!
-    async def can_dose(self, pod_id, amount: float):
+    async def can_dose(self, serial_number, amount: float):
         """checks if a consumer can use a specific pod for dosing
 
-        :param pod_id:
+        :param serial_number:
         :param amount:
         :return: True if consumer can dose, else False.
         """
-        pod = await self.get_pod_by_id(pod_id)
+        pod = await self.get_pod_by_serial_number(serial_number)
         if pod is None:
             return False
         if pod.remainder < amount or amount <= 0:
@@ -63,9 +63,9 @@ class Consumer(Account):
 
     # private helper method - returns a pod if the given pod_id is in self.pods
     # else - returns None
-    async def get_pod_by_id(self, pod_id):
+    async def get_pod_by_serial_number(self, serial_number: str):
         for pod in self.pods:
-            if pod.id == pod_id:
+            if pod.serial_number == serial_number:
                 return pod
         return None
 
