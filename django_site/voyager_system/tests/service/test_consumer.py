@@ -27,7 +27,7 @@ class TestConsumer(TestCase):
                          'goal': 'pam'}
     company_details = {'name': "E-corp"}
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
-    dispenser_details2 = {'serial_number': "1212", 'version': "1.5"}
+    dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
     pod_details1 = {"serial_number": "1_1"}
     pod_details2 = {"serial_number": "1_2"}
@@ -103,20 +103,21 @@ class TestConsumer(TestCase):
         pod_dicts = Res.get_value(result)
         self.assertEqual(len(pod_dicts), 2)
 
-
-
     def test_register_dispenser_to_consumer(self):
         consumer1_id = self.consumer_details1['id']
         # register dispensers
-        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id, self.dispenser_details1['serial_number'])
+        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id,
+                                                                      self.dispenser_details1['serial_number'],
+                                                                      self.dispenser_details1['version'])
         self.assertTrue(Res.is_successful(result))
-        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id, self.dispenser_details2['serial_number'])
+        result = self.consumer_service.register_dispenser_to_consumer(consumer1_id,
+                                                                      self.dispenser_details2['serial_number'],
+                                                                      self.dispenser_details2['version'])
         self.assertTrue(Res.is_successful(result))
 
         # check if pods are related to consumer
         dispensers = self.db_proxy.get_consumer_dispensers(consumer1_id)
         self.assertEqual(len(dispensers), 2)
-
 
     def test_tests(self):
         print(f"Testing test!!!!!")

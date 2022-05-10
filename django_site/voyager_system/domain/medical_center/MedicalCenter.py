@@ -151,7 +151,7 @@ class MedicalCenter:
         self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
 
-    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number):
+    def consumer_register_dispenser(self, consumer_id, dispenser_serial_number, dispenser_version):
         """registers a dispenser of the specified serial number to the consumer
 
         :param consumer_id: id of the consumer
@@ -161,7 +161,7 @@ class MedicalCenter:
         """
         consumer = self.get_consumer(consumer_id)
         consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
-        dispenser = self.validate_dispenser(serial_num=dispenser_serial_number)
+        dispenser = self.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
         consumer.register_dispenser(dispenser)
         self.db.update_dispenser(dispenser, consumer_id=consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] registered dispenser [serial #: {dispenser_serial_number}]")
@@ -197,14 +197,13 @@ class MedicalCenter:
         pod_type = self.get_pod_type_from_typeId(pod_type_name)
         pod = Pod.from_type(serial_number=serial_num,pod_type=pod_type)
         return pod
-        # return Pod(serial_number=pod_serial_num,remainder=pod_type.capacity,type_name=pod_type_name)
 
-    def validate_dispenser(self, serial_num: str) -> Dispenser:
+
+    def validate_dispenser(self, serial_num: str, version: str) -> Dispenser:
         disp = Dispenser()
         disp.serial_number = serial_num
-        disp.version = "1.5"
+        disp.version = version
         disp.registration_date = datetime.now()
         return disp
-        # return Pod(serial_number=pod_serial_num,remainder=pod_type.capacity,type_name=pod_type_name)
 
     # endregion Marketplace
