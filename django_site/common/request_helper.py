@@ -25,7 +25,12 @@ def keys_to_values(request: HttpRequest, keys):
 def result_to_response(res):
     (succeeded, val) = res
     if succeeded:
-        return HttpResponse(val)
+        if isinstance(val, str):
+            return HttpResponse(val)
+        elif isinstance(val, dict):
+            return HttpResponse(json.dumps(val))
+        else:
+            return HttpResponse(str(val))
     else:
         return HttpResponse(val, status=BAD_REQUEST_STATUS_CODE)
 
