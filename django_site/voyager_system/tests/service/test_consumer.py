@@ -107,17 +107,12 @@ class TestConsumer(TestCase):
         # check if pods are related to consumer
         result = self.consumer_service.get_consumer_pods(consumer1_id)
         pod_dicts = Res.get_value(result)
-<<<<<<< HEAD
         self.assertEqual(len(pod_dicts), 3)
         list(pod_dicts).sort(key= lambda x: x['serial_number'])
         pods_details = [self.pod_details1, self.pod_details2, self.pod_details3]
         pods_details.sort(key= lambda x: x['serial_number'])
         for pod_dict, pod_details in zip(pod_dicts, pods_details):
             self.assertEqual(pod_dict['serial_number'],pod_details['serial_number'])
-
-=======
-        self.assertEqual(len(pod_dicts), 2)
->>>>>>> domain
 
     def test_register_dispenser_to_consumer(self):
         consumer1_id = self.consumer_details1['id']
