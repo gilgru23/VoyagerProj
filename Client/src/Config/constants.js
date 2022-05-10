@@ -3,3 +3,5 @@ export const responseStatus = {
   SUCCESS: 'success',
   FAILURE: 'failure'
 }
+
+export const podRunningLowMsg = 'pod running low'

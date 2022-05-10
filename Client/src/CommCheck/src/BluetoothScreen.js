@@ -26,17 +26,19 @@ export default class BluetoothScreen extends React.Component {
    *z  n nmnmji8
    * @param device the BluetoothDevice selected or connected
    */
-  selectDevice = async(device) => {
-    const response = await this.props.route.params.controller.registerDispenser(
-      device.address,
-      device.name
-    )
-    if(response.status === responseStatus.SUCCESS){
-      this.setState({ device })
-    }
-    else{
-      alert('Error', "Can not connect to the device")
-    }
+  selectDevice = async (device) => {
+    this.setState({ device })
+
+    // const response = await this.props.route.params.controller.registerDispenser(
+    //   device.address,
+    //   device.name
+    // )
+    // if(response.status === responseStatus.SUCCESS){
+    //   this.setState({ device })
+    // }
+    // else{
+    //   alert('Error', "Can not connect to the device")
+    // }
   }
 
   /**

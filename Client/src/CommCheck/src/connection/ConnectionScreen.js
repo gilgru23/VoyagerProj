@@ -24,6 +24,7 @@ import { Buffer } from 'buffer'
 import { Dispenser } from '../../../model/dispenser'
 import { Consumer } from '../../../model/Consumer'
 import PushNotification from 'react-native-push-notification'
+import { podRunningLowMsg } from '../../../Config/constants'
 
 /**
  * Manages a selected device connection.  The selected Device should
@@ -205,12 +206,24 @@ export default class ConnectionScreen extends React.Component {
 
   async addDataMessage(message) {
     console.log('message received: ' + JSON.stringify(message))
-    console.log(this.props.consumer.email)
-    PushNotification.localNotification({
-      channelId: this.props.consumer.email || 'gilgu@gmail.com',
-      title: `Message from dispneser ${this.props.device.name}`,
-      message: 'pod is running low' // (required)
-    })
+    const messageContent = message.data.split(';')
+    // const msgFromDispenser = JSON.parse(JSON.stringify(msgFromDispenser))
+    // console.log(JSON.parse(JSON.stringify(msgFromDispenser)))
+    console.log(messageContent[0])
+    if (messageContent[0].includes(podRunningLowMsg)) {
+      PushNotification.localNotification({
+        channelId: this.props.consumer.email || 'gilgu@gmail.com',
+        title: `Message from dispneser ${this.props.device.name}`,
+        message: 'pod is running low' // (required)
+      })
+    } else {
+      PushNotification.localNotification({
+        channelId: this.props.consumer.email || 'gilgu@gmail.com',
+        title: `Message from dispneser ${this.props.device.name}`,
+        message: `Dispense has been made:\n  time: ${message.timestamp} \n pod type: ${messageContent[1]}\n dosage:${messageContent[2]} mg` // (required)
+      })
+    }
+
     this.setState({ data: [message, ...this.state.data] })
   }
 
@@ -222,7 +235,10 @@ export default class ConnectionScreen extends React.Component {
     try {
       console.log(`Attempting to send data ${this.state.text}`)
       let message = this.state.text + '\r'
-      await RNBluetoothClassic.writeToDevice(this.props.device.address, message)
+      await RNBluetoothClassic.writeToDevice(
+        this.props.device.address,
+        JSON.stringify(message)
+      )
       console.log('---wrote 1')
 
       this.addData({
