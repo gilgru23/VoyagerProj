@@ -7,8 +7,7 @@ import manage
 if __name__ == '__main__':
     # args = [sys.argv[0], 'test', 'voyager_system.tests.service.test_guest.TestGuest.test_tests']
     args = [sys.argv[0], 'test', 'voyager_system.tests.service']
-    args = [sys.argv[0], 'test',
-            'voyager_system.tests.service.test_consumer.TestConsumer']
+    # args = [sys.argv[0], 'test', 'voyager_system.tests.service.test_guest.TestGuest']
     sys.argv = args
     manage.main()
     #

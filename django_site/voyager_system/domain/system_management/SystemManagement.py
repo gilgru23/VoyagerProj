@@ -1,6 +1,6 @@
 import re
 from voyager_system.common.ErrorTypes import AppOperationError
-
+from datetime import datetime
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 
@@ -82,7 +82,8 @@ class SystemManagement:
         account: Account = self.db_proxy.get_account_by_id(account_id=account_id)
         if not account:
             raise AppOperationError(f"Invalid account id or email")
-        return {'first_name':account.first_name,'last_name':account.last_name,'date_of_birth':account.date_of_birth}
+        date_str = account.date_of_birth.strftime("%Y-%m-%d")
+        return {'first_name':account.first_name,'last_name':account.last_name,'date_of_birth':date_str}
 
 
     # helper methods
