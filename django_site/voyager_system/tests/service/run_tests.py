@@ -5,11 +5,11 @@ import manage
 
 
 if __name__ == '__main__':
-    # args = [sys.argv[0], 'test', 'voyager_system.tests.service.test_guest.TestGuest.test_tests']
-    args = [sys.argv[0], 'test', 'voyager_system.tests.service']
-    # args = [sys.argv[0], 'test', 'voyager_system.tests.service.test_guest.TestGuest']
+    # args = [sys.argv[0], 'test', 'voyager_system.tests.service']
+    args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance']
     sys.argv = args
     manage.main()
+
     #
     # # !/usr/bin/env python
     # os.environ['DJANGO_SETTINGS_MODULE'] = 'voyager_system.tests.test_settings'

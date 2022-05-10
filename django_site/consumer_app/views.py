@@ -29,9 +29,10 @@ def register_dispenser(request: HttpRequest):
 @csrf_exempt
 def register_pod(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    keys = ['serial_num']
-    serial_num, = rh.keys_to_values(request, keys)
-    res = service.get_consumer_service().register_pod_to_consumer(account_id, serial_num, "HARD_CODED_POD_TYPE")
+    keys = ['serial_num','pod_type']
+    serial_num, pod_type = rh.keys_to_values(request, keys)
+    # res = service.get_consumer_service().register_pod_to_consumer(account_id, serial_num, "HARD_CODED_POD_TYPE")
+    res = service.get_consumer_service().register_pod_to_consumer(account_id, serial_num, pod_type)
     return rh.result_to_response(res)
 
 @csrf_exempt
