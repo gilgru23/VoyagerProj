@@ -73,6 +73,7 @@ class TestConsumer(TestCase):
         disp.version = self.dispenser_details1['version']
         self.db_proxy.add_dispenser(disp)
         disp.serial_number = self.dispenser_details2['serial_number']
+        disp.version = self.dispenser_details2['version']
         self.db_proxy.add_dispenser(disp)
 
     def tearDown(self) -> None:

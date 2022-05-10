@@ -21,5 +21,6 @@ def get_consumer_service():
 def get_guest_service():
     return guest_service
 
-
+def get_db_proxy():
+    return db_proxy
 
