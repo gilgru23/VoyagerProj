@@ -320,7 +320,6 @@ class DatabaseProxy:
         # pod_type.capacity = podtype_dto.capacity
         pod_type.company = podtype_dto.company
         pod_type.url = podtype_dto.url
-        # pod_type.url = ""
         pod_type.description = podtype_dto.description
         return pod_type
 

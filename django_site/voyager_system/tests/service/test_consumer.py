@@ -115,7 +115,6 @@ class TestConsumer(TestCase):
             self.assertEqual(pod_dict['serial_number'],pod_details['serial_number'])
 
 
-
     def test_register_dispenser_to_consumer(self):
         consumer1_id = self.consumer_details1['id']
         # register dispensers
