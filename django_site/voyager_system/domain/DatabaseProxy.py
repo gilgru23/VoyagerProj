@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 # TODO:: convert every object returned from DB to Domain Layer object
 from voyager_system.domain.system_management.Account import Account
 
+# TODO: add loggings
 
 class DatabaseProxy:
     def __init__(self, db_impl, object_cache=None):
@@ -103,6 +104,18 @@ class DatabaseProxy:
             err_str = f"Unable to retrieve consumer's dispensers from db, with id [{consumer_id}]." + "\n" + str(e)
             raise DataAccessError(err_str)
 
+    def get_consumer_dosing(self, consumer_id: int):
+        try:
+            dosing_dtos = db.get_dosings_for_consumer_by_id(consumer_id)
+            dosing = [self.dto_to_dosing(dto) for dto in dosing_dtos]
+            return dosing
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve consumer's past dosings from db, with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+        pass
+
     # endregion Consumer
 
     # region Pod
@@ -175,6 +188,33 @@ class DatabaseProxy:
 
     # endregion Dispenser
 
+    # region Dosing
+
+    def add_dosing(self, dosing: Dosing):
+        dto = self.dosing_to_dto(dosing)
+        try:
+            return db.add_dosing(dto)
+        except Exception as e:
+            err_str = f"Unable to add a new dosing type to DB, with id [{dosing.id}]"\
+                      + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+
+
+    def get_dosings_for_pod(self, pod: Pod):
+        try:
+            dosing_dtos = db.get_dosings_for_pod(self.pod_to_dto)
+            dosing = [self.dto_to_dosing(dto) for dto in dosing_dtos]
+            return dosing
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve from db past dosings, for pod with serial number [{pod.serial_number}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+        pass
+
+    # endregion Dosing
+
     # region DTO conversion
 
     """
@@ -236,6 +276,12 @@ class DatabaseProxy:
         consumer.date_of_birth = account_dto.dob
         # consumer.phone = account_dto.phone
         consumer.registration_date = account_dto.registration_date
+
+        # fail fast - for testing purposes
+        consumer.pods = None
+        consumer.dispensers = None
+        consumer.dosing_history = None
+        consumer.dosing_reminders = None
         return consumer
 
     @staticmethod
@@ -302,8 +348,31 @@ class DatabaseProxy:
         pod.remainder = pod_dto.remainder
         return pod
 
-    def dosing_to_dto(self, dosing: Dosing):
-        raise NotImplementedError("method not implemented yet")
+    @staticmethod
+    def dosing_to_dto(dosing: Dosing):
+        dto = DosingDto().build(
+            id=dosing.id,
+            pod=dosing.pod_serial_number,
+            # type= dosing.pod_type_name,
+            # amount= dosing.amount,
+            time=dosing.time,
+            latitude=dosing.latitude,
+            longitude=dosing.longitude)
+        return dto
+
+    @staticmethod
+    def dto_to_dosing(dosing_dto: DosingDto):
+        dosing = Dosing(
+            dosing_id=dosing_dto.id,
+            pod_serial_number= dosing_dto.pod,
+            # pod_type_name=dosing_dto.pod_type,
+            pod_type_name= "",
+            # amount= dosing_dto.amount,
+            amount= 3.5,
+            time= dosing_dto.time,
+            latitude= dosing_dto.latitude,
+            longitude= dosing_dto.longitude)
+        return dosing
 
     def dosing_reminder_to_dto(self, reminder: DosingReminder):
         raise NotImplementedError("method not implemented yet")

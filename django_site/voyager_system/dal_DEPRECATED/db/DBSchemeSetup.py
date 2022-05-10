@@ -239,7 +239,7 @@ def test_db(engine):
         dosing.feedback.id += 100
 
     for disp in dto_consumer4.dispensers:
-        disp.serial_number += '100'
+        disp.pod_serial_number += '100'
     session.add(dto_consumer4)
     session.commit()
     print(dto_consumer4)

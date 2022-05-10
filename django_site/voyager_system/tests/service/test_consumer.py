@@ -1,4 +1,7 @@
+
 from django.test import TestCase
+
+from datetime import datetime
 
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import PodType, Pod
@@ -29,10 +32,10 @@ class TestConsumer(TestCase):
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "1.5"}
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
-    pod_details1 = {"serial_number": "1_1"}
-    pod_details2 = {"serial_number": "1_2"}
-    pod_details3 = {"serial_number": "1_3"}
-    pod_details4 = {"serial_number": "1_4"}
+    pod_details1 = {"serial_number": "1_1",'type_name':pod_type_details['name']}
+    pod_details2 = {"serial_number": "1_2",'type_name':pod_type_details['name']}
+    pod_details3 = {"serial_number": "1_3",'type_name':pod_type_details['name']}
+    pod_details4 = {"serial_number": "1_4",'type_name':pod_type_details['name']}
 
     def setUp(self):
         print('\nset up acceptance test')
@@ -146,6 +149,29 @@ class TestConsumer(TestCase):
         self.assertTrue(ans)
         ans = self.guest_service.system_management.is_email_registered('no_one@nowhere.nothing')
         self.assertFalse(ans)
+
+
+    def test_consumer_dose(self):
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        p_d2 = self.pod_details2
+        p_d3 = self.pod_details3
+        self.consumer_service.register_pod_to_consumer(c_id1,p_d1['serial_number'],p_d1['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1,p_d2['serial_number'],p_d2['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1,p_d3['serial_number'],p_d3['type_name'])
+
+        result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d2['serial_number'],
+                                                     amount=0.5, time=datetime.now(), longitude=42.76, latitude=36.43)
+        self.assertTrue(Res.is_successful(result))
+        result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d3['serial_number'],
+                                                     amount=1.5, time=datetime.now(), longitude=42.76, latitude=36.43)
+        self.assertTrue(Res.is_successful(result))
+
+        result = self.consumer_service.get_consumer_dosing_history(c_id1)
+        self.assertTrue(Res.is_successful(result))
+        history = Res.get_value(result)
+        self.assertEqual(len(history), 2)
+
 
     def test_get_consumer_and_some_other_stuff(self):
         # c2 = self.consumer2

@@ -93,7 +93,7 @@ class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(real_pod.remainder, 100 - amount)
         real_dosing = consumer1.dosing_history[0]
         self.assertEqual(real_dosing.amount, amount)
-        self.assertEqual(real_dosing.pod_id, pod_id)
+        self.assertEqual(real_dosing.pod_serial_number, pod_id)
 
 
     async def test_consumer_dose_fail_1(self):

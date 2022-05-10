@@ -6,7 +6,7 @@ from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 
 class ConsumerService:
     def __init__(self, med_center: MedicalCenter) -> None:
-        self.med_center = med_center
+        self.med_center: MedicalCenter = med_center
         pass
 
     def update_personal_info(self, consumer_id: int, residence: str, height: int,
@@ -42,9 +42,26 @@ class ConsumerService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
+    def get_consumer_dosing_history(self, consumer_id):
+        try:
+            history = self.med_center.get_consumer_dosing_history(consumer_id=consumer_id)
+            return Result.success(history)
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
+
+    def consumer_dose(self, consumer_id, pod_serial_num: str, amount: float, time, latitude=None, longitude=None):
+        try:
+            self.med_center.consumer_dose(consumer_id, pod_serial_num, amount, time, latitude, longitude)
+            return Result.success()
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
 
 
-# - dose(consumer_id, pod, amount, units)
+
 # - set_dosing_reminder
 # - get_recomendation(consumer_id)
 # - set_regimen(consumer_id)
