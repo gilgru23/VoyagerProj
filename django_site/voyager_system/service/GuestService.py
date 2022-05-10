@@ -31,7 +31,8 @@ class GuestService:
 
 
     def get_account_details(self, account_id: int):
-        return {'first_name:':"f",'last_name:':"l",'date_of_birth':"dob"}
+        result = {'first_name:':"f",'last_name:':"l",'date_of_birth':"dob"}
+        return (True, result)
 
 
     def get_consumer_profile(self, consumer_id: int):
