@@ -32,8 +32,9 @@ def login_user(request: HttpRequest):
     user = authenticate(request, username=email, password=pwd)
     if user is not None:
         login(request, user)
-        # res = service.get_guest_service().get_account_details(account_id)
-        return HttpResponse("Successfully logged in")
+        account_id = rh.get_acount_id(request)
+        res = service.get_guest_service().get_account_details(account_id)
+        return rh.result_to_response(res)
     else:
         return HttpResponse("Failed to log in", status = rh.BAD_REQUEST_STATUS_CODE)
 
