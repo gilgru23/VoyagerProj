@@ -18,7 +18,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         print('\nset up unit test')
         pod_type_1 = PodType(name= "111", capacity=100, description="None")
-        dosings = [Dosing(dosing_id=i, pod_serial_number=f'{i // 2}',pod_type_name=pod_type_1.name,
+        dosings = [Dosing(dosing_id=i, pod_serial_number=f'{i // 2}', pod_type_name=pod_type_1.name,
                           amount=20, time=None, latitude=None, longitude=None) for i in range(10)]
         pods = [Pod.from_type(serial_number=f"{i}", pod_type=pod_type_1) for i in range(5)]
         self.consumer1.dosing_history = dosings
@@ -125,7 +125,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         rating = 10
         d_id = 100
         with self.assertRaises(AppOperationError):
-            await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
+            self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
                                                   feedback_description=description)
 
     # Unit Test Symbol: 1.6
@@ -137,7 +137,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         rating = 10
         d_id = 1
         with self.assertRaises(AppOperationError):
-            await self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
+            self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
                                                   feedback_description=description)
 
 
