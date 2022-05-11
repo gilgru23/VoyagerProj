@@ -64,7 +64,8 @@ export const loginUser = async (email, pwd) => {
       pwd
     })
     if (response) {
-      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+      console.log('response from server:', response.data)
+      return createResponseObj(responseStatus.SUCCESS, response.data)
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
@@ -81,6 +82,21 @@ export const registerDispenser = async (id, name) => {
         version: name
       }
     )
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const registerPod = async (id, podType) => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/register_pod`, {
+      serial_num: id,
+      pod_type: podType
+    })
     if (response) {
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
