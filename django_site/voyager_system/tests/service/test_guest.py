@@ -86,4 +86,12 @@ class TestGuest(TestCase):
                                                             c1['units'], c1['gender'], c1['goal'])
         self.assertTrue(Res.is_failure(result))
 
-
+    def test_get_account_details(self):
+        print(f'Test: get account details - success:')
+        a1 = self.account1
+        result = self.guest_service.get_account_details(a1['id'])
+        self.assertTrue(Res.is_successful(result))
+        a1_details = Res.get_value(result)
+        self.assertEqual(a1_details['first_name'],self.account1['f_name'])
+        self.assertEqual(a1_details['last_name'],self.account1['l_name'])
+        self.assertEqual(a1_details['date_of_birth'],self.account1['dob'])

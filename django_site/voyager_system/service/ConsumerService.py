@@ -13,9 +13,9 @@ class ConsumerService:
                              weight: int, units, gender, goal: any):
         pass
 
-    def register_dispenser_to_consumer(self, consumer_id: int, dispenser_serial_num: str):
+    def register_dispenser_to_consumer(self, consumer_id: int, dispenser_serial_num: str, dispenser_version: str):
         try:
-            self.med_center.consumer_register_dispenser(consumer_id, dispenser_serial_num)
+            self.med_center.consumer_register_dispenser(consumer_id, dispenser_serial_num,dispenser_version)
             return Result.success()
         except AppOperationError as e:
             return Result.failure(str(e))

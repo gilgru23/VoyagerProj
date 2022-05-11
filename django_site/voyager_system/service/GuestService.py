@@ -31,8 +31,14 @@ class GuestService:
 
 
     def get_account_details(self, account_id: int):
-        result = {'first_name:':"f",'last_name:':"l",'date_of_birth':"dob"}
-        return (True, result)
+        try:
+            account_details = self.system_management.get_account_details(account_id)
+            return Result.success(account_details)
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
+
 
 
     def get_consumer_profile(self, consumer_id: int):
