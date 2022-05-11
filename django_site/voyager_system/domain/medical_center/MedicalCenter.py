@@ -4,6 +4,7 @@ from datetime import datetime
 from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
+from voyager_system.domain.marketplace.MarketPlace import MarketPlace
 from voyager_system.domain.medical_center.Consumer import Consumer
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import *
@@ -16,12 +17,13 @@ from voyager_system.common import Logger
 # import voyager_system.data_access.database as database
 
 
+# noinspection SpellCheckingInspection
 class MedicalCenter:
-    # mapper is deprecated
-    def __init__(self, db_proxy: DatabaseProxy, mapper: IMapper = None) -> None:
-        self.object_mapper: IMapper = mapper
+    def __init__(self, db_proxy: DatabaseProxy, marketplace = None, notifier = None) -> None:
+        self.object_mapper: IMapper = None    # mapper is deprecated
         self.db = db_proxy
-        self.notifier = None
+        self.marketpalce: MarketPlace = marketplace
+        self.notifier = notifier
         self.logger = Logger.get_logger('Domain', 'MedicalCenter')
         pass
 
@@ -146,7 +148,7 @@ class MedicalCenter:
         """
         consumer = self.get_consumer(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
-        pod = self.validate_pod(pod_serial_num, pod_type_name)
+        pod = self.marketpalce.validate_pod(pod_serial_num, pod_type_name)
         consumer.register_pod(pod=pod)
         self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
@@ -154,18 +156,18 @@ class MedicalCenter:
     def consumer_register_dispenser(self, consumer_id, dispenser_serial_number, dispenser_version):
         """registers a dispenser of the specified serial number to the consumer
 
-        :param consumer_id: id of the consumer
-        :param dispenser_serial_number: serial number of the dispenser
+        :param consumer_id: int - id of the consumer
+        :param dispenser_serial_number: string - serial number of the dispenser
+        :param dispenser_version: string - the version of the dispenser
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         """
         consumer = self.get_consumer(consumer_id)
         consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
-        dispenser = self.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
+        dispenser = self.marketpalce.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
         consumer.register_dispenser(dispenser)
         self.db.update_dispenser(dispenser, consumer_id=consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] registered dispenser [serial #: {dispenser_serial_number}]")
-
 
     async def consumer_get_recommendation(self, consumer_id):
         consumer = await self.get_consumer(consumer_id)
@@ -189,21 +191,21 @@ class MedicalCenter:
     # endregion Consumer
 
     # region Marketplace
-    def get_pod_type_from_typeId(self, pod_type_name: str) -> PodType:
-        return PodType(name=pod_type_name, substance="Nothing",description="even less")
-
-    # todo: check in MarketPlace
-    def validate_pod(self, serial_num: str, pod_type_name: str) -> Pod:
-        pod_type = self.get_pod_type_from_typeId(pod_type_name)
-        pod = Pod.from_type(serial_number=serial_num,pod_type=pod_type)
-        return pod
-
-
-    def validate_dispenser(self, serial_num: str, version: str) -> Dispenser:
-        disp = Dispenser()
-        disp.serial_number = serial_num
-        disp.version = version
-        disp.registration_date = datetime.now()
-        return disp
+    # def get_pod_type_from_typeId(self, pod_type_name: str) -> PodType:
+    #     return PodType(name=pod_type_name, substance="Nothing",description="even less")
+    #
+    # # todo: check in MarketPlace
+    # def validate_pod(self, serial_num: str, pod_type_name: str) -> Pod:
+    #     pod_type = self.get_pod_type_from_typeId(pod_type_name)
+    #     pod = Pod.from_type(serial_number=serial_num,pod_type=pod_type)
+    #     return pod
+    #
+    #
+    # def validate_dispenser(self, serial_num: str, version: str) -> Dispenser:
+    #     disp = Dispenser()
+    #     disp.serial_number = serial_num
+    #     disp.version = version
+    #     disp.registration_date = datetime.now()
+    #     return disp
 
     # endregion Marketplace

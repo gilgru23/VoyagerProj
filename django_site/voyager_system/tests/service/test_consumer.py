@@ -120,53 +120,6 @@ class TestConsumer(TestCase):
         dispensers = self.db_proxy.get_consumer_dispensers(consumer1_id)
         self.assertEqual(len(dispensers), 2)
 
-    def test_tests(self):
-        print(f"Testing test!!!!!")
-        real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
-        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details1['serial_number'],
-                                                       self.pod_type_details['name'])
-        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details2['serial_number'],
-                                                       self.pod_type_details['name'])
-        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details3['serial_number'],
-                                                       self.pod_type_details['name'])
-        self.consumer_service.register_pod_to_consumer(real_consumer1.id, self.pod_details4['serial_number'],
-                                                       self.pod_type_details['name'])
+    def test_consumer_dose(self):
+        self.skipTest("add test")
 
-        ans = self.guest_service.system_management.account_id_exist(1)
-        self.assertTrue(ans)
-        ans = self.guest_service.system_management.account_id_exist(190)
-        self.assertFalse(ans)
-        ans = self.guest_service.system_management.is_email_registered(self.account_details1['email'])
-        self.assertTrue(ans)
-        ans = self.guest_service.system_management.is_email_registered('no_one@nowhere.nothing')
-        self.assertFalse(ans)
-
-    def test_get_consumer_and_some_other_stuff(self):
-        # c2 = self.consumer2
-        # self.guest_service.create_consumer_profile(c2['id'], c2['residence'], c2['height'], c2['weight'], c2['units'],
-        #                                            c2['gender'], c2['goal'])
-        #
-        # # consumer = self.db_proxy.get_consumer(57)
-        # self.db_proxy.add_company("E-corp")
-        # pod_type = PodType(name="corpDrops", capacity=40, substance="secret", description="done")
-        # self.db_proxy.add_pod_type(pod_type)
-
-        # pod1 = Pod("1_1",pod_type)
-        # pod2 = Pod("1_2",pod_type)
-        # self.db_proxy.add_pod(pod1,consumer2)
-        # self.db_proxy.add_pod(pod2,consumer2)
-        #
-        # dispenser = Dispenser()
-        # dispenser.serial_number = "111"
-        # dispenser.version = "mk1"
-        # self.db_proxy.add_dispenser(dispenser)
-        # consumer1 = self.db_proxy.get_consumer(self.consumer1['id'])
-        # self.db_proxy.update_dispenser(dispenser,consumer1)
-        # consumer1.register_pod(pod1)
-        # consumer1.register_pod(pod2)
-        # self.db_proxy.update_pod(pod1, consumer1)
-        # self.db_proxy.update_pod(pod2, consumer1)
-        # flag = True
-        # consumer2again = self.db_proxy.get_consumer(consumer2.id)
-        # consumer1again = self.db_proxy.get_consumer(consumer1.id)
-        self.skipTest("not implemented")
