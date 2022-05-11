@@ -31,6 +31,11 @@ function App() {
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
+          name="RegisterPod"
+          component={ConnectionScreen}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
           name="BluetoothScreen"
           component={BluetoothScreen}
           initialParams={{ controller: controller }}

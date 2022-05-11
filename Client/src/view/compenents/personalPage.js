@@ -35,6 +35,16 @@ export default function PersonalPage({ route, navigation }) {
         <TouchableOpacity
           style={styles.submitBtn}
           onPress={() =>
+            navigation.navigate('RegisterPod', {
+              device: route.params.device
+            })
+          }
+        >
+          <Text style={{ color: 'white' }}>{`Register pod`}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.submitBtn}
+          onPress={() =>
             navigation.navigate('RecommendationPage', {
               device: route.params.device
             })
