@@ -12,12 +12,13 @@ from voyager_system.domain.medical_center.Pod import *
 """
 
 
+# noinspection SpellCheckingInspection
 class TestConsumer(unittest.IsolatedAsyncioTestCase):
     consumer1 = Consumer()
 
     def setUp(self):
         print('\nset up unit test')
-        pod_type_1 = PodType(name= "111", capacity=100, description="None")
+        pod_type_1 = PodType(name="111", capacity=100, description="None")
         dosings = [Dosing(dosing_id=i, pod_serial_number=f'{i // 2}', pod_type_name=pod_type_1.name,
                           amount=20, time=None, latitude=None, longitude=None) for i in range(10)]
         pods = [Pod.from_type(serial_number=f"{i}", pod_type=pod_type_1) for i in range(5)]
@@ -126,7 +127,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         d_id = 100
         with self.assertRaises(AppOperationError):
             self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
-                                                  feedback_description=description)
+                                            feedback_description=description)
 
     # Unit Test Symbol: 1.6
     async def test_provide_feedback_to_dose_fail_2(self):
@@ -138,7 +139,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         d_id = 1
         with self.assertRaises(AppOperationError):
             self.consumer1.provide_feedback(dosing_id=d_id, feedback_rating=rating,
-                                                  feedback_description=description)
+                                            feedback_description=description)
 
 
 if __name__ == '__main__':
