@@ -6,7 +6,7 @@ from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 
 class ConsumerService:
     def __init__(self, med_center: MedicalCenter) -> None:
-        self.med_center: MedicaleCenter = med_center
+        self.med_center: MedicalCenter = med_center
         pass
 
     def update_personal_info(self, consumer_id: int, residence: str, height: int,
