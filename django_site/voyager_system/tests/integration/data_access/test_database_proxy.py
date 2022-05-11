@@ -1,5 +1,6 @@
 
 from django.test import TestCase
+from django.utils.datetime_safe import datetime
 
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Dosing import Dosing
@@ -25,10 +26,10 @@ class TestConsumer(TestCase):
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
-    pod_details1 = {"serial_number": "1_1"}
-    pod_details2 = {"serial_number": "1_2"}
-    pod_details3 = {"serial_number": "1_3"}
-    pod_details4 = {"serial_number": "1_4"}
+    pod_details1 = {"serial_number": "1_1", 'type_name':pod_type_details['name']}
+    pod_details2 = {"serial_number": "1_2", 'type_name':pod_type_details['name']}
+    pod_details3 = {"serial_number": "1_3", 'type_name':pod_type_details['name']}
+    pod_details4 = {"serial_number": "1_4", 'type_name':pod_type_details['name']}
 
     def setUp(self):
         print('\nset up acceptance test')
@@ -91,14 +92,29 @@ class TestConsumer(TestCase):
 
     def test_dosings_add_update_get(self):
         print(f'Test: pods add update get')
+        # create dosings
+        dosing1 = Dosing(dosing_id=None, pod_serial_number=self.pod_details1['serial_number'],
+                         pod_type_name= self.pod_details1['type_name'], amount=0.75,
+                         time=datetime.now(), longitude=42.76, latitude=36.43)
+        dosing2 = Dosing(dosing_id=None, pod_serial_number=self.pod_details1['serial_number'],
+                         pod_type_name= self.pod_details1['type_name'], amount=0.5,
+                         time=datetime.now(), longitude=42.76, latitude=36.43)
+        dosing3 = Dosing(dosing_id=None, pod_serial_number=self.pod_details2['serial_number'],
+                         pod_type_name= self.pod_details2['type_name'], amount=0.75,
+                         time=datetime.now(), longitude=42.76, latitude=36.43)
+        dosing4 = Dosing(dosing_id=None, pod_serial_number=self.pod_details2['serial_number'],
+                         pod_type_name= self.pod_details2['type_name'], amount=0.5,
+                         time=datetime.now(), longitude=42.76, latitude=36.43)
         # add dosings
-        dosing1 = Dosing()
-        # get dosings
+        self.db.add_dosing(dosing1)
+        self.db.add_dosing(dosing2)
+        self.db.add_dosing(dosing3)
+        self.db.add_dosing(dosing4)
+        #  get pods
         pod1 = self.db.get_pod(self.pod_details1['serial_number'])
         pod2 = self.db.get_pod(self.pod_details2['serial_number'])
-        # register to a consumer
-        self.db.update_pod(pod1, self.consumer_details1['id'])
-        self.db.update_pod(pod2, self.consumer_details1['id'])
-        # check if pods are related to consumer
-        pods = self.db.get_consumer_pods(self.consumer_details1['id'])
+        # check if dosings are related to pods
+        pods = self.db.get_dosings_for_pod(pod1.serial_number)
+        self.assertEqual(len(pods), 2)
+        pods = self.db.get_dosings_for_pod(pod2.serial_number)
         self.assertEqual(len(pods), 2)

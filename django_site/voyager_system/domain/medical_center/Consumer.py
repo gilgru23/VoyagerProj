@@ -31,30 +31,30 @@ class Consumer(Account):
     # add a consumer dosing occurrence when a dosing is performed.
     # * adds a 'dosing record' to dosing_history
     # * changes the current state of the relevant pod(?)
-    # returns True if successful, otherwise False.
+    # returns the new Dosing object.
     # throws AppOperationError if the given pod_id is wrong or does not have the required amount for the dosing.
-    async def dose(self,serial_number, amount: float, location):
-        is_dosing = await self.can_dose(serial_number,amount)
+    def dose(self,pod_serial_number: str, amount: float,time, latitude=None, longitude=None):
+        if not self.is_valid_dosing_time(time):
+            raise AppOperationError(f"Error: consumer dosing - invalid dosing time [{time}] for consumer [{self.id}]")
+        is_dosing = self.can_dose(pod_serial_number,amount)
         if not is_dosing:
-            raise AppOperationError(f"Error: consumer dosing - wrong pod_id [{serial_number}] or amount [{amount}] for consumer [{self.id}]")
-        pod = await self.get_pod_by_serial_number(serial_number)
+            raise AppOperationError(f"Error: consumer dosing - wrong serial number [{pod_serial_number}] or amount [{amount}] for consumer [{self.id}]")
+        pod: Pod = self.get_pod_by_serial_number(pod_serial_number)
         pod.dose(amount)
-        # @TODO: replace datetime.now with a more generic time method
-        dosing_time = datetime.now()
-        # @TODO: replace random.randint with an ORM generated id (when adding DAL)
-        dosing_id = randint(1, 100000)
-        new_dosing = Dosing(dosing_id=dosing_id, pod_id=serial_number, pod_type_id= pod.type.name, amount=amount, time=dosing_time, location=location)
+        new_dosing = Dosing(dosing_id=None, pod_serial_number=pod_serial_number, pod_type_name=pod.type_name,
+                            amount=amount, time=time, longitude=longitude, latitude=latitude)
         self.dosing_history.insert(0, new_dosing)
+        return new_dosing
 
     # private helper method. returns boolean!
-    async def can_dose(self, serial_number, amount: float):
+    def can_dose(self, serial_number, amount: float):
         """checks if a consumer can use a specific pod for dosing
 
         :param serial_number:
         :param amount:
         :return: True if consumer can dose, else False.
         """
-        pod = await self.get_pod_by_serial_number(serial_number)
+        pod = self.get_pod_by_serial_number(serial_number)
         if pod is None:
             return False
         if pod.remainder < amount or amount <= 0:
@@ -63,18 +63,18 @@ class Consumer(Account):
 
     # private helper method - returns a pod if the given pod_id is in self.pods
     # else - returns None
-    async def get_pod_by_serial_number(self, serial_number: str):
+    def get_pod_by_serial_number(self, serial_number: str):
         for pod in self.pods:
             if pod.serial_number == serial_number:
                 return pod
         return None
 
     # returns a (SHALLOW) copy of the list of pods registered to the consumer
-    async def get_pods(self):
+    def get_pods(self):
         return self.pods.copy()
 
     # returns a list (SHALLOW COPY) of the dosing in consumer's dosing history which matches the filters
-    async def get_dosage_history(self, filters=None):
+    def get_dosage_history(self, filters=None):
         dosings = [dose for dose in self.dosing_history if self.filter_dosing(dose,filters)]
         return dosings
 
@@ -90,8 +90,8 @@ class Consumer(Account):
     # returns True if successful, otherwise False.
     # overrides past feedback for the same dosing!
     # throws AppOperationError if the dosing of the given dosing_id is not found in history.
-    async def provide_feedback(self, dosing_id, feedback_rating, feedback_description):
-        dosing = await self.get_dosing_by_id(dosing_id)
+    def provide_feedback(self, dosing_id, feedback_rating, feedback_description):
+        dosing = self.get_dosing_by_id(dosing_id)
         if dosing is None:
             raise AppOperationError(f"Error: consumer provide feedback - wrong dosing_id [{dosing_id}] for consumer [{self.id}]")
         # @TODO: replace datetime.now with a more generic time method
@@ -103,7 +103,7 @@ class Consumer(Account):
 
     # private helper method - returns a past dosing if the given dosing_id is in self.dosing_history
     # else - returns None
-    async def get_dosing_by_id(self, dosing_id):
+    def get_dosing_by_id(self, dosing_id):
         for dose in self.dosing_history:
             if dose.id == dosing_id:
                 return dose
@@ -126,6 +126,10 @@ class Consumer(Account):
             raise AppOperationError(f"Error: consumer register dispenser - serial number [{new_dispenser.serial_number}] already exists for consumer [{self.id}]")
         self.dispensers.insert(0, new_dispenser)
 
-    async def get_recommendation(self, stuff):
+    @staticmethod
+    def is_valid_dosing_time(time):
+        return True
+
+    def get_recommendation(self, stuff):
         raise NotImplementedError("replace this with an actual method")
 

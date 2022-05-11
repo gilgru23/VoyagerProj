@@ -77,7 +77,7 @@ class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(pods is not None)
         real_pods = await consumer_factory(consumer_id).get_pods()
         for pod1, pod2 in zip(pods, real_pods):
-            self.assertEqual(pod1.id, pod2.id)
+            self.assertEqual(real_dosing.pod_serial_number, pod_id)
 
     async def test_consumer_dose_success(self):
         print(f'Test: consumer dose - success')
