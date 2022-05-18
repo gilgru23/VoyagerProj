@@ -1,5 +1,7 @@
 // components/signup.js
 import React, { useState, useEffect } from 'react'
+import { ResourceIds as ids } from './ResourceIds'
+
 import {
   StyleSheet,
   Text,
@@ -82,18 +84,21 @@ export default function Signup({ navigation, route }) {
         placeholder="First Name"
         value={firstName}
         onChangeText={(val) => setFirstName(val)}
+        testID={ids.reg_firstName_et}
       />
       <TextInput
         style={styles.inputStyle}
         placeholder="Last Name"
         value={lastName}
         onChangeText={(val) => setLastName(val)}
+        testID={ids.reg_lastName_et}
       />
       <TextInput
         style={styles.inputStyle}
         placeholder="Email"
         value={email}
         onChangeText={(val) => setEmail(val)}
+        testID={ids.reg_email_et}
       />
       <TextInput
         style={styles.inputStyle}
@@ -102,12 +107,14 @@ export default function Signup({ navigation, route }) {
         onChangeText={(val) => setPassword(val)}
         maxLength={15}
         secureTextEntry={true}
+        testID={ids.reg_password_et}
       />
       <View style={styles.inputStyle}>
         <Text>Enter your Year Of Birth</Text>
         <Button
           onPress={() => setDateModalOpen(true)}
           title={birthDate.toDateString()}
+          testID={ids.reg_dob_btn}
         />
       </View>
       {dateModalOpen && (
@@ -132,7 +139,7 @@ export default function Signup({ navigation, route }) {
           <Picker.Item label="Care Giver" value="Care Giver" />
         </Picker> */}
 
-      <Button color="#3740FE" title="Signup" onPress={() => register()} />
+      <Button color="#3740FE" title="Signup" onPress={() => register()} testID={ids.reg_submit_btn}/>
       <Text
         style={styles.loginText}
         onPress={() => navigation.navigate('Login')}

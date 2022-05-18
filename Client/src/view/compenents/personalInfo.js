@@ -1,5 +1,6 @@
 // components/login.js
 import React, { useState } from 'react'
+import { ResourceIds as ids } from './ResourceIds'
 import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 // import { createConsumerProfile } from '../../controller/controller'
@@ -98,7 +99,7 @@ export default function PersonalInfo({ navigation, route }) {
           maxLength={6}
         />
       </View>
-      <Button title="Submit" onPress={(e) => onSubmit()} />
+      <Button title="Submit" onPress={(e) => onSubmit()} testID={ids.regPersonalInfo_submit_btn}/>
     </View>
   )
 }
