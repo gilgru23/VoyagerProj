@@ -19,6 +19,7 @@ export class ResourceIds{
     static reg_submit_btn = regScreenPrefix + "submit";
 
     //personal info
+    static regPersonalInfo_residence_et = personalInfoFormScreenPrefix + "residence";
     static regPersonalInfo_submit_btn = personalInfoFormScreenPrefix + "submit";
 
 

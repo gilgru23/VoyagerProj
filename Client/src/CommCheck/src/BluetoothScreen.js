@@ -7,7 +7,7 @@ import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
 import { responseStatus } from '../../Config/constants'
 import { alert } from '../../view/compenents/utils'
-import DispenserDemo from '../../Communication/dispenserDemo'
+// import DispenserDemo from '../../Communication/dispenserDemo'
 export default class BluetoothScreen extends React.Component {
   constructor(props) {
     super(props)
