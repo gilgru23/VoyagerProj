@@ -24,7 +24,7 @@ import { Buffer } from 'buffer'
 import { Dispenser } from '../../../model/dispenser'
 import { Consumer } from '../../../model/Consumer'
 import PushNotification from 'react-native-push-notification'
-import { podRunningLowMsg } from '../../../Config/constants'
+import { msgsFromDispenserTypes } from '../../../Config/constants'
 
 /**
  * Manages a selected device connection.  The selected Device should
@@ -38,7 +38,9 @@ export default class ConnectionScreen extends React.Component {
     super(props)
 
     this.state = {
-      text: undefined,
+      amountText: undefined,
+      podSerialText: undefined,
+      podTypeText: undefined,
       data: [],
       polling: false,
       connection: false,
@@ -72,7 +74,6 @@ export default class ConnectionScreen extends React.Component {
    */
   componentDidMount() {
     setTimeout(() => this.connect(), 0)
-    // this.createChannel(this.props.consumer.email)
   }
 
   async connect() {
@@ -201,44 +202,69 @@ export default class ConnectionScreen extends React.Component {
 
   async addData(message) {
     console.log('message received: ' + JSON.stringify(message))
+    const parsedAns = JSON.parse(message.data)
+    console.log(parsedAns.podType)
     this.setState({ data: [message, ...this.state.data] })
   }
 
-  async addDataMessage(message) {
-    console.log('message received: ' + JSON.stringify(message))
-    const messageContent = message.data.split(';')
-    // const msgFromDispenser = JSON.parse(JSON.stringify(msgFromDispenser))
-    // console.log(JSON.parse(JSON.stringify(msgFromDispenser)))
-    console.log(messageContent[0])
-    if (messageContent[0].includes(podRunningLowMsg)) {
-      PushNotification.localNotification({
-        channelId: this.props.consumer.email || 'gilgu@gmail.com',
-        title: `Message from dispneser ${this.props.device.name}`,
-        message: 'pod is running low' // (required)
-      })
-    } else {
-      PushNotification.localNotification({
-        channelId: this.props.consumer.email || 'gilgu@gmail.com',
-        title: `Message from dispneser ${this.props.device.name}`,
-        message: `Dispense has been made:\n  time: ${message.timestamp} \n pod type: ${messageContent[1]}\n dosage:${messageContent[2]} mg` // (required)
-      })
+  async doseRequests(podSerial, podType, amount) {
+    const { controller } = this.props
+    try {
+      await controller.dose(podSerial, amount)
+      await controller.registerPod(podSerial, podType)
+    } catch (e) {
+      console.log(e)
     }
+  }
 
+  async addDataMessage(message) {
+    try {
+      console.log('message received: ' + JSON.stringify(message))
+      console.log(message.data.substring(message.data.indexOf('{')))
+      const messageObj = message.data.substring(message.data.indexOf('{'))
+      const messageContent = JSON.parse(messageObj)
+      await this.doseRequests(
+        messageContent.podSerial,
+        messageContent.podType,
+        messageContent.amount
+      )
+      if (messageContent.type === msgsFromDispenserTypes.DOSING) {
+        PushNotification.localNotification({
+          channelId: this.props.consumer.email || 'gilgu@gmail.com',
+          title: `Message from dispneser ${this.props.device.name}`,
+          message: `Dispense has been made:\n  time: ${message.timestamp} \n pod type: ${messageContent.podType}\n dosage:${messageContent.amount} mg` // (required)
+        })
+      } else {
+        PushNotification.localNotification({
+          channelId: this.props.consumer.email || 'gilgu@gmail.com',
+          title: `Message from dispneser ${this.props.device.name}`,
+          message: `Pod  ${messageContent.podSerial} from type ${messageContent.podType} is running low` // (required)
+        })
+      }
+    } catch (e) {
+      console.log(e)
+    }
     this.setState({ data: [message, ...this.state.data] })
+  }
+
+  async toggleConnection() {
+    if (this.state.connection) {
+      this.disconnect()
+    } else {
+      this.connect()
+    }
   }
 
   /**
    * Attempts to send data to the connected Device.  The input text is
    * padded with a NEWLINE (which is required for most commands)
    */
-  async sendData() {
+  async sendData(type) {
     try {
-      console.log(`Attempting to send data ${this.state.text}`)
-      let message = this.state.text + '\r'
-      await RNBluetoothClassic.writeToDevice(
-        this.props.device.address,
-        JSON.stringify(message)
-      )
+      const messageToSend = `{"type":"${type}", "amount":"${this.state.amountText}", "podSerial":"${this.state.podSerialText}", "podType":"${this.state.podTypeText}"}`
+      console.log(`Attempting to send data ${messageToSend}`)
+      let message = messageToSend + '\r'
+      await RNBluetoothClassic.writeToDevice(this.props.device.address, message)
       console.log('---wrote 1')
 
       this.addData({
@@ -250,26 +276,19 @@ export default class ConnectionScreen extends React.Component {
 
       let data = Buffer.alloc(10, 0xef)
       await this.props.device.write(data)
+      console.log('---wrote 2')
+
+      this.addData({
+        timestamp: new Date(),
+        data: `Byte array: ${data.toString()}`,
+        type: 'sent'
+      })
+      console.log('---added data 2')
 
       this.setState({ text: undefined })
     } catch (error) {
       console.log(error)
     }
-  }
-
-  async toggleConnection() {
-    if (this.state.connection) {
-      this.disconnect()
-    } else {
-      this.connect()
-    }
-  }
-
-  navigateToPersonal = () => {
-    this.props.navigation.navigate('PersonalPage', {
-      consumer: this.props.consumer || new Consumer('test', 'test', new Date()),
-      device: new Dispenser(this.props.device.id, this.props.device.name)
-    })
   }
 
   render() {
@@ -306,30 +325,54 @@ export default class ConnectionScreen extends React.Component {
           <TextInput
             style={styles.inputAreaTextInput}
             placeholder={'Enter amount to dispense'}
-            value={this.state.text}
-            onChangeText={(text) => this.setState({ text })}
+            value={this.state.amountText}
+            onChangeText={(text) => this.setState({ amountText: text })}
             autoCapitalize="none"
             autoCorrect={false}
-            onSubmitEditing={() => this.sendData()}
             returnKeyType="send"
+            keyboardType="numeric"
+          />
+        </View>
+
+        <View style={styles.option}>
+          <TextInput
+            style={styles.inputAreaTextInput}
+            placeholder={'Enter pod serial num'}
+            value={this.state.podSerialText}
+            onChangeText={(text) => this.setState({ podSerialText: text })}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="send"
+          />
+        </View>
+        <View style={styles.option}>
+          <TextInput
+            style={styles.inputAreaTextInput}
+            placeholder={'Enter pod typer'}
+            value={this.state.podTypeText}
+            onChangeText={(text) => this.setState({ podTypeText: text })}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="send"
+          />
+        </View>
+        <View style={styles.option}>
+          <Button
+            backgroundColor="green"
+            label="Dose"
+            borderRadius={7}
+            onPress={() => this.sendData(msgsFromDispenserTypes.DOSING)}
           />
           <Button
             backgroundColor="green"
-            label="Dispense"
+            label="Alert pod running low"
             borderRadius={7}
-            onPress={() => this.sendData()}
-          />
-        </View>
-        <View>
-          <Button
-            backgroundColor="blue"
-            label="Move to personal page"
-            borderRadius={7}
-            onPress={this.navigateToPersonal}
+            onPress={() =>
+              this.sendData(msgsFromDispenserTypes.POD_RUNNING_LOW)
+            }
           />
         </View>
       </View>
-      // </View>
     )
   }
 }

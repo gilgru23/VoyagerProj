@@ -270,8 +270,8 @@ def get_dosings_for_consumer_by_id(consumer_id: int) -> List[DosingDto]:
 
 
 
-def get_dosings_for_pod(pod_dto: PodDto) -> List[DosingDto]:
-    dosings: List[Dosing] = Dosing.objects.filter(pod = Pod.objects.get(serial_num = pod_dto.serial_num))
+def get_dosings_for_pod(pod_serial_num: str) -> List[DosingDto]:
+    dosings: List[Dosing] = Dosing.objects.filter(pod = Pod.objects.get(serial_num = pod_serial_num))
     return [_dosing_to_dto(dosing) for dosing in dosings]
 # endregion Dosing
 

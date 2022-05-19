@@ -6,12 +6,11 @@ from voyager_system.domain.medical_center.Pod import *
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 import voyager_system.data_access.database as db
 from django.core.exceptions import ObjectDoesNotExist
-
-# TODO:: convert every object returned from DB to Domain Layer object
 from voyager_system.domain.system_management.Account import Account
 
 # TODO: add loggings
 
+# TODO:: add logging
 class DatabaseProxy:
     def __init__(self, db_impl, object_cache=None):
         super().__init__()
@@ -195,21 +194,20 @@ class DatabaseProxy:
         try:
             return db.add_dosing(dto)
         except Exception as e:
-            err_str = f"Unable to add a new dosing type to DB, with id [{dosing.id}]"\
+            err_str = f"Unable to add a new dosing to DB, with id [{dosing.id}]"\
                       + "\n" + str(e)
             raise DataAccessError(err_str)
 
 
-
-    def get_dosings_for_pod(self, pod: Pod):
+    def get_dosings_for_pod(self, pod_serial_number: str):
+        dosing_dtos = db.get_dosings_for_pod(pod_serial_number)
         try:
-            dosing_dtos = db.get_dosings_for_pod(self.pod_to_dto)
             dosing = [self.dto_to_dosing(dto) for dto in dosing_dtos]
             return dosing
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve from db past dosings, for pod with serial number [{pod.serial_number}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve from db past dosings, for pod with serial number [{pod_serial_number}]." + "\n" + str(e)
             raise DataAccessError(err_str)
         pass
 
@@ -282,6 +280,7 @@ class DatabaseProxy:
         consumer.dispensers = None
         consumer.dosing_history = None
         consumer.dosing_reminders = None
+
         return consumer
 
     @staticmethod
@@ -373,7 +372,8 @@ class DatabaseProxy:
             longitude= dosing_dto.longitude)
         return dosing
 
-    def dosing_reminder_to_dto(self, reminder: DosingReminder):
+    @staticmethod
+    def dosing_reminder_to_dto(reminder: DosingReminder):
         raise NotImplementedError("method not implemented yet")
 
     # endregion DTO conversion

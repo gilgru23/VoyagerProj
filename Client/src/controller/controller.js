@@ -86,4 +86,12 @@ export class Controller {
   registerDispenser = async (id, name) => {
     return await this.model.registerDispenser(id, name)
   }
+
+  registerPod = async (id, podType) => {
+    return await this.model.registerPod(id, podType)
+  }
+
+  dose = async (pod, amount) => {
+    return await this.model.dose(pod, amount)
+  }
 }

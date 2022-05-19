@@ -41,11 +41,10 @@ class Consumer(Account):
             raise AppOperationError(f"Error: consumer dosing - wrong serial number [{pod_serial_number}] or amount [{amount}] for consumer [{self.id}]")
         pod: Pod = self.get_pod_by_serial_number(pod_serial_number)
         pod.dose(amount)
-        new_dosing = Dosing(dosing_id=None, pod_serial_number=pod_serial_number, pod_type_name= pod.type_name,
+        new_dosing = Dosing(dosing_id=None, pod_serial_number=pod_serial_number, pod_type_name=pod.type_name,
                             amount=amount, time=time, longitude=longitude, latitude=latitude)
         self.dosing_history.insert(0, new_dosing)
         return new_dosing
-
 
     # private helper method. returns boolean!
     def can_dose(self, serial_number, amount: float):

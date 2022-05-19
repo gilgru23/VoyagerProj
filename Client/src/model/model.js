@@ -3,7 +3,8 @@ import {
   loginUser as loginUserRequest,
   createConsumerProfile as createConsumerProfileRequest,
   registerDispenser as registerDispenserRequest,
-  registerPod as registerPodRequest
+  registerPod as registerPodRequest,
+  dose as doseRequest
 } from '../Communication/ApiRequests.js'
 
 import { Consumer } from './Consumer.js'
@@ -30,6 +31,7 @@ export class Model {
       : registerDispenserRequest
 
     this.registerPodRreq = testMode ? this.mock.registerPod : registerPodRequest
+    this.doseReq = testMode ? this.mock.dose : doseRequest
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
@@ -97,9 +99,17 @@ export class Model {
   }
 
   registerPod = async (id, podType) => {
-    const response = await this.registerDispenserRreq(id, podType)
+    const response = await this.registerPodRreq(id, podType)
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(responseStatus.SUCCESS, new Pod(id, podType))
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
+  dose = async (pod, amount) => {
+    const response = await this.doseReq(pod, amount)
+    if (response.status === responseStatus.SUCCESS) {
+      return createResponseObj(responseStatus.SUCCESS, 'Dosing succeeded')
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
