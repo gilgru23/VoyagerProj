@@ -4,4 +4,7 @@ export const responseStatus = {
   FAILURE: 'failure'
 }
 
-export const podRunningLowMsg = 'pod running low'
+export const msgsFromDispenserTypes = {
+  POD_RUNNING_LOW: 'pod running low',
+  DOSING: 'dosing'
+}

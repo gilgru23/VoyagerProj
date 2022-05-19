@@ -75,6 +75,7 @@ export const loginUser = async (email, pwd) => {
 
 export const registerDispenser = async (id, name) => {
   try {
+    console.log('sending to server: ', id, name)
     const response = await axios.post(
       `${baseURL}/consumers/register_dispenser`,
       {
@@ -96,6 +97,22 @@ export const registerPod = async (id, podType) => {
     const response = await axios.post(`${baseURL}/consumers/register_pod`, {
       serial_num: id,
       pod_type: podType
+    })
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const dose = async (pod, amount) => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/dose`, {
+      pod: pod,
+      amount: amount,
+      units: 1
     })
     if (response) {
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
