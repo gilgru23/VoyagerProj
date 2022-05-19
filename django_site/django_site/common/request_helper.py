@@ -27,5 +27,7 @@ def result_to_response(res):
     if succeeded:
         return HttpResponse(val)
     else:
+        print("got a bad request")
+        print(val)
         return HttpResponse(val, status=BAD_REQUEST_STATUS_CODE)
 
