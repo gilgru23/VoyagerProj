@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { ResourceIds as ids } from './ResourceIds'
 import RNBluetoothClassic, {
   BluetoothDevice
 } from 'react-native-bluetooth-classic'
@@ -40,6 +41,7 @@ export default function HomeScreen({ navigation, test }) {
         <TouchableOpacity
           style={styles.loginBtn}
           onPress={() => navigation.navigate('Login')}
+          testID={ids.home_login_btn}
         >
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
@@ -47,6 +49,7 @@ export default function HomeScreen({ navigation, test }) {
         <TouchableOpacity
           style={styles.loginBtn}
           onPress={() => navigation.navigate('signUp')}
+          testID={ids.home_register_btn}
         >
           <Text style={styles.loginText}>Register</Text>
         </TouchableOpacity>
