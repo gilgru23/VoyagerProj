@@ -16,7 +16,6 @@ import { MockServer } from './src/Communication/mockServer'
 import { Controller } from './src/controller/controller'
 import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
 import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
-import DispenserDemo from './src/Communication/dispenserDemo'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,13 +23,8 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="BluetoothScreen">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen
-          name="Dispenser demo"
-          component={DispenserDemo}
-          initialParams={{ controller: controller }}
-        />
         <Stack.Screen
           name="Connection"
           component={ConnectionScreen}
