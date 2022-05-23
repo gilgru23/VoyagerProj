@@ -118,13 +118,32 @@ class MedicalCenter:
         self.db.update_pod(pod, consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] dosed from pod [serial number: {pod_serial_num}] - with amount [{amount}]")
 
+    def get_consumer_dispensers(self, consumer_id):
+        """
+        retrieves a list of dictionaries representing all of the dispensers registered to the consumer
+
+        :param consumer_id: id of the consumer
+        :return: A List of Dictionaries representing dispensers registered to the consumer
+        :raise AppOperationError: exception if consumer was not found (see get_consumer)
+        :raise DataAccessError: throws exception if db was not able to retrieve consumer or dispensers
+        """
+        dispensers = self.db.get_consumer_dispensers(consumer_id)
+        def disp_to_dict(disp:Dispenser):
+            return {'serial_number': disp.serial_number, 'version': disp.version,
+                    'registration_date':disp.registration_date.strftime("%Y-%m-%d")}
+
+        dispenser_dicts = [disp_to_dict(disp) for disp in dispensers]
+        self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered dispensers")
+        return dispenser_dicts
+
     def get_consumer_pods(self, consumer_id):
-        """retrieves a shallow copy of all of the pods registered to the consumer
+        """
+        retrieves a list of dictionaries representing all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
         :return: A List of Dictionaries representing pods registered to the consumer
         :raise AppOperationError: exception if consumer was not found (see get_consumer)
-        :raise DataAccessError: throws exception if db was not able to get consumer
+        :raise DataAccessError: throws exception if db was not able to retrieve consumer or pods
         """
         def pod_to_dict(pod:Pod):
             return {'serial_number': pod.serial_number, 'remainder': pod.remainder, 'type_name':pod.type_name}

@@ -29,6 +29,8 @@ def result_to_response(res):
             return HttpResponse(val)
         elif isinstance(val, dict):
             return HttpResponse(json.dumps(val))
+        elif isinstance(val, list):
+            return HttpResponse(json.dumps(val))
         else:
             return HttpResponse(str(val))
     else:

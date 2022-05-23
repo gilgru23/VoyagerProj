@@ -91,3 +91,26 @@ class TestConsumers(TestCase):
         body = json.dumps(params)
         response = self.client1.generic('POST', reverse('register_pod'), body)
         self.assertEqual(response.status_code, 200)
+
+    def test_register_dispenser(self):
+        # register dispenser1 to consumer
+        params = {"serial_num": self.dispenser_details1['serial_number'],
+                  "version": self.dispenser_details1['version']}
+        body = json.dumps(params)
+        response = self.client1.generic('POST', reverse('register dispenser'), body)
+        self.assertEqual(response.status_code, 200)
+
+        # register dispenser2 to consumer
+        params = {"serial_num": self.dispenser_details2['serial_number'],
+                  "version": self.dispenser_details2['version']}
+        body = json.dumps(params)
+        response = self.client1.generic('POST', reverse('register dispenser'), body)
+        self.assertEqual(response.status_code, 200)
+
+        # get consumer's dispensers
+        response = self.client1.generic('POST', reverse('get_dispensers_of_consumer'), '')
+        self.assertEqual(response.status_code, 200)
+        dispensers = json.loads(response.content)
+        self.assertEqual(len(dispensers), 2)
+        # print(response.content)
+

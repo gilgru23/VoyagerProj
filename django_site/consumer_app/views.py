@@ -69,7 +69,13 @@ def get_regimen(request: HttpRequest):
 @csrf_exempt
 def get_pods_of_consumer(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    res = service.get_consumer_service().get_consumers_pods(account_id)
-    return rh.result_to_response(res)   
+    res = service.get_consumer_service().get_consumer_pods(account_id)
+    return rh.result_to_response(res)
+
+@csrf_exempt
+def get_dispensers_of_consumer(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    res = service.get_consumer_service().get_consumer_dispensers(account_id)
+    return rh.result_to_response(res)
 
 
