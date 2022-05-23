@@ -11,6 +11,7 @@ urlpatterns = [
     path('set_dosing_reminder', views.set_dosing_reminder, name='set_dosing_reminder'),
     path('set_regimen', views.set_regimen, name='set_regimen'),
     path('get_regimen', views.get_regimen, name='get_regimen'),
+    path('get_dosing_history', views.get_dosing_history, name='get_dosing_history'),
     path('get_pods_of_consumer', views.get_pods_of_consumer, name='get_pods_of_consumer'),
     path('get_dispensers_of_consumer', views.get_dispensers_of_consumer, name='get_dispensers_of_consumer')
 ]

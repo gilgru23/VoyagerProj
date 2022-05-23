@@ -60,7 +60,7 @@ class ConsumerService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
-    def consumer_dose(self, consumer_id, pod_serial_num: str, amount: float, time, latitude=None, longitude=None):
+    def consumer_dose(self, consumer_id, pod_serial_num: str, amount: float, time, latitude=-1.0, longitude=-1.0):
         try:
             self.med_center.consumer_dose(consumer_id, pod_serial_num, amount, time, latitude, longitude)
             return Result.success()
