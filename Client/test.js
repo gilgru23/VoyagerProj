@@ -6,7 +6,7 @@ import { Consumer } from './src/model/Consumer.js'
 import { MockServer } from './src/Communication/mockServer.js'
 import { Dispenser } from './src/model/dispenser.js'
 
-const model = new Model(true)
+const model = new Model(false)
 
 const validEmail = 'gilg3@gmail.com'
 const invalidEmail = 'Gilgmail.com'
@@ -31,106 +31,114 @@ const userCradentials = {
 }
 const dispenserId = 'id1234'
 const dispenserName = 'dispenser1'
+const genUid = () => new Date().getTime().toString()
 
-describe('registration', async function () {
-  this.afterEach(async () => {
-    MockServer.users = []
-    MockServer.dispensres = []
-  })
+// describe('registration', async function () {
+//   this.afterEach(async () => {
+//     MockServer.users = []
+//     MockServer.dispensres = []
+//   })
 
-  it('registiration success scenario', async function () {
-    const response = await model.registerUser(
-      validEmail,
-      validPassword,
-      firstName,
-      lastName,
-      birthDateString
-    )
-    assert.equal(response.status, responseStatus.SUCCESS)
-  })
+//   it('registiration success scenario', async function () {
+//     const response = await model.registerUser(
+//       validEmail,
+//       validPassword,
+//       firstName,
+//       lastName,
+//       birthDateString
+//     )
+//     assert.equal(response.status, responseStatus.SUCCESS)
+//   })
 
-  it('registiration failure scenario- invalid mail', async function () {
-    const response = await model.registerUser(
-      invalidEmail,
-      validPassword,
-      firstName,
-      lastName,
-      birthDateString
-    )
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
+//   it('registiration failure scenario- invalid mail', async function () {
+//     const response = await model.registerUser(
+//       invalidEmail,
+//       validPassword,
+//       firstName,
+//       lastName,
+//       birthDateString
+//     )
+//     assert.equal(response.status, responseStatus.FAILURE)
+//   })
 
-  it('registiration failure scenario- weak password', async function () {
-    const response = await model.registerUser(
-      validEmail,
-      inValidPassword,
-      firstName,
-      lastName,
-      birthDateString
-    )
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
-})
+//   it('registiration failure scenario- weak password', async function () {
+//     const response = await model.registerUser(
+//       validEmail,
+//       inValidPassword,
+//       firstName,
+//       lastName,
+//       birthDateString
+//     )
+//     assert.equal(response.status, responseStatus.FAILURE)
+//   })
+// })
 
-describe('login', async function () {
-  this.beforeEach(async () => {
-    await model.registerUser(
-      validEmail,
-      validPassword,
-      firstName,
-      lastName,
-      birthDateString
-    )
-  })
+// describe('login', async function () {
+//   this.beforeEach(async () => {
+//     await model.registerUser(
+//       validEmail,
+//       validPassword,
+//       firstName,
+//       lastName,
+//       birthDateString
+//     )
+//   })
 
-  this.afterEach(async () => {
-    MockServer.users = []
-    MockServer.dispensres = []
-  })
+//   this.afterEach(async () => {
+//     MockServer.users = []
+//     MockServer.dispensres = []
+//   })
 
-  it('login success scenario', async function () {
-    const response = await model.loginUser(validEmail, validPassword)
-    console.log(response)
-    assert.equal(response.status, responseStatus.SUCCESS)
-    assert.deepEqual(
-      response.content,
-      new Consumer(validEmail, firstName, lastName, birthDateString)
-    )
-  })
+//   it('login success scenario', async function () {
+//     const response = await model.loginUser(validEmail, validPassword)
+//     console.log(response)
+//     assert.equal(response.status, responseStatus.SUCCESS)
+//     assert.deepEqual(
+//       response.content,
+//       new Consumer(validEmail, firstName, lastName, birthDateString)
+//     )
+//   })
 
-  it('login failure scenario- empty parameter', async function () {
-    const response = await model.loginUser('', validPassword)
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
+//   it('login failure scenario- empty parameter', async function () {
+//     const response = await model.loginUser('', validPassword)
+//     assert.equal(response.status, responseStatus.FAILURE)
+//   })
 
-  it('login failure scenario- bad email', async function () {
-    const response = await model.loginUser(invalidEmail, validPassword)
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
-})
+//   it('login failure scenario- bad email', async function () {
+//     const response = await model.loginUser(invalidEmail, validPassword)
+//     assert.equal(response.status, responseStatus.FAILURE)
+//   })
+// })
 
 describe('createConsumerProfile', async function () {
-  this.beforeEach(async () => {
-    await model.registerUser(
-      validEmail,
-      validPassword,
-      firstName,
-      lastName,
-      birthDateString
-    )
-  })
+  // this.beforeEach(async () => {
+  //   const uid = genUid()
+  //   await model.registerUser(
+  //     uid + validEmail,
+  //     validPassword,
+  //     firstName,
+  //     lastName,
+  //     birthDateString
+  //   )
+  //   await model.loginUser(uid + validEmail, validPassword)
+  // })
 
-  this.afterEach(async () => {
-    MockServer.users = []
-    MockServer.dispensres = []
-  })
-
-  it('createConsumerProfile success scenario', async function () {
-    assert.equal(true, true)
-  })
+  // this.afterEach(async () => {
+  //   MockServer.users = []
+  //   MockServer.dispensres = []
+  // })
 
   it('createConsumerProfile success scenario', async function () {
     console.log('checking')
+    const uid = genUid()
+    await model.registerUser(
+      uid + validEmail,
+      validPassword,
+      firstName,
+      lastName,
+      birthDateString
+    )
+    await model.loginUser(uid + validEmail, validPassword)
     const response = await model.createConsumerProfile(
       residence,
       height,
@@ -147,72 +155,72 @@ describe('createConsumerProfile', async function () {
     )
   })
 
-  it('createConsumerProfile failure scenario- empty parameter', async function () {
-    const response = await model.createConsumerProfile(
-      residence,
-      height,
-      weight,
-      '',
-      gender,
-      goal,
-      userCradentials
-    )
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
-})
-
-describe('register dispenser', async function (done) {
-  it('register dispenser success scenario', async function (done) {
-    // const uid = new Date().getTime().toString()
-    // const email = uid + validEmail
-    // await model.registerUser(
-    //   email,
-    //   validPassword,
-    //   firstName,
-    //   lastName,
-    //   birthDateString
-    // )
-    await model.loginUser(validEmail, validPassword)
-    // await model.createConsumerProfile(
-    //   residence,
-    //   height,
-    //   weight,
-    //   units,
-    //   gender,
-    //   goal,
-    //   userCradentials
-    // )
-    // await model.loginUser(validEmail, validPassword)
-    // done()
-    const response = await model.registerDispenser(dispenserId, dispenserName)
-    assert.equal(response.status, responseStatus.SUCCESS)
-    assert.deepEqual(
-      response.content,
-      new Dispenser(dispenserId, dispenserName)
-    )
-  })
-  // it('register dispenser failure scenario- duplicate dispenser', async function () {
-  //   const response = await model.registerDispenser(dispenserId, dispenserName)
-  //   assert.equal(response.status, responseStatus.FAILURE)
-  // })
-  // it('register dispenser failure scenario- one of the parameters is empty', async function () {
-  //   const response = await model.registerDispenser('', dispenserName)
-  //   assert.equal(response.status, responseStatus.FAILURE)
-  // })
-  // it('register dispenser failure scenario', async function () {
-  //   const response = await model.registerDispenser('1234', 'dispenser1')
+  // it('createConsumerProfile failure scenario- empty parameter', async function () {
+  //   const response = await model.createConsumerProfile(
+  //     residence,
+  //     height,
+  //     weight,
+  //     '',
+  //     gender,
+  //     goal,
+  //     userCradentials
+  //   )
   //   assert.equal(response.status, responseStatus.FAILURE)
   // })
 })
 
-describe('register pod', async function (done) {
-  this.beforeAll(async () => {
-    await model.loginUser(validEmail, validPassword)
-  })
-  it('register pod success scenario', async function (done) {
-    done()
-    const response = await model.registerPod(podId, podType)
-    assert.equal(response.status, responseStatus.SUCCESS)
-    assert.deepEqual(response.content, new Pod(podId, podType))
-  })
-})
+// describe('register dispenser', async function (done) {
+//   it('register dispenser success scenario', async function (done) {
+//     // const uid = new Date().getTime().toString()
+//     // const email = uid + validEmail
+//     // await model.registerUser(
+//     //   email,
+//     //   validPassword,
+//     //   firstName,
+//     //   lastName,
+//     //   birthDateString
+//     // )
+//     await model.loginUser(validEmail, validPassword)
+//     // await model.createConsumerProfile(
+//     //   residence,
+//     //   height,
+//     //   weight,
+//     //   units,
+//     //   gender,
+//     //   goal,
+//     //   userCradentials
+//     // )
+//     // await model.loginUser(validEmail, validPassword)
+//     // done()
+//     const response = await model.registerDispenser(dispenserId, dispenserName)
+//     assert.equal(response.status, responseStatus.SUCCESS)
+//     assert.deepEqual(
+//       response.content,
+//       new Dispenser(dispenserId, dispenserName)
+//     )
+//   })
+//   // it('register dispenser failure scenario- duplicate dispenser', async function () {
+//   //   const response = await model.registerDispenser(dispenserId, dispenserName)
+//   //   assert.equal(response.status, responseStatus.FAILURE)
+//   // })
+//   // it('register dispenser failure scenario- one of the parameters is empty', async function () {
+//   //   const response = await model.registerDispenser('', dispenserName)
+//   //   assert.equal(response.status, responseStatus.FAILURE)
+//   // })
+//   // it('register dispenser failure scenario', async function () {
+//   //   const response = await model.registerDispenser('1234', 'dispenser1')
+//   //   assert.equal(response.status, responseStatus.FAILURE)
+//   // })
+// })
+
+// describe('register pod', async function (done) {
+//   this.beforeAll(async () => {
+//     await model.loginUser(validEmail, validPassword)
+//   })
+//   it('register pod success scenario', async function (done) {
+//     done()
+//     const response = await model.registerPod(podId, podType)
+//     assert.equal(response.status, responseStatus.SUCCESS)
+//     assert.deepEqual(response.content, new Pod(podId, podType))
+//   })
+// })

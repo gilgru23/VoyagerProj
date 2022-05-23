@@ -322,6 +322,19 @@ export default class ConnectionScreen extends React.Component {
           style={styles.header}
         >{`Hello ${this.props.consumer.firstName} You are connected to dispneser: ${this.props.device.name}`}</Text>
         <View style={styles.option}>
+          <Button
+            backgroundColor="green"
+            label="Go to personal page"
+            borderRadius={7}
+            onPress={() =>
+              this.props.navigation.navigate('PersonalPage', {
+                device: this.props.device,
+                consumer: this.props.consumer
+              })
+            }
+          />
+        </View>
+        {/* <View style={styles.option}>
           <TextInput
             style={styles.inputAreaTextInput}
             placeholder={'Enter amount to dispense'}
@@ -371,7 +384,7 @@ export default class ConnectionScreen extends React.Component {
               this.sendData(msgsFromDispenserTypes.POD_RUNNING_LOW)
             }
           />
-        </View>
+        </View> */}
       </View>
     )
   }
