@@ -363,6 +363,7 @@ class DatabaseProxy:
         dosing = Dosing(
             dosing_id=dosing_dto.id,
             pod_serial_number= dosing_dto.pod,
+            # TODO:: add fields to dto and model
             # pod_type_name=dosing_dto.pod_type,
             pod_type_name= "",
             # amount= dosing_dto.amount,

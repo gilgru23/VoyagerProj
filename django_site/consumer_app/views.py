@@ -38,9 +38,9 @@ def register_pod(request: HttpRequest):
 @csrf_exempt
 def dose(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    keys = ['pod', 'amount', 'units']
-    pod, amount, units = rh.keys_to_values(request, keys)
-    res = service.get_consumer_service().dose(account_id, pod, amount, units)
+    keys = ['pod_serial_num', 'amount', 'time']
+    pod_serial_num, amount, time = rh.keys_to_values(request, keys)
+    res = service.get_consumer_service().consumer_dose(account_id, pod_serial_num, amount, time)
     return rh.result_to_response(res)
 
 
@@ -67,9 +67,21 @@ def get_regimen(request: HttpRequest):
     return rh.result_to_response(res)   
 
 @csrf_exempt
+def get_dosing_history(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    res = service.get_consumer_service().get_consumer_dosing_history(account_id)
+    return rh.result_to_response(res)
+
+@csrf_exempt
 def get_pods_of_consumer(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    res = service.get_consumer_service().get_consumers_pods(account_id)
-    return rh.result_to_response(res)   
+    res = service.get_consumer_service().get_consumer_pods(account_id)
+    return rh.result_to_response(res)
+
+@csrf_exempt
+def get_dispensers_of_consumer(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    res = service.get_consumer_service().get_consumer_dispensers(account_id)
+    return rh.result_to_response(res)
 
 

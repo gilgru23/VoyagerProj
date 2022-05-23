@@ -1,6 +1,6 @@
 # from django.utils.datetime_safe import datetime
 
-from datetime import datetime
+from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
 from voyager_system.dal_DEPRECATED.IMapper import IMapper
 from voyager_system.domain.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
@@ -29,27 +29,8 @@ class MedicalCenter:
         pass
 
     # region Consumer
-    # consumer related interface
 
-    # async def get_consumer2(self, consumer_id):
-    #     """retrieves a consumer from database (or cache) by id
-    #
-    #     :param consumer_id: id of the consumer
-    #     :return: Consumer object.
-    #     :raise  AppOperationError: throws exception if consumer was not found
-    #     """
-    #     try:
-    #         consumer = await self.object_mapper.get_consumer(consumer_id)
-    #     except DataAccessError as e:
-    #         self.logger.debug(str(e))
-    #         err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
-    #         self.logger.info(err_str)
-    #         raise AppOperationError(err_str)
-    #     if not consumer:
-    #         err_str = f'Error: consumer [id: {consumer_id}] is not registered in the system.'
-    #         raise AppOperationError(err_str)
-    #     self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
-    #     return consumer
+    # consumer related interface
 
     def get_consumer(self, consumer_id) -> Consumer:
         """retrieves a consumer from database (or cache) by id
@@ -83,7 +64,7 @@ class MedicalCenter:
         """
         def dosing_to_dict(dosing: Dosing):
             return {'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': dosing.pod_type_name,
-                    'amount': dosing.amount, 'time': dosing.time, 'latitude': dosing.latitude,
+                    'amount': dosing.amount, 'time': date_time_to_str(dosing.time), 'latitude': dosing.latitude,
                     'longitude': dosing.longitude}
         dosings = self.db.get_consumer_dosing(consumer_id)
         history = [dosing_to_dict(d) for d in dosings]
@@ -118,13 +99,32 @@ class MedicalCenter:
         self.db.update_pod(pod, consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] dosed from pod [serial number: {pod_serial_num}] - with amount [{amount}]")
 
+    def get_consumer_dispensers(self, consumer_id):
+        """
+        retrieves a list of dictionaries representing all of the dispensers registered to the consumer
+
+        :param consumer_id: id of the consumer
+        :return: A List of Dictionaries representing dispensers registered to the consumer
+        :raise AppOperationError: exception if consumer was not found (see get_consumer)
+        :raise DataAccessError: throws exception if db was not able to retrieve consumer or dispensers
+        """
+        dispensers = self.db.get_consumer_dispensers(consumer_id)
+        def disp_to_dict(disp:Dispenser):
+            return {'serial_number': disp.serial_number, 'version': disp.version,
+                    'registration_date':date_to_str(disp.registration_date)}
+
+        dispenser_dicts = [disp_to_dict(disp) for disp in dispensers]
+        self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered dispensers")
+        return dispenser_dicts
+
     def get_consumer_pods(self, consumer_id):
-        """retrieves a shallow copy of all of the pods registered to the consumer
+        """
+        retrieves a list of dictionaries representing all of the pods registered to the consumer
 
         :param consumer_id: id of the consumer
         :return: A List of Dictionaries representing pods registered to the consumer
         :raise AppOperationError: exception if consumer was not found (see get_consumer)
-        :raise DataAccessError: throws exception if db was not able to get consumer
+        :raise DataAccessError: throws exception if db was not able to retrieve consumer or pods
         """
         def pod_to_dict(pod:Pod):
             return {'serial_number': pod.serial_number, 'remainder': pod.remainder, 'type_name':pod.type_name}

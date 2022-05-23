@@ -33,6 +33,15 @@ class ConsumerService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
+    def get_consumer_dispensers(self, consumer_id):
+        try:
+            pods = self.med_center.get_consumer_dispensers(consumer_id=consumer_id)
+            return Result.success(pods)
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
+
     def get_consumer_pods(self, consumer_id):
         try:
             pods = self.med_center.get_consumer_pods(consumer_id=consumer_id)
@@ -51,7 +60,7 @@ class ConsumerService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
-    def consumer_dose(self, consumer_id, pod_serial_num: str, amount: float, time, latitude=None, longitude=None):
+    def consumer_dose(self, consumer_id, pod_serial_num: str, amount: float, time, latitude=-1.0, longitude=-1.0):
         try:
             self.med_center.consumer_dose(consumer_id, pod_serial_num, amount, time, latitude, longitude)
             return Result.success()
