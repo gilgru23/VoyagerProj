@@ -14,7 +14,7 @@ import voyager_system.data_access.db_check as db_check
 #todo: fix. if password is weak then voyager account exists without user!!
 @csrf_exempt
 def register_user(request: HttpRequest):
-    print("ladidaa")
+    print("ladidaaa")
     keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
     email, pwd, phone, f_name, l_name, dob = rh.keys_to_values(request, keys)
     _validate_password(pwd)
