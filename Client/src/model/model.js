@@ -141,7 +141,7 @@ export class Model {
   getDosingHistory = async () => {
     const response = await this.getDosingHistoryReq()
     if (response.status === responseStatus.SUCCESS) {
-      return createResponseObj(responseStatus.SUCCESS, 'Dosing succeeded')
+      return createResponseObj(responseStatus.SUCCESS, response.content)
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }

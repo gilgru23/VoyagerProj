@@ -40,31 +40,17 @@ export default function PersonalPage({ route, navigation }) {
             })
           }
         >
-          {/* <Text style={{ color: 'white' }}>{`Register pod`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('RecommendationPage', {
-              device: route.params.device
-            })
-          }
-        > */}
-          {/* <Text style={{ color: 'white' }}>{`Recommendation Page`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('TrackingPage', {
-              device: route.params.device
-            })
-          }
-        > */}
-          <Text style={{ color: 'white' }}>{`History`}</Text>
+          <Text style={{ color: 'white' }}>{`Register a Pod`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitBtn}
           onPress={() => navigation.navigate('History')}
+        >
+          <Text style={{ color: 'white' }}>{`Dosing History`}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.submitBtn}
+          onPress={() => navigation.navigate('Schedule')}
         >
           <Text style={{ color: 'white' }}>{`Schedule Page`}</Text>
         </TouchableOpacity>

@@ -87,7 +87,7 @@ function App() {
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
-          name="Scheduler"
+          name="Schedule"
           component={Schedule}
           initialParams={{ controller: controller }}
         />
