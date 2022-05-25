@@ -40,7 +40,7 @@ export default function PersonalPage({ route, navigation }) {
             })
           }
         >
-          <Text style={{ color: 'white' }}>{`Register pod`}</Text>
+          {/* <Text style={{ color: 'white' }}>{`Register pod`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitBtn}
@@ -49,8 +49,8 @@ export default function PersonalPage({ route, navigation }) {
               device: route.params.device
             })
           }
-        >
-          <Text style={{ color: 'white' }}>{`Recommendation Page`}</Text>
+        > */}
+          {/* <Text style={{ color: 'white' }}>{`Recommendation Page`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitBtn}
@@ -59,16 +59,12 @@ export default function PersonalPage({ route, navigation }) {
               device: route.params.device
             })
           }
-        >
-          <Text style={{ color: 'white' }}>{`Track Usage Page`}</Text>
+        > */}
+          <Text style={{ color: 'white' }}>{`History`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('Scheduler', {
-              consumerId: route.params.consumer.email
-            })
-          }
+          onPress={() => navigation.navigate('History')}
         >
           <Text style={{ color: 'white' }}>{`Schedule Page`}</Text>
         </TouchableOpacity>

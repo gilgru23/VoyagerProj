@@ -210,8 +210,12 @@ export default class ConnectionScreen extends React.Component {
   async doseRequests(podSerial, podType, amount) {
     const { controller } = this.props
     try {
-      await controller.dose(podSerial, amount)
       await controller.registerPod(podSerial, podType)
+      await controller.dose(
+        podSerial,
+        parseFloat(amount),
+        new Date().toISOString()
+      )
     } catch (e) {
       console.log(e)
     }

@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text
 } from 'react-native'
+import { responseStatus } from '../../../Config/constants'
 
 /**
  * See https://reactnative.dev/docs/permissionsandroid for more information
@@ -47,6 +48,7 @@ export default class DeviceListScreen extends React.Component {
     super(props)
 
     this.state = {
+      registerdDevices: [],
       devices: [],
       accepting: false,
       discovering: false,
@@ -54,7 +56,11 @@ export default class DeviceListScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const response = await this.props.controller.getDispenserOfConsumer()
+    if ((response.status = responseStatus.SUCCESS)) {
+      this.setState({ registerdDevices: response.content })
+    }
     this.getBondedDevices()
   }
 
@@ -102,7 +108,8 @@ export default class DeviceListScreen extends React.Component {
       let device = await RNBluetoothClassic.accept({ delimiter: '\r' })
       if (device) {
         this.display('device accepted!')
-        this.props.selectDevice(device)
+        console.log('device accepted')
+        this.props.selectDevice(device, true)
       }
     } catch (error) {
       // If we're not in an accepting state, then chances are we actually
@@ -224,8 +231,16 @@ export default class DeviceListScreen extends React.Component {
       ? 'Discovering (cancel)... '
       : 'Discover Devices'
 
-    const devicesToDisplay = this.state.devices.filter((d) =>
-      this.isDeviceOfInterest(d)
+    const registerdDevicesToDisplay = this.state.devices.filter((d) =>
+      this.state.registerdDevices.some(
+        (registerdDevice) => registerdDevice.id === d.address
+      )
+    )
+    const unRegisterdDevicesToDisplay = this.state.devices.filter(
+      (d) =>
+        !this.state.registerdDevices.some(
+          (registerdDevice) => registerdDevice.id === d.address
+        ) && this.isDeviceOfInterest(d)
     )
     return (
       <View>
@@ -244,9 +259,17 @@ export default class DeviceListScreen extends React.Component {
             ) : undefined}
 
             <View>
+              <Text>Available and registered devices</Text>
               <DeviceList
-                devices={devicesToDisplay}
+                devices={registerdDevicesToDisplay}
                 onPress={this.props.selectDevice}
+                registered={true}
+              />
+              <Text>Available and unrregistered devices</Text>
+              <DeviceList
+                devices={unRegisterdDevicesToDisplay}
+                onPress={this.props.selectDevice}
+                registered={false}
               />
               <Text>End of List</Text>
             </View>
@@ -271,13 +294,14 @@ export default class DeviceListScreen extends React.Component {
  * @param {function} onPress
  * @param {function} onLongPress
  */
-export const DeviceList = ({ devices, onPress, onLongPress }) => {
+export const DeviceList = ({ devices, onPress, onLongPress, registered }) => {
   const renderItem = ({ item }) => {
     return (
       <DeviceListItem
         device={item}
         onPress={onPress}
         onLongPress={onLongPress}
+        registered={registered}
       />
     )
   }
@@ -289,18 +313,22 @@ export const DeviceList = ({ devices, onPress, onLongPress }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.address}
       />
-      <Text>My end</Text>
     </View>
   )
 }
 
-export const DeviceListItem = ({ device, onPress, onLongPress }) => {
+export const DeviceListItem = ({
+  device,
+  onPress,
+  onLongPress,
+  registered
+}) => {
   let bgColor = device.connected ? '#0f0' : '#fff'
   let icon = device.bonded ? 'ios-bluetooth' : 'ios-cellular'
 
   return (
     <TouchableOpacity
-      onPress={() => onPress(device)}
+      onPress={() => onPress(device, registered)}
       onLongPress={() => onLongPress(device)}
       style={styles.deviceListItem}
     >

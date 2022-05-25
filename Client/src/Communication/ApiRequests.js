@@ -107,15 +107,41 @@ export const registerPod = async (id, podType) => {
   }
 }
 
-export const dose = async (pod, amount) => {
+export const dose = async (pod, amount, time) => {
   try {
     const response = await axios.post(`${baseURL}/consumers/dose`, {
-      pod: pod,
+      pod_serial_num: pod,
       amount: amount,
-      units: 1
+      time: time
     })
     if (response) {
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const getDispensersOfConsumer = async () => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/consumers/get_dispensers_of_consumer`
+    )
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const getDosingHistory = async () => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/get_dosing_history`)
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, response.data)
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {

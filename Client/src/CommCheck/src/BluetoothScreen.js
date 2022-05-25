@@ -7,7 +7,6 @@ import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
 import { responseStatus } from '../../Config/constants'
 import { alert } from '../../view/compenents/utils'
-import DispenserDemo from '../../Communication/dispenserDemo'
 export default class BluetoothScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -27,17 +26,23 @@ export default class BluetoothScreen extends React.Component {
    *z  n nmnmji8
    * @param device the BluetoothDevice selected or connected
    */
-  selectDevice = async (device) => {
-    console.log('selected device is:', device.name, device.address)
-    const response = await this.props.route.params.controller.registerDispenser(
-      device.address,
-      device.name
-    )
-    if (response.status === responseStatus.SUCCESS) {
-      this.setState({ device })
+  selectDevice = async (device, registered) => {
+    console.log(registered)
+    if (!registered) {
+      const response =
+        await this.props.route.params.con01111troller.registerDispenser(
+          device.address,
+          device.name
+        )
+      if (response.status === responseStatus.SUCCESS) {
+        this.setState({ device })
+      } else {
+        alert('Error', 'Can not connect to the device')
+      }
     } else {
-      alert('Error', 'Can not connect to the device')
+      this.setState({ device })
     }
+
     // this.setState({ device })
   }
 
@@ -148,6 +153,7 @@ export default class BluetoothScreen extends React.Component {
           <DeviceListScreen
             bluetoothEnabled={this.state.bluetoothEnabled}
             selectDevice={this.selectDevice}
+            controller={this.props.route.params.controller}
           />
         ) : (
           <ConnectionScreen

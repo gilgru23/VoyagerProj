@@ -4,7 +4,9 @@ import {
   createConsumerProfile as createConsumerProfileRequest,
   registerDispenser as registerDispenserRequest,
   registerPod as registerPodRequest,
-  dose as doseRequest
+  dose as doseRequest,
+  getDispensersOfConsumer as getDispensersOfConsumerRequest,
+  getDosingHistory as getDosingHistoryRequest
 } from '../Communication/ApiRequests.js'
 
 import { Consumer } from './Consumer.js'
@@ -32,6 +34,13 @@ export class Model {
 
     this.registerPodRreq = testMode ? this.mock.registerPod : registerPodRequest
     this.doseReq = testMode ? this.mock.dose : doseRequest
+    this.getDispensersOfConsumerReq = testMode
+      ? this.mock.getDispensersOfConsumer
+      : getDispensersOfConsumerRequest
+
+    this.getDosingHistoryReq = testMode
+      ? this.mock.getDosingHistory
+      : getDosingHistoryRequest
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
@@ -98,6 +107,21 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
+  getDispenserOfConsumer = async () => {
+    const response = await this.getDispensersOfConsumerReq()
+    if (response.status === responseStatus.SUCCESS) {
+      console.log(response.content)
+      return createResponseObj(
+        responseStatus.SUCCESS,
+        response.content.map(
+          (dispenser) =>
+            new Dispenser(dispenser.serial_number, dispenser.version)
+        )
+      )
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
   registerPod = async (id, podType) => {
     const response = await this.registerPodRreq(id, podType)
     if (response.status === responseStatus.SUCCESS) {
@@ -106,8 +130,16 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
-  dose = async (pod, amount) => {
-    const response = await this.doseReq(pod, amount)
+  dose = async (pod, amount, time) => {
+    const response = await this.doseReq(pod, amount, time)
+    if (response.status === responseStatus.SUCCESS) {
+      return createResponseObj(responseStatus.SUCCESS, 'Dosing succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
+  getDosingHistory = async () => {
+    const response = await this.getDosingHistoryReq()
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(responseStatus.SUCCESS, 'Dosing succeeded')
     }

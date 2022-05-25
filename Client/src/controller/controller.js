@@ -91,7 +91,15 @@ export class Controller {
     return await this.model.registerPod(id, podType)
   }
 
-  dose = async (pod, amount) => {
-    return await this.model.dose(pod, amount)
+  dose = async (pod, amount, time) => {
+    return await this.model.dose(pod, amount, time)
+  }
+
+  getDispenserOfConsumer = async () => {
+    return await this.model.getDispenserOfConsumer()
+  }
+
+  getDosingHistory = async () => {
+    return await this.model.getDosingHistory()
   }
 }
