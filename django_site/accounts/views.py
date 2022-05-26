@@ -55,6 +55,7 @@ def create_consumer_profile(request: HttpRequest):
     keys = ['residence', 'height', 'weight', 'units', 'gender', 'goal']
     residence, height, weight, units, gender, goal = rh.keys_to_values(
         request, keys)
+    weight=100
     res = service.get_guest_service().create_consumer_profile(
         id, residence, height, weight, units, gender, goal)
     return rh.result_to_response(res)

@@ -97,6 +97,7 @@ export default function PersonalInfo({ navigation, route }) {
           onChangeText={(val) => setResidence(val)}
           keyboardType="numeric"
           maxLength={6}
+          testID={ids.regPersonalInfo_residence_et}
         />
       </View>
       <Button title="Submit" onPress={(e) => onSubmit()} testID={ids.regPersonalInfo_submit_btn}/>

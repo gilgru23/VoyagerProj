@@ -14,6 +14,7 @@ import voyager_system.data_access.db_check as db_check
 #todo: fix. if password is weak then voyager account exists without user!!
 @csrf_exempt
 def register_user(request: HttpRequest):
+    print("ladidaaa")
     keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
     email, pwd, phone, f_name, l_name, dob = rh.keys_to_values(request, keys)
     _validate_password(pwd)
@@ -25,6 +26,9 @@ def register_user(request: HttpRequest):
         User.objects.create_user(email, email, pwd)
     return rh.result_to_response(res)
 
+#(Get-Item "wsgi.py").CreationTime=("19 May 2022 02:00:00")
+#(Get-Item "wsgi.py").LastWriteTime=("19 May 2022 02:01:00")
+#(Get-Item "wsgi.py").LastAccessTime=("19 May 2022 02:02:00")
 @csrf_exempt
 def login_user(request: HttpRequest):
     keys = ['email', 'pwd']
@@ -44,6 +48,7 @@ def logout_user(request: HttpRequest):
 
 @csrf_exempt
 def create_consumer_profile(request: HttpRequest):
+    print("gottty")
     id = rh.get_acount_id(request)
     keys = ['residence', 'height', 'weight', 'units', 'gender', 'goal']
     residence, height, weight, units, gender, goal = rh.keys_to_values(request, keys)

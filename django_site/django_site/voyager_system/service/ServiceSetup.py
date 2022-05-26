@@ -19,6 +19,7 @@ def get_consumer_service():
 
 
 def get_guest_service():
+    print("gotty guest serviceeee")
     return guest_service
 
 
