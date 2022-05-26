@@ -25,22 +25,12 @@ export default function PersonalPage({ route, navigation }) {
         <TouchableOpacity
           style={styles.submitBtn}
           onPress={() =>
-            navigation.navigate('PersonalPods', {
+            navigation.navigate('Current Pods', {
               device: route.params.device
             })
           }
         >
           <Text style={{ color: 'white' }}>{`Personal pods page`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('RegisterPod', {
-              device: route.params.device
-            })
-          }
-        >
-          <Text style={{ color: 'white' }}>{`Register a Pod`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.submitBtn}

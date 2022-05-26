@@ -102,4 +102,8 @@ export class Controller {
   getDosingHistory = async () => {
     return await this.model.getDosingHistory()
   }
+
+  getPods = async () => {
+    return await this.model.getPods()
+  }
 }

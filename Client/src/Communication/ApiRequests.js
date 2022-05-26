@@ -148,3 +148,18 @@ export const getDosingHistory = async () => {
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
+
+export const getPods = async () => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/consumers/get_pods_of_consumer`
+    )
+    if (response) {
+      console.log('pods from server:', response.data)
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}

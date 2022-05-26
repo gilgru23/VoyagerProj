@@ -77,12 +77,7 @@ function App() {
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
-          name="PersonalPods"
-          component={PersonalPods}
-          initialParams={{ controller: controller }}
-        />
-        <Stack.Screen
-          name="Current Pod"
+          name="Current Pods"
           component={CurrPod}
           initialParams={{ controller: controller }}
         />

@@ -6,7 +6,8 @@ import {
   registerPod as registerPodRequest,
   dose as doseRequest,
   getDispensersOfConsumer as getDispensersOfConsumerRequest,
-  getDosingHistory as getDosingHistoryRequest
+  getDosingHistory as getDosingHistoryRequest,
+  getPods as getPodsRequest
 } from '../Communication/ApiRequests.js'
 
 import { Consumer } from './Consumer.js'
@@ -41,6 +42,8 @@ export class Model {
     this.getDosingHistoryReq = testMode
       ? this.mock.getDosingHistory
       : getDosingHistoryRequest
+
+    this.getPodsReq = testMode ? this.mock.getPods : getPodsRequest
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
@@ -142,6 +145,22 @@ export class Model {
     const response = await this.getDosingHistoryReq()
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(responseStatus.SUCCESS, response.content)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
+  getPods = async () => {
+    const creatPodsObjs = (podsJsns) => {
+      return podsJsns.map((podJsn) => {
+        const { serial_number, remainder, type_name } = podJsn
+        return new Pod(serial_number, type_name, remainder)
+      })
+    }
+    const response = await this.getPodsReq()
+    if (response.status === responseStatus.SUCCESS) {
+      const pods = creatPodsObjs(response.content)
+      console.log('pods in model', pods)
+      return createResponseObj(responseStatus.SUCCESS, pods)
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }

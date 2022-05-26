@@ -116,14 +116,22 @@ export default function History({ navigation, route }) {
   )
 
   return (
-    <FlatList
-      data={dosingHistory}
-      renderItem={({ item, index }) => renderRow(item, index)}
-      keyExtractor={keyExtractor}
-    />
+    <>
+      <Text style={styles.header}>Dosing history</Text>
+      <FlatList
+        data={dosingHistory}
+        renderItem={({ item, index }) => renderRow(item, index)}
+        keyExtractor={keyExtractor}
+      />
+    </>
   )
 }
 const styles = StyleSheet.create({
+  header: {
+    fontSize: 30,
+    marginBottom: 40,
+    textAlign: 'center'
+  },
   image: {
     width: 54,
     height: 70,
