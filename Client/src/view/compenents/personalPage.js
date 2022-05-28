@@ -1,6 +1,7 @@
 import React from 'react'
 import { ScrollView, TextInput, StyleSheet, Text, Image } from 'react-native'
 import { Colors, TouchableOpacity, View } from 'react-native-ui-lib'
+import { responseStatus } from '../../Config/constants'
 
 export default function OldPersonalPage({ route, navigation }) {
   const [searchText, setSearchText] = React.useState('')
@@ -21,11 +22,19 @@ export default function OldPersonalPage({ route, navigation }) {
       img: require('./assets/dispenser.png')
     }
   ]
+
+  const handleLogout = async () => {
+    const response = await route.params.controller.logout()
+    if (response.status === responseStatus.SUCCESS) {
+      navigation.navigate('Home')
+    }
+  }
+
   return (
     <View>
       <TextInput
         style={{ padding: 10, marginBottom: 0, fontSize: 18 }}
-        placeholder="Search for your component..."
+        placeholder="Search for an option..."
         onChangeText={(text) => setSearchText(text)}
         value={searchText}
       />
@@ -72,6 +81,25 @@ export default function OldPersonalPage({ route, navigation }) {
                   item.key.toLowerCase().indexOf(searchText.toLowerCase()) !==
                   -1
               )}
+            <TouchableOpacity
+              activeOpacity={1}
+              bg-red40
+              paddingH-s5
+              paddingV-s4
+              key={'logout'}
+              activeBackgroundColor={Colors.red20}
+              style={{
+                borderBottomWidth: 1,
+                borderColor: Colors.white
+              }}
+              onPress={async () => await handleLogout()}
+            >
+              <View style={styles.card}>
+                <Text white text70M style={styles.option}>
+                  Logout
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

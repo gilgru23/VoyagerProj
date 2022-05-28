@@ -163,3 +163,15 @@ export const getPods = async () => {
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
+
+export const logout = async () => {
+  try {
+    const response = await axios.post(`${baseURL}/accounts/logout_user`)
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'logout succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'logout failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'logout failed')
+  }
+}

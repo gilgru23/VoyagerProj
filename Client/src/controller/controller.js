@@ -8,7 +8,7 @@ import { Consumer } from '../model/Consumer.js'
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj } from '../utilsFunctions.js'
 import { Model } from '../model/model.js'
-import { checkTheParametersAreValid } from '../utilsFunctions.js'
+import { checkTheParametersAreValid, validateEmail } from '../utilsFunctions.js'
 
 export class Controller {
   constructor() {
@@ -16,11 +16,16 @@ export class Controller {
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
-    console.log(checkTheParametersAreValid)
     if (!checkTheParametersAreValid(email, password)) {
       return {
         status: responseStatus.FAILURE,
         content: 'email or password is empty'
+      }
+    }
+    if (!validateEmail(email)) {
+      return {
+        status: responseStatus.FAILURE,
+        content: 'email is invalid'
       }
     }
     return await this.model.registerUser(
@@ -72,15 +77,13 @@ export class Controller {
         'one of the parameters is empty'
       )
     }
+    if (!validateEmail(email)) {
+      return {
+        status: responseStatus.FAILURE,
+        content: 'email is invalid'
+      }
+    }
     return await this.model.loginUser(email, password)
-  }
-
-  updatePersonalInfo = (birthDate, height, weight, gender) => {
-    return true
-  }
-
-  getPodsPerDispenser = (dispenserId) => {
-    return ['pod1', 'pod2', ' pod3']
   }
 
   registerDispenser = async (id, name) => {
@@ -105,5 +108,9 @@ export class Controller {
 
   getPods = async () => {
     return await this.model.getPods()
+  }
+
+  logout = async () => {
+    return await this.model.logout()
   }
 }
