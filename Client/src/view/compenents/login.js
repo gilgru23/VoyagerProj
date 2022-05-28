@@ -18,8 +18,8 @@ export default class Login extends Component {
   constructor(props) {
     super()
     this.state = {
-      email: '',
-      password: '',
+      email: 'gil@g.com',
+      password: 'Aa12345678!',
       isLoading: false,
       controller: props.route.params.controller
     }

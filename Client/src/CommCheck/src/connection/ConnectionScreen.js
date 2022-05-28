@@ -142,10 +142,11 @@ export default class ConnectionScreen extends React.Component {
     this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(() =>
       this.disconnect(true)
     )
-
+    console.log('heree')
     if (this.state.polling) {
       this.readInterval = setInterval(() => this.performRead(), 5000)
     } else {
+      console.log('readinggg')
       this.readSubscription = this.props.device.onDataReceived((data) =>
         this.onReceivedData(data)
       )
@@ -201,10 +202,14 @@ export default class ConnectionScreen extends React.Component {
   }
 
   async addData(message) {
-    console.log('message received: ' + JSON.stringify(message))
-    const parsedAns = JSON.parse(message.data)
-    console.log(parsedAns.podType)
-    this.setState({ data: [message, ...this.state.data] })
+    try {
+      console.log('message received: ' + JSON.stringify(message))
+      const parsedAns = JSON.parse(message.data)
+      console.log(parsedAns.podType)
+      this.setState({ data: [message, ...this.state.data] })
+    } catch (e) {
+      console.log('')
+    }
   }
 
   async doseRequests(podSerial, podType, amount) {
@@ -331,7 +336,7 @@ export default class ConnectionScreen extends React.Component {
             label="Go to personal page"
             borderRadius={7}
             onPress={() =>
-              this.props.navigation.navigate('PersonalPage', {
+              this.props.navigation.navigate('Personal Page', {
                 device: this.props.device,
                 consumer: this.props.consumer
               })
@@ -389,6 +394,12 @@ export default class ConnectionScreen extends React.Component {
             }
           />
         </View> */}
+        <Button
+          backgroundColor="green"
+          label="Alert pod running low"
+          borderRadius={7}
+          onPress={() => this.sendData(msgsFromDispenserTypes.POD_RUNNING_LOW)}
+        />
       </View>
     )
   }

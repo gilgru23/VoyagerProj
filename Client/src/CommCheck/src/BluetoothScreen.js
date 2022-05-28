@@ -7,6 +7,7 @@ import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
 import { responseStatus } from '../../Config/constants'
 import { alert } from '../../view/compenents/utils'
+// import DispenserDemo from '../../Communication/dispenserDemo'
 export default class BluetoothScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -30,7 +31,7 @@ export default class BluetoothScreen extends React.Component {
     console.log(registered)
     if (!registered) {
       const response =
-        await this.props.route.params.con01111troller.registerDispenser(
+        await this.props.route.params.controller.registerDispenser(
           device.address,
           device.name
         )

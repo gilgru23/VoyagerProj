@@ -8,7 +8,6 @@ import Signup from './src/view/compenents/signup'
 import Login from './src/view/compenents/login'
 import Communication from './src/view/compenents/Communication.js'
 import PersonalInfo from './src/view/compenents/personalInfo'
-import PersonalPage from './src/view/compenents/personalPage'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
 import Schedule from './src/view/compenents/Schedule'
@@ -17,6 +16,7 @@ import { Controller } from './src/controller/controller'
 import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
 import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
 import History from './src/view/compenents/history'
+import PersonalPage from './src/view/compenents/personalPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,8 +24,13 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="BluetoothScreen">
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="Personal Page"
+          component={PersonalPage}
+          initialParams={{ controller: controller }}
+        />
         <Stack.Screen
           name="History"
           component={History}
