@@ -104,8 +104,8 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
-  registerDispenser = async (id, name) => {
-    const response = await this.registerDispenserRreq(id, name)
+  registerDispenser = async (id, name, email) => {
+    const response = await this.registerDispenserRreq(id, name, email)
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(responseStatus.SUCCESS, new Dispenser(id, name))
     }
@@ -127,8 +127,8 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
-  registerPod = async (id, podType) => {
-    const response = await this.registerPodRreq(id, podType)
+  registerPod = async (id, podType, email) => {
+    const response = await this.registerPodRreq(id, podType, email)
     if (response.status === responseStatus.SUCCESS) {
       return createResponseObj(responseStatus.SUCCESS, new Pod(id, podType))
     }
