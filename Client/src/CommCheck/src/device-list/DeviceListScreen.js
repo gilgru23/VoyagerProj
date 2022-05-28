@@ -1,14 +1,8 @@
 import React from 'react'
-import { Platform } from 'react-native'
+import { Platform, Image } from 'react-native'
 import RNBluetoothClassic from 'react-native-bluetooth-classic'
-import {
-  PermissionsAndroid,
-  View,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Text
-} from 'react-native'
+import { PermissionsAndroid, FlatList, StyleSheet, Text } from 'react-native'
+import { Colors, TouchableOpacity, View, ListItem } from 'react-native-ui-lib'
 import { responseStatus } from '../../../Config/constants'
 
 /**
@@ -244,6 +238,9 @@ export default class DeviceListScreen extends React.Component {
     )
     return (
       <View>
+        <Text text50 marginL-s5 marginV-s3 style={styles.title}>
+          Connect to dispenser
+        </Text>
         <Text>{this.state.msg}</Text>
         {this.props.bluetoothEnabled ? (
           <>
@@ -252,26 +249,26 @@ export default class DeviceListScreen extends React.Component {
                 <TouchableOpacity block onPress={toggleAccept}>
                   <Text> {acceptTxt} </Text>
                 </TouchableOpacity>
-                <TouchableOpacity block onPress={toggleDiscovery}>
-                  <Text> {discoveringTxt} </Text>
-                </TouchableOpacity>
               </View>
             ) : undefined}
 
             <View>
-              <Text>Available and registered devices</Text>
+              <Text text50 marginL-s5 marginV-s3 style={styles.subTitle}>
+                Available and registered devices
+              </Text>
               <DeviceList
                 devices={registerdDevicesToDisplay}
                 onPress={this.props.selectDevice}
                 registered={true}
               />
-              <Text>Available and unrregistered devices</Text>
+              <Text text50 marginL-s5 marginV-s3 style={styles.subTitle}>
+                Available and unrregistered devices
+              </Text>
               <DeviceList
                 devices={unRegisterdDevicesToDisplay}
                 onPress={this.props.selectDevice}
                 registered={false}
               />
-              <Text>End of List</Text>
             </View>
           </>
         ) : (
@@ -328,13 +325,31 @@ export const DeviceListItem = ({
 
   return (
     <TouchableOpacity
+      activeOpacity={1}
+      bg-blue40
+      paddingH-s5
+      paddingV-s4
+      key={device.address}
+      activeBackgroundColor={Colors.blue20}
+      style={{
+        borderBottomWidth: 1,
+        borderColor: Colors.white,
+        textAlign: 'left'
+      }}
       onPress={() => onPress(device, registered)}
       onLongPress={() => onLongPress(device)}
-      style={styles.deviceListItem}
     >
-      <View>
-        <Text>{device.name}</Text>
-        <Text note>{device.address}</Text>
+      <View style={styles.card}>
+        <Text white text70M style={styles.option}>
+          {device.name}
+        </Text>
+        <Image
+          source={require('../assets/dispenser.png')}
+          style={styles.image}
+        />
+        {/* <Text white text70M style={styles.option}>
+          {device.address}
+        </Text> */}
       </View>
     </TouchableOpacity>
   )
@@ -356,5 +371,36 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  container: {
+    textAlign: 'center'
+  },
+  subTitle: {
+    fontSize: 15,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+  title: {
+    fontSize: 25,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+
+  option: {
+    color: 'white',
+    alignContent: 'flex-start'
+  },
+  image: {
+    width: 20,
+    height: 40,
+    marginLeft: 'auto'
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+    alignContent: 'space-between'
   }
 })

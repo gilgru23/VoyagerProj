@@ -1,13 +1,25 @@
 import React from 'react'
-import { ScrollView, TextInput, StyleSheet, Text } from 'react-native'
+import { ScrollView, TextInput, StyleSheet, Text, Image } from 'react-native'
 import { Colors, TouchableOpacity, View } from 'react-native-ui-lib'
 
 export default function OldPersonalPage({ route, navigation }) {
   const [searchText, setSearchText] = React.useState('')
   const screens = [
-    { id: 'Current Pods', title: 'Personal pods page' },
-    { id: 'History', title: 'Dosing History' },
-    { id: 'Schedule', title: 'Set Dosing Reminder' }
+    {
+      id: 'Current Pods',
+      title: 'Personal pods page',
+      img: require('./assets/pod.png')
+    },
+    {
+      id: 'History',
+      title: 'Dosing History',
+      img: require('./assets/dosing.png')
+    },
+    {
+      id: 'Schedule',
+      title: 'Set Dosing Reminder',
+      img: require('./assets/dispenser.png')
+    }
   ]
   return (
     <View>
@@ -25,6 +37,8 @@ export default function OldPersonalPage({ route, navigation }) {
             </Text>
             {screens
               .map((screen) => {
+                console.log(screen.img)
+                const imgPath = `./assets/${screen.img}`
                 return (
                   <TouchableOpacity
                     activeOpacity={1}
@@ -44,9 +58,12 @@ export default function OldPersonalPage({ route, navigation }) {
                       navigation.navigate(screen.id)
                     }}
                   >
-                    <Text white text70M style={styles.option}>
-                      {screen.title}
-                    </Text>
+                    <View style={styles.card}>
+                      <Text white text70M style={styles.option}>
+                        {screen.title}
+                      </Text>
+                      <Image source={screen.img} style={styles.image} />
+                    </View>
                   </TouchableOpacity>
                 )
               })
@@ -74,5 +91,16 @@ const styles = StyleSheet.create({
   },
   option: {
     color: 'white'
+  },
+  image: {
+    width: 20,
+    height: 40,
+    marginLeft: 'auto'
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+    alignContent: 'space-between'
   }
 })
