@@ -64,7 +64,10 @@ export default function OldPersonalPage({ route, navigation }) {
                     onPress={() => {
                       // convert "unicorn.components.ActionBarScreen" -> "ActionBar"
 
-                      navigation.navigate(screen.id)
+                      navigation.navigate(screen.id, {
+                        consumer: route.params.consumer,
+                        device: route.params.device
+                      })
                     }}
                   >
                     <View style={styles.card}>

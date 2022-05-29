@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker'
 // import { loginUser } from '../../controller/controller'
 import { responseStatus } from '../../Config/constants'
 import { alert } from './utils'
+import PushNotification from 'react-native-push-notification'
 export default class Login extends Component {
   constructor(props) {
     super()
@@ -24,6 +25,20 @@ export default class Login extends Component {
       controller: props.route.params.controller
     }
   }
+
+  createChannel = (consumerId) =>
+    PushNotification.createChannel(
+      {
+        channelId: consumerId, // (required)
+        channelName: 'Test channe', // (required)
+        channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
+        playSound: false, // (optional) default: true
+        soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+        vibrate: true // (optional) default: true. Creates the default vibration pattern if true.
+      },
+      (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    )
+
   updateInputVal = (val, prop) => {
     const state = this.state
     state[prop] = val
@@ -37,6 +52,7 @@ export default class Login extends Component {
       role
     )
     if (response.status === responseStatus.SUCCESS) {
+      this.createChannel(this.state.email)
       this.props.navigation.navigate('BluetoothScreen', {
         consumer: response.content
       })

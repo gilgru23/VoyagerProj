@@ -19,9 +19,10 @@ export default function Schedule({ navigation, route }) {
     )
   }, [])
   function onSubmit() {
+    console.log(route.params.consumer, '*********')
     try {
       PushNotification.localNotificationSchedule({
-        channelId: route.params.consumerId || 'gilgu@gmail.com',
+        channelId: route.params.consumer.email || 'gilgu@gmail.com',
         date: alarmDate, // in 60 secs
         title: 'Time to dose',
         message: 'This is a reminder for dosing' // (required)
