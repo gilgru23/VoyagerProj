@@ -250,6 +250,7 @@ def _dosing_to_dto(dosing: Dosing):
         dosing.id,
         dosing.pod.serial_num,
         dosing.time,
+        dosing.amount,
         dosing.latitude,
         dosing.longitude
     )
@@ -258,6 +259,7 @@ def add_dosing(dosing_dto: DosingDto):
     Dosing.objects.create(
         pod = Pod.objects.get(serial_num = dosing_dto.pod),
         time = dosing_dto.time,
+        amount = dosing_dto.amount,
         latitude = dosing_dto.latitude,
         longitude = dosing_dto.longitude
     )

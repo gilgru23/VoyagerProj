@@ -88,6 +88,7 @@ class Regimen(models.Model):
 class Dosing(models.Model):
     pod = models.ForeignKey(Pod, on_delete=models.CASCADE)
     time = models.DateTimeField()
+    amount = models.FloatField(default="0.0")
     latitude = models.FloatField()
     longitude = models.FloatField()
 

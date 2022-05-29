@@ -352,7 +352,7 @@ class DatabaseProxy:
             id=dosing.id,
             pod=dosing.pod_serial_number,
             # type= dosing.pod_type_name,
-            # amount= dosing.amount,
+            amount= dosing.amount,
             time=dosing.time,
             latitude=dosing.latitude,
             longitude=dosing.longitude)
@@ -366,8 +366,8 @@ class DatabaseProxy:
             # TODO:: add fields to dto and model
             # pod_type_name=dosing_dto.pod_type,
             pod_type_name= "",
-            # amount= dosing_dto.amount,
-            amount= 3.5,
+            amount= dosing_dto.amount,
+            # amount= 3.5,
             time= dosing_dto.time,
             latitude= dosing_dto.latitude,
             longitude= dosing_dto.longitude)

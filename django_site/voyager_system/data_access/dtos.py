@@ -94,13 +94,15 @@ class DosingDto:
         self.id = None
         self.pod = None #serial number
         self.time = None
+        self.amount = None
         self.latitude = None
         self.longitude = None
 
-    def build(self, id, pod, time, latitude, longitude):
+    def build(self, id, pod, time, amount, latitude, longitude):
         self.id = id,
         self.pod = pod
         self.time = time
+        self.amount = amount
         self.latitude = latitude
         self.longitude = longitude
         return self
