@@ -20,8 +20,8 @@ from voyager_system.common import Logger
 
 # noinspection SpellCheckingInspection
 class MedicalCenter:
-    def __init__(self, db_proxy: DatabaseProxy, marketplace = None, notifier = None) -> None:
-        self.object_mapper: IMapper = None    # mapper is deprecated
+    def __init__(self, db_proxy: DatabaseProxy, marketplace=None, notifier=None) -> None:
+        self.object_mapper: IMapper = None  # mapper is deprecated
         self.db = db_proxy
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
@@ -62,13 +62,24 @@ class MedicalCenter:
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
-        def dosing_to_dict(dosing: Dosing):
-            return {'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': dosing.pod_type_name,
+
+        def dosing_to_dict(dosing: Dosing, pod_type: str):
+            return {'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': pod_type,
                     'amount': dosing.amount, 'time': date_time_to_str(dosing.time), 'latitude': dosing.latitude,
                     'longitude': dosing.longitude}
+
+        type_names = dict()
+        def get_pod_type(pod_serial_num: str):
+            if pod_serial_num in type_names:
+                return type_names[pod_serial_num]
+            pod = self.db.get_pod(pod_serial_num)
+            type_name = pod.type_name
+            type_names[pod_serial_num] = type_name
+            return type_name
+
         dosings = self.db.get_consumer_dosing(consumer_id)
-        history = [dosing_to_dict(d) for d in dosings]
-        # log changes
+        pod_serials = {dosing.pod_serial_number for dosing in dosings}
+        history = [dosing_to_dict(d, get_pod_type(d.pod_serial_number)) for d in dosings]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] dosing history")
         return history
 
@@ -97,7 +108,8 @@ class MedicalCenter:
         pod: Pod = consumer.get_pod_by_serial_number(pod_serial_num)
         self.db.add_dosing(new_dosing)
         self.db.update_pod(pod, consumer_id)
-        self.logger.info(f"consumer [id: {consumer_id}] dosed from pod [serial number: {pod_serial_num}] - with amount [{amount}]")
+        self.logger.info(
+            f"consumer [id: {consumer_id}] dosed from pod [serial number: {pod_serial_num}] - with amount [{amount}]")
 
     def get_consumer_dispensers(self, consumer_id):
         """
@@ -109,9 +121,10 @@ class MedicalCenter:
         :raise DataAccessError: throws exception if db was not able to retrieve consumer or dispensers
         """
         dispensers = self.db.get_consumer_dispensers(consumer_id)
-        def disp_to_dict(disp:Dispenser):
+
+        def disp_to_dict(disp: Dispenser):
             return {'serial_number': disp.serial_number, 'version': disp.version,
-                    'registration_date':date_to_str(disp.registration_date)}
+                    'registration_date': date_to_str(disp.registration_date)}
 
         dispenser_dicts = [disp_to_dict(disp) for disp in dispensers]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered dispensers")
@@ -126,8 +139,10 @@ class MedicalCenter:
         :raise AppOperationError: exception if consumer was not found (see get_consumer)
         :raise DataAccessError: throws exception if db was not able to retrieve consumer or pods
         """
-        def pod_to_dict(pod:Pod):
-            return {'serial_number': pod.serial_number, 'remainder': pod.remainder, 'type_name':pod.type_name}
+
+        def pod_to_dict(pod: Pod):
+            return {'serial_number': pod.serial_number, 'remainder': pod.remainder, 'type_name': pod.type_name}
+
         pods = self.db.get_consumer_pods(consumer_id)
         pod_dicts = [pod_to_dict(pod) for pod in pods]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] registered pods")

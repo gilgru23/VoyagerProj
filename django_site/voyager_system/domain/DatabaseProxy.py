@@ -155,6 +155,16 @@ class DatabaseProxy:
             err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n" + str(e)
             raise DataAccessError(err_str)
 
+    def get_pod_type(self,pod_type_name: str):
+        try:
+            pod_type_dto = db.get_pod_type(pod_type_name)
+            return self.dto_to_pod_type(pod_type_dto)
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve pod type from db, with type-name [{pod_type_name}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
     def update_podtype(self, podtype: PodType):
         dto = self.pod_type_to_dto(podtype)
         try:
@@ -351,7 +361,6 @@ class DatabaseProxy:
         dto = DosingDto().build(
             id=dosing.id,
             pod=dosing.pod_serial_number,
-            # type= dosing.pod_type_name,
             amount= dosing.amount,
             time=dosing.time,
             latitude=dosing.latitude,
@@ -363,11 +372,7 @@ class DatabaseProxy:
         dosing = Dosing(
             dosing_id=dosing_dto.id,
             pod_serial_number= dosing_dto.pod,
-            # TODO:: add fields to dto and model
-            # pod_type_name=dosing_dto.pod_type,
-            pod_type_name= "",
             amount= dosing_dto.amount,
-            # amount= 3.5,
             time= dosing_dto.time,
             latitude= dosing_dto.latitude,
             longitude= dosing_dto.longitude)
