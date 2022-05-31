@@ -212,15 +212,18 @@ export default class ConnectionScreen extends React.Component {
     }
   }
 
+  getUserTime() {
+    const tzoffset = new Date().getTimezoneOffset() * 60000 //offset in milliseconds
+    return new Date(Date.now() - tzoffset).toISOString().slice(0, -1)
+  }
+
   async doseRequests(podSerial, podType, amount) {
     const { controller } = this.props
     try {
       await controller.registerPod(podSerial, podType)
-      await controller.dose(
-        podSerial,
-        parseFloat(amount),
-        new Date().toISOString()
-      )
+      const dosingTime = this.getUserTime()
+      console.log('the date of dose is: ', dosingTime)
+      await controller.dose(podSerial, parseFloat(amount), dosingTime)
     } catch (e) {
       console.log(e)
     }
@@ -272,7 +275,7 @@ export default class ConnectionScreen extends React.Component {
     try {
       const messageToSend = `{"type":"${type}", "amount":"${this.state.amountText}", "podSerial":"${this.state.podSerialText}", "podType":"${this.state.podTypeText}"}`
       console.log(`Attempting to send data ${messageToSend}`)
-      let message = messageToSend + '\r'
+      let message = messageToSend + '\n'
       await RNBluetoothClassic.writeToDevice(this.props.device.address, message)
       console.log('---wrote 1')
 
@@ -394,12 +397,6 @@ export default class ConnectionScreen extends React.Component {
             }
           />
         </View> */}
-        <Button
-          backgroundColor="green"
-          label="Alert pod running low"
-          borderRadius={7}
-          onPress={() => this.sendData(msgsFromDispenserTypes.POD_RUNNING_LOW)}
-        />
       </View>
     )
   }

@@ -17,6 +17,7 @@ import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
 import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
 import History from './src/view/compenents/history'
 import PersonalPage from './src/view/compenents/personalPage'
+import Feeback from './src/view/compenents/feedback'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,8 +25,13 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="Feedback">
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="Feedback"
+          component={Feeback}
+          initialParams={{ controller: controller }}
+        />
         <Stack.Screen
           name="Personal Page"
           component={PersonalPage}

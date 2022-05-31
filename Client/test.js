@@ -5,6 +5,7 @@ import { toDateString } from './src/utilsFunctions.js'
 import { Consumer } from './src/model/Consumer.js'
 import { MockServer } from './src/Communication/mockServer.js'
 import { Dispenser } from './src/model/dispenser.js'
+import { Pod } from './src/model/pod.js'
 
 const model = new Model(true)
 
@@ -163,26 +164,6 @@ describe('register dispenser', async function (done) {
     MockServer.users = []
   })
   it('register dispenser success scenario', async function () {
-    // const uid = new Date().getTime().toString()
-    // const email = uid + validEmail
-    // await model.registerUser(
-    //   email,
-    //   validPassword,
-    //   firstName,
-    //   lastName,
-    //   birthDateString
-    // )
-    // await model.createConsumerProfile(
-    //   residence,
-    //   height,
-    //   weight,
-    //   units,
-    //   gender,
-    //   goal,
-    //   userCradentials
-    // )
-    // await model.loginUser(validEmail, validPassword)
-    // done()
     const response = await model.registerDispenser(
       dispenserId,
       dispenserName,
@@ -211,6 +192,37 @@ describe('register dispenser', async function (done) {
       dispenserName,
       validEmail
     )
+    assert.equal(response.status, responseStatus.FAILURE)
+  })
+})
+
+describe('register pod', async function () {
+  this.beforeEach(async () => {
+    await model.registerUser(
+      validEmail,
+      validPassword,
+      firstName,
+      lastName,
+      birthDateString
+    )
+  })
+  this.afterEach(async () => {
+    MockServer.users = []
+  })
+  it('register pod success scenario', async function () {
+    const response = await model.registerPod(podId, podType, validEmail)
+    assert.equal(response.status, responseStatus.SUCCESS)
+    assert.deepEqual(response.content, new Pod(podId, podType))
+  })
+  it('register pod failure scenario- duplicate dispenser', async function () {
+    await model.registerPod(podId, podType, validEmail)
+    const response = await model.registerPod(podId, podType, validEmail)
+    assert.equal(response.status, responseStatus.FAILURE)
+    console.log('&&&&&&&&&')
+    console.log(response)
+  })
+  it('register pod failure scenario- one of the parameters is empty', async function () {
+    const response = await model.registerPod('', podType, validEmail)
     assert.equal(response.status, responseStatus.FAILURE)
   })
 })

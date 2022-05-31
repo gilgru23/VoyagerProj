@@ -99,7 +99,7 @@ export default class DeviceListScreen extends React.Component {
     this.setState({ accepting: true })
 
     try {
-      let device = await RNBluetoothClassic.accept({ delimiter: '\r' })
+      let device = await RNBluetoothClassic.accept({ delimiter: '\n' })
       if (device) {
         this.display('device accepted!')
         console.log('device accepted')
@@ -225,17 +225,26 @@ export default class DeviceListScreen extends React.Component {
       ? 'Discovering (cancel)... '
       : 'Discover Devices'
 
-    const registerdDevicesToDisplay = this.state.devices.filter((d) =>
-      this.state.registerdDevices.some(
-        (registerdDevice) => registerdDevice.id === d.address
-      )
-    )
-    const unRegisterdDevicesToDisplay = this.state.devices.filter(
-      (d) =>
-        !this.state.registerdDevices.some(
+    const registerdDevicesToDisplay = this.state.devices.filter((d) => {
+      try {
+        return this.state.registerdDevices.some(
           (registerdDevice) => registerdDevice.id === d.address
-        ) && this.isDeviceOfInterest(d)
-    )
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })
+    const unRegisterdDevicesToDisplay = this.state.devices.filter((d) => {
+      try {
+        return (
+          !this.state.registerdDevices.some(
+            (registerdDevice) => registerdDevice.id === d.address
+          ) && this.isDeviceOfInterest(d)
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })
     return (
       <View>
         <Text text50 marginL-s5 marginV-s3 style={styles.title}>

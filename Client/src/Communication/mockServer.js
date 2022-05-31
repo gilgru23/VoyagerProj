@@ -106,14 +106,14 @@ export class MockServer {
       )
     }
     const user = this.users.find((user) => user.consumer.email === email)
-    if (!user.dispensers.includes(id)) {
+    if (!user.pods.includes(id)) {
       user.pods.push(id)
       return createResponseObj(
         responseStatus.SUCCESS,
         'Adding dispenser succeeded'
       )
     }
-    return createResponseObj(responseStatus.FAILURE, 'Dispenser already exists')
+    return createResponseObj(responseStatus.FAILURE, 'Pod already exists')
   }
 
   createConsumerProfile = (residence, height, weight, units, gender, goal) => {

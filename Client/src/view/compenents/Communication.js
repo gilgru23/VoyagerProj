@@ -30,7 +30,7 @@ export default function Communication({ navigation, route }) {
   }
   acceptConnections = async () => {
     try {
-      let device = await RNBluetoothClassic.accept({ delimiter: '\r' })
+      let device = await RNBluetoothClassic.accept({ delimiter: '\n' })
       if (device) {
         setConnectedDevice(device)
         // setConnectedDevice(device)
@@ -41,7 +41,7 @@ export default function Communication({ navigation, route }) {
   }
   const sendData = async () => {
     try {
-      let message = dataToSend + '\r'
+      let message = dataToSend + '\n'
       await RNBluetoothClassic.writeToDevice(connectedDevice.address, message)
       console.log('---wrote 1')
       let data = Buffer.alloc(10, 0xef)
