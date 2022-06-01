@@ -90,7 +90,7 @@ class Consumer(Account):
     # returns True if successful, otherwise False.
     # overrides past feedback for the same dosing!
     # throws AppOperationError if the dosing of the given dosing_id is not found in history.
-    def provide_feedback(self, dosing_id, feedback_rating, feedback_comment):
+    def provide_feedback(self, dosing_id: int, feedback_rating: int, feedback_comment: str):
         if feedback_rating > 10 or feedback_rating < 1:
             raise AppOperationError(
                 f"Error: consumer provide feedback - illegal value for parameter rating - providing feedback for dosing_id [{dosing_id}] for consumer [{self.id}]")

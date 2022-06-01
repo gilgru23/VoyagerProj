@@ -112,7 +112,7 @@ class TestConsumers(TestCase):
         response = self.client1.generic('GET', reverse('get_dosing_history'), '')
         return response
 
-    def add_feedback(self, dosing_id, feedback_rating, feedback_comment):
+    def add_feedback(self, dosing_id, feedback_rating: int, feedback_comment: str):
         params = {"dosing_id": dosing_id,
                   "rating": feedback_rating, "comment": feedback_comment}
         body = json.dumps(params)
@@ -180,7 +180,7 @@ class TestConsumers(TestCase):
         dosings = json.loads(response.content)
         # add feedback
         dosing_id = dosings[0]['dosing_id']
-        response = self.add_feedback(dosing_id=dosing_id, feedback_rating='8',
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating=8,
                                      feedback_comment="it was good")
         self.assertEqual(response.status_code, 200)
         response = self.get_feedback(dosing_id=dosing_id)
