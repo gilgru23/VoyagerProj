@@ -27,6 +27,7 @@
     "react-native-number-picker-library": "^1.0.8",
     "react-native-number-please": "^1.0.5",
     "react-native-push-notification": "^8.1.1",
+    "react-native-ratings": "^8.1.0",
     "react-native-reanimated": "^2.8.0",
     "react-native-safe-area-context": "^4.2.4",
     "react-native-screens": "^3.13.1",

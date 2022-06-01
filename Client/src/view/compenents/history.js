@@ -38,7 +38,11 @@ export default function History({ navigation, route }) {
         activeBackgroundColor={Colors.grey60}
         activeOpacity={0.3}
         height={77.5}
-        onPress={() => Alert.alert(`pressed on order #${id + 1}`)}
+        onPress={() =>
+          navigation.navigate('Feedback', {
+            dosing: row
+          })
+        }
       >
         <ListItem.Part left>
           <Image source={require('./assets/dosing.png')} style={styles.image} />
@@ -63,7 +67,7 @@ export default function History({ navigation, route }) {
               grey40
               numberOfLines={1}
             >
-              {`Pod Serial Num: ${row.pod_serial_number}`}
+              {`Pod Serial Num: ${row.podSerialNum}`}
             </Text>
           </ListItem.Part>
           <ListItem.Part containerStyle={{ marginBottom: 3 }}>
@@ -81,7 +85,7 @@ export default function History({ navigation, route }) {
               grey40
               numberOfLines={1}
             >
-              {`Pod Type: ${row.pod_type_name}`}
+              {`Pod Type: ${row.podType}`}
             </Text>
           </ListItem.Part>
           <ListItem.Part containerStyle={{ marginBottom: 3 }}>
@@ -118,6 +122,7 @@ export default function History({ navigation, route }) {
   return (
     <>
       <Text style={styles.header}>Dosing history</Text>
+      <Text style={styles.subHeader}>Press on dosing item to feedback him</Text>
       <FlatList
         data={dosingHistory}
         renderItem={({ item, index }) => renderRow(item, index)}
@@ -129,6 +134,11 @@ export default function History({ navigation, route }) {
 const styles = StyleSheet.create({
   header: {
     fontSize: 30,
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+  subHeader: {
+    fontSize: 20,
     marginBottom: 40,
     textAlign: 'center'
   },

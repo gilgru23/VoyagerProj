@@ -14,8 +14,8 @@ import {
 import { Consumer } from './Consumer.js'
 import { Dispenser } from './dispenser.js'
 import { Pod } from './pod.js'
+import { Dosing } from './dosing.js'
 import { MockServer } from '../Communication/mockServer.js'
-
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj, toDateString } from '../utilsFunctions.js'
 
@@ -146,7 +146,17 @@ export class Model {
   getDosingHistory = async () => {
     const response = await this.getDosingHistoryReq()
     if (response.status === responseStatus.SUCCESS) {
-      return createResponseObj(responseStatus.SUCCESS, response.content)
+      const dosings = response.content.map(
+        (dosing) =>
+          new Dosing(
+            dosing.dosing_id,
+            dosing.pod_serial_number,
+            dosing.pod_type_name,
+            dosing.amount,
+            dosing.time
+          )
+      )
+      return createResponseObj(responseStatus.SUCCESS, dosings)
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }

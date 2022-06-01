@@ -25,7 +25,7 @@ function App() {
   const controller = new Controller()
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Feedback">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
           name="Feedback"
