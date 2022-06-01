@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from accounts.models import Account
 
@@ -95,6 +96,7 @@ class Dosing(models.Model):
 class Feedback(models.Model):
     dosing = models.OneToOneField(Dosing, on_delete=models.CASCADE)
     rating = models.IntegerField()
+    time = models.DateTimeField(default=timezone.now)
     comment = models.CharField(max_length=200, null=True, blank=True)
 
 class FeedbackReminder(models.Model):

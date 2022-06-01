@@ -246,14 +246,24 @@ def pod_to_dto(pod):
 
 # region Dosing
 def _dosing_to_dto(dosing: Dosing):
-    return DosingDto().build(
-        dosing.id,
-        dosing.pod.serial_num,
-        dosing.time,
-        dosing.amount,
-        dosing.latitude,
-        dosing.longitude
-    )
+    # dto = DosingDto.build(
+    #     dosing.id,
+    #     dosing.pod.serial_num,
+    #     dosing.time,
+    #     dosing.amount,
+    #     dosing.latitude,
+    #     dosing.longitude
+    # )
+    dto = DosingDto()
+    dto.dosing_id = dosing.id
+    dto.pod = dosing.pod.serial_num
+    dto.time = dosing.time
+    dto.amount = dosing.amount
+    dto.latitude = dosing.latitude
+    dto.longitude = dosing.longitude
+
+    return dto
+
 
 def add_dosing(dosing_dto: DosingDto):
     Dosing.objects.create(
@@ -310,15 +320,18 @@ def get_regimen_by_consumer_id(consumer_id: int) -> RegimenDto:
 #dosing, rating, comment
 def _feedback_to_dto(feedback: Feedback) -> FeedbackDto:
     return FeedbackDto().build(
+        feedback.id,
         feedback.dosing.id,
         feedback.rating,
+        feedback.time,
         feedback.comment
     )
 
 def add_feedback(feedback_dto: FeedbackDto):
     Feedback.objects.create(
-        dosing = Dosing.objects.get(id = feedback_dto.dosing),
+        dosing = Dosing.objects.get(id = feedback_dto.dosing_id),
         rating = feedback_dto.rating,
+        time = feedback_dto.time,
         comment = feedback_dto.comment
     )
 
@@ -328,6 +341,11 @@ def get_feedbacks_for_consumer(consumer_id: int) -> List[FeedbackDto]:
     dosings: List[Dosing] = Dosing.objects.filter(pod__in = pods)
     feedbacks: List[Feedback] =  Feedback.objects.filter(dosing__in = dosings)
     return [_feedback_to_dto(feedback) for feedback in feedbacks]
+
+def get_feedback_for_dosing(dosing_id:int)-> FeedbackDto:
+    feedback = Feedback.objects.get(dosing = Dosing.objects.get(id = dosing_id))
+    dto = _feedback_to_dto(feedback)
+    return dto
 
 # endregion Feedback
 

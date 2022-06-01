@@ -13,5 +13,7 @@ urlpatterns = [
     path('get_regimen', views.get_regimen, name='get_regimen'),
     path('get_dosing_history', views.get_dosing_history, name='get_dosing_history'),
     path('get_pods_of_consumer', views.get_pods_of_consumer, name='get_pods_of_consumer'),
-    path('get_dispensers_of_consumer', views.get_dispensers_of_consumer, name='get_dispensers_of_consumer')
+    path('get_dispensers_of_consumer', views.get_dispensers_of_consumer, name='get_dispensers_of_consumer'),
+    path('provide_feedback', views.provide_feedback, name='provide_feedback'),
+    path('get_feedback_for_dosing', views.get_feedback_for_dosing, name='get_feedback_for_dosing')
 ]

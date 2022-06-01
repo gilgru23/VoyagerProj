@@ -8,7 +8,6 @@ from voyager_system.service import ServiceSetup
 
 
 class TestConsumers(TestCase):
-
     consumer_service = ServiceSetup.get_consumer_service()
     db_proxy = ServiceSetup.get_db_proxy()
 
@@ -23,10 +22,14 @@ class TestConsumers(TestCase):
                 'l_name': "halpert", 'dob': "1979-01-01"}
     consumer2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                  'goal': 'pam'}
+
     company_details = {'name': "E-corp"}
+
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
+
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
+
     pod_details1 = {"serial_number": "1_1", "type_name": pod_type_details["name"]}
     pod_details2 = {"serial_number": "1_2", "type_name": pod_type_details["name"]}
     pod_details3 = {"serial_number": "1_3", "type_name": pod_type_details["name"]}
@@ -98,7 +101,7 @@ class TestConsumers(TestCase):
         response = self.client1.generic('POST', reverse('register_pod'), body)
         return response
 
-    def consumer_dose(self,pod_details,amount:float, time: str):
+    def consumer_dose(self, pod_details, amount: float, time: str):
         params = {"pod_serial_num": pod_details['serial_number'],
                   "amount": amount, "time": time}
         body = json.dumps(params)
@@ -107,6 +110,19 @@ class TestConsumers(TestCase):
 
     def get_dosing_history(self):
         response = self.client1.generic('GET', reverse('get_dosing_history'), '')
+        return response
+
+    def add_feedback(self, dosing_id, feedback_rating, feedback_comment):
+        params = {"dosing_id": dosing_id,
+                  "rating": feedback_rating, "comment": feedback_comment}
+        body = json.dumps(params)
+        response = self.client1.generic('POST', reverse('provide_feedback'), body)
+        return response
+
+    def get_feedback(self, dosing_id):
+        params = {"dosing_id": dosing_id}
+        body = json.dumps(params)
+        response = self.client1.generic('POST', reverse('get_feedback_for_dosing'), body)
         return response
 
     def test_register_pod(self):
@@ -140,13 +156,12 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # perform dosings
-        response = self.consumer_dose(self.pod_details1, amount=1.5, time = '2020-05-20 16:05:00')
+        response = self.consumer_dose(self.pod_details1, amount=1.5, time='2020-05-20 16:05:00')
         self.assertEqual(response.status_code, 200)
-        response = self.consumer_dose(self.pod_details1, amount=1.0, time = '2020-05-20 16:10:00')
+        response = self.consumer_dose(self.pod_details1, amount=1.0, time='2020-05-20 16:10:00')
         self.assertEqual(response.status_code, 200)
-        response = self.consumer_dose(self.pod_details2, amount=0.5, time = '2020-05-20 16:15:00')
+        response = self.consumer_dose(self.pod_details2, amount=0.5, time='2020-05-20 16:15:00')
         self.assertEqual(response.status_code, 200)
-
 
     def test_get_dosing_history(self):
         # perform dosings
@@ -157,6 +172,19 @@ class TestConsumers(TestCase):
         dosings = json.loads(response.content)
         self.assertEqual(len(dosings), 3)
 
-
-
-
+    def test_add_feedback_to_dosing(self):
+        # perform dosings
+        self.test_consumer_dose()
+        # get history
+        response = self.get_dosing_history()
+        dosings = json.loads(response.content)
+        # add feedback
+        dosing_id = dosings[0]['dosing_id']
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating='8',
+                                     feedback_comment="it was good")
+        self.assertEqual(response.status_code, 200)
+        response = self.get_feedback(dosing_id=dosing_id)
+        self.assertEqual(response.status_code, 200)
+        feedback = json.loads(response.content)
+        self.assertEqual(feedback['rating'], 8)
+        self.assertEqual(feedback['comment'], "it was good")

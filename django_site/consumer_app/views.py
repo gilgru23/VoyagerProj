@@ -84,4 +84,21 @@ def get_dispensers_of_consumer(request: HttpRequest):
     res = service.get_consumer_service().get_consumer_dispensers(account_id)
     return rh.result_to_response(res)
 
+@csrf_exempt
+def provide_feedback(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    keys = ['dosing_id', 'rating', 'comment']
+    dosing_id, rating, comment = rh.keys_to_values(request, keys)
+    res = service.get_consumer_service().provide_feedback_to_dosing(account_id, dosing_id, rating, comment)
+    return rh.result_to_response(res)
+
+
+@csrf_exempt
+def get_feedback_for_dosing(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    keys = ['dosing_id']
+    dosing_id, = rh.keys_to_values(request, keys)
+    res = service.get_consumer_service().get_feedback_for_dosing(account_id, dosing_id)
+    return rh.result_to_response(res)
+
 

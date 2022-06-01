@@ -15,10 +15,11 @@ class Dosing:
 
 
 class Feedback:
-    def __init__(self, id, rating, description, time) -> None:
+    def __init__(self, id, dosing_id, rating, comment, time) -> None:
         self.id = id
+        self.dosing_id = dosing_id
         self.rating = rating
-        self.description = description
+        self.comment = comment
         self.time = time
 
 

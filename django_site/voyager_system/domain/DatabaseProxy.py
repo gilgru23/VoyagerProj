@@ -223,6 +223,41 @@ class DatabaseProxy:
 
     # endregion Dosing
 
+    # region Feedback
+
+    def add_feedback(self, feedback: Feedback, dosing_id: str):
+        dto = self.feedback_to_dto(feedback, dosing_id)
+        try:
+            return db.add_feedback(dto)
+        except Exception as e:
+            err_str = f"Unable to add a new feedback for dosing to DB, with dosing id [{dosing_id}]"\
+                      + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+    def get_feedback_for_dosing(self, dosing_id: int):
+        feedback_dto = db.get_feedback_for_dosing(dosing_id)
+        try:
+            feedback = self.dto_to_feedback(feedback_dto)
+            return feedback
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve from db feedback, for dosing with id [{dosing_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+
+    def get_feedbacks_for_consumer(self, consumer_id: int):
+        feedback_dtos = db.get_feedbacks_for_consumer(consumer_id)
+        try:
+            feedback = [self.dto_to_feedback(dto) for dto in feedback_dtos]
+            return feedback
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve from db past feedback, for consumer with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+    # endregion Feedback
+
     # region DTO conversion
 
     """
@@ -348,18 +383,18 @@ class DatabaseProxy:
         pod.remainder = pod_dto.remainder
         return pod
 
-    @staticmethod
-    def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
-        pod: Pod = Pod()
-        pod.serial_number = pod_dto.serial_num
-        pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
-        pod.remainder = pod_dto.remainder
-        return pod
+    # @staticmethod
+    # def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
+    #     pod: Pod = Pod()
+    #     pod.serial_number = pod_dto.serial_num
+    #     pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
+    #     pod.remainder = pod_dto.remainder
+    #     return pod
 
     @staticmethod
     def dosing_to_dto(dosing: Dosing):
         dto = DosingDto().build(
-            id=dosing.id,
+            dosing_id=dosing.id,
             pod=dosing.pod_serial_number,
             amount= dosing.amount,
             time=dosing.time,
@@ -370,13 +405,34 @@ class DatabaseProxy:
     @staticmethod
     def dto_to_dosing(dosing_dto: DosingDto):
         dosing = Dosing(
-            dosing_id=dosing_dto.id,
+            dosing_id=dosing_dto.dosing_id,
             pod_serial_number= dosing_dto.pod,
             amount= dosing_dto.amount,
             time= dosing_dto.time,
             latitude= dosing_dto.latitude,
             longitude= dosing_dto.longitude)
         return dosing
+
+    @staticmethod
+    def feedback_to_dto(feedback: Feedback, dosing_id: str):
+        dto = FeedbackDto().build(
+            id=feedback.id,
+            dosing_id=dosing_id,
+            rating=feedback.rating,
+            time=feedback.time,
+            comment=feedback.comment)
+        return dto
+
+    @staticmethod
+    def dto_to_feedback(feedback_dto: FeedbackDto):
+        feedback = Feedback(
+            id=feedback_dto.id,
+            dosing_id=feedback_dto.dosing_id,
+            rating=feedback_dto.rating,
+            time=feedback_dto.time,
+            comment=feedback_dto.comment,
+        )
+        return feedback
 
     @staticmethod
     def dosing_reminder_to_dto(reminder: DosingReminder):
