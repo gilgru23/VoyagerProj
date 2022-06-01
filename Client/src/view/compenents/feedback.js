@@ -6,6 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import PushNotification from 'react-native-push-notification'
 import { Rating, AirbnbRating } from 'react-native-ratings'
 import { Button, TextField } from 'react-native-ui-lib'
+import { provideFeedback } from '../../Communication/ApiRequests'
+import { responseStatus } from '../../Config/constants'
 
 export default function Feeback({ navigation, route }) {
   const [dateModalOpen, setDateModalOpen] = useState(false)
@@ -37,7 +39,20 @@ export default function Feeback({ navigation, route }) {
   const ratingCompleted = (rating) => {
     setStarCount(rating)
   }
-  const { podSerialNum, podType, time } = route.params.dosing
+  const { podSerialNum, podType, time, id } = route.params.dosing
+
+  const provideFeedback = async () => {
+    const { consumer, controller } = route.params
+    const response = await controller.provideFeedback(id, starCount, feedback)
+    if (response.status === responseStatus.SUCCESS) {
+      console.log(response.content)
+      navigation.navigate('History', {
+        consumer: consumer
+      })
+    } else {
+      alert('Error', response.content)
+    }
+  }
   return (
     <View style={styles.container}>
       <Text
@@ -65,7 +80,7 @@ export default function Feeback({ navigation, route }) {
         backgroundColor="green"
         label="Submit"
         borderRadius={7}
-        onPress={() => console.log('submitted')}
+        onPress={() => provideFeedback()}
       />
     </View>
   )

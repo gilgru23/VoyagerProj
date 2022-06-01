@@ -40,7 +40,8 @@ export default function History({ navigation, route }) {
         height={77.5}
         onPress={() =>
           navigation.navigate('Feedback', {
-            dosing: row
+            dosing: row,
+            consumer: route.params.consumer
           })
         }
       >

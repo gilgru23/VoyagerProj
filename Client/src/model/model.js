@@ -8,7 +8,8 @@ import {
   getDispensersOfConsumer as getDispensersOfConsumerRequest,
   getDosingHistory as getDosingHistoryRequest,
   getPods as getPodsRequest,
-  logout as logoutRequest
+  logout as logoutRequest,
+  provideFeedback as provideFeedbackRequest
 } from '../Communication/ApiRequests.js'
 
 import { Consumer } from './Consumer.js'
@@ -46,6 +47,9 @@ export class Model {
 
     this.getPodsReq = testMode ? this.mock.getPods : getPodsRequest
     this.logoutReq = testMode ? this.mock.logout : logoutRequest
+    this.provideFeedbackReq = testMode
+      ? this.mock.provideFeedback
+      : provideFeedbackRequest
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
@@ -181,6 +185,15 @@ export class Model {
     const response = await this.logoutReq()
     if (response.status === responseStatus.SUCCESS) {
       console.log('logout in model')
+      return createResponseObj(responseStatus.SUCCESS, response.content)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
+  provideFeedback = async (dosingId, rating, comment) => {
+    const response = await this.provideFeedbackReq(dosingId, rating, comment)
+    if (response.status === responseStatus.SUCCESS) {
+      console.log('provide feedback in model')
       return createResponseObj(responseStatus.SUCCESS, response.content)
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')

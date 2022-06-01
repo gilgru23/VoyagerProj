@@ -113,4 +113,8 @@ export class Controller {
   logout = async () => {
     return await this.model.logout()
   }
+
+  provideFeedback = async (dosingId, rating, comment) => {
+    return await this.model.provideFeedback(dosingId, rating, comment)
+  }
 }

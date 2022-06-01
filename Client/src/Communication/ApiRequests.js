@@ -175,3 +175,20 @@ export const logout = async () => {
     return createResponseObj(responseStatus.FAILURE, 'logout failed')
   }
 }
+
+export const provideFeedback = async (dosingId, rating, comment) => {
+  console.log('sending comment: ', comment)
+  try {
+    const response = await axios.post(`${baseURL}/consumers/provide_feedback`, {
+      dosing_id: dosingId,
+      rating: rating,
+      comment: comment
+    })
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'feedback accepted')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
+  }
+}
