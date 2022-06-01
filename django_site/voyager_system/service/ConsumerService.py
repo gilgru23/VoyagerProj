@@ -69,6 +69,23 @@ class ConsumerService:
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
 
+    def provide_feedback_to_dosing(self, consumer_id, dosing_id: int, rating: int, comment: str,):
+        try:
+            self.med_center.consumer_provide_feedback(consumer_id,dosing_id,rating,comment)
+            return Result.success()
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
+
+    def get_feedback_for_dosing(self, consumer_id, dosing_id):
+        try:
+            feedback = self.med_center.get_feedback_for_dosing(consumer_id=consumer_id, dosing_id=dosing_id)
+            return Result.success(feedback)
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
 
 # - set_dosing_reminder
 # - get_recomendation(consumer_id)

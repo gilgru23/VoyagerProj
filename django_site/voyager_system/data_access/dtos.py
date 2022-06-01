@@ -80,7 +80,7 @@ class PodTypeDto:
 class PodDto:
     def __init__(self) -> None:
         self.serial_num = None
-        self.pod_type = PodTypeDto()
+        self.pod_type = None #PodTypeDto()
         self.remainder = None
 
     def build(self, serial_num, pod_type, remainder):
@@ -91,16 +91,18 @@ class PodDto:
 
 class DosingDto:
     def __init__(self) -> None:
-        self.id = None
+        self.dosing_id = None
         self.pod = None #serial number
         self.time = None
+        self.amount = None
         self.latitude = None
         self.longitude = None
 
-    def build(self, id, pod, time, latitude, longitude):
-        self.id = id,
+    def build(self, dosing_id, pod, time, amount, latitude, longitude):
+        self.dosing_id = dosing_id,
         self.pod = pod
         self.time = time
+        self.amount = amount
         self.latitude = latitude
         self.longitude = longitude
         return self
@@ -115,13 +117,17 @@ class RegimenDto:
 
 class FeedbackDto:
     def __init__(self) -> None:
-        self.dosing = DosingDto()
+        self.id = None
+        self.dosing_id = None  # DosingDto()
         self.rating = None
+        self.time = None
         self.comment = None
 
-    def build(self, dosing, rating, comment):
-        self.dosing = dosing
+    def build(self, id, dosing_id, rating, time, comment):
+        self.id = id
+        self.dosing_id = dosing_id
         self.rating = rating
+        self.time = time
         self.comment = comment
         return self
 

@@ -155,6 +155,16 @@ class DatabaseProxy:
             err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n" + str(e)
             raise DataAccessError(err_str)
 
+    def get_pod_type(self,pod_type_name: str):
+        try:
+            pod_type_dto = db.get_pod_type(pod_type_name)
+            return self.dto_to_pod_type(pod_type_dto)
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve pod type from db, with type-name [{pod_type_name}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
     def update_podtype(self, podtype: PodType):
         dto = self.pod_type_to_dto(podtype)
         try:
@@ -212,6 +222,41 @@ class DatabaseProxy:
         pass
 
     # endregion Dosing
+
+    # region Feedback
+
+    def add_feedback(self, feedback: Feedback, dosing_id: str):
+        dto = self.feedback_to_dto(feedback, dosing_id)
+        try:
+            return db.add_feedback(dto)
+        except Exception as e:
+            err_str = f"Unable to add a new feedback for dosing to DB, with dosing id [{dosing_id}]"\
+                      + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+    def get_feedback_for_dosing(self, dosing_id: int):
+        feedback_dto = db.get_feedback_for_dosing(dosing_id)
+        try:
+            feedback = self.dto_to_feedback(feedback_dto)
+            return feedback
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve from db feedback, for dosing with id [{dosing_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+
+
+    def get_feedbacks_for_consumer(self, consumer_id: int):
+        feedback_dtos = db.get_feedbacks_for_consumer(consumer_id)
+        try:
+            feedback = [self.dto_to_feedback(dto) for dto in feedback_dtos]
+            return feedback
+        except ObjectDoesNotExist as e:
+            return []
+        except Exception as e:
+            err_str = f"Unable to retrieve from db past feedback, for consumer with id [{consumer_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+    # endregion Feedback
 
     # region DTO conversion
 
@@ -338,21 +383,20 @@ class DatabaseProxy:
         pod.remainder = pod_dto.remainder
         return pod
 
-    @staticmethod
-    def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
-        pod: Pod = Pod()
-        pod.serial_number = pod_dto.serial_num
-        pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
-        pod.remainder = pod_dto.remainder
-        return pod
+    # @staticmethod
+    # def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
+    #     pod: Pod = Pod()
+    #     pod.serial_number = pod_dto.serial_num
+    #     pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
+    #     pod.remainder = pod_dto.remainder
+    #     return pod
 
     @staticmethod
     def dosing_to_dto(dosing: Dosing):
         dto = DosingDto().build(
-            id=dosing.id,
+            dosing_id=dosing.id,
             pod=dosing.pod_serial_number,
-            # type= dosing.pod_type_name,
-            # amount= dosing.amount,
+            amount= dosing.amount,
             time=dosing.time,
             latitude=dosing.latitude,
             longitude=dosing.longitude)
@@ -361,17 +405,34 @@ class DatabaseProxy:
     @staticmethod
     def dto_to_dosing(dosing_dto: DosingDto):
         dosing = Dosing(
-            dosing_id=dosing_dto.id,
+            dosing_id=dosing_dto.dosing_id,
             pod_serial_number= dosing_dto.pod,
-            # TODO:: add fields to dto and model
-            # pod_type_name=dosing_dto.pod_type,
-            pod_type_name= "",
-            # amount= dosing_dto.amount,
-            amount= 3.5,
+            amount= dosing_dto.amount,
             time= dosing_dto.time,
             latitude= dosing_dto.latitude,
             longitude= dosing_dto.longitude)
         return dosing
+
+    @staticmethod
+    def feedback_to_dto(feedback: Feedback, dosing_id: str):
+        dto = FeedbackDto().build(
+            id=feedback.id,
+            dosing_id=dosing_id,
+            rating=feedback.rating,
+            time=feedback.time,
+            comment=feedback.comment)
+        return dto
+
+    @staticmethod
+    def dto_to_feedback(feedback_dto: FeedbackDto):
+        feedback = Feedback(
+            id=feedback_dto.id,
+            dosing_id=feedback_dto.dosing_id,
+            rating=feedback_dto.rating,
+            time=feedback_dto.time,
+            comment=feedback_dto.comment,
+        )
+        return feedback
 
     @staticmethod
     def dosing_reminder_to_dto(reminder: DosingReminder):
