@@ -25,6 +25,7 @@ import { Dispenser } from '../../../model/dispenser'
 import { Consumer } from '../../../model/Consumer'
 import PushNotification from 'react-native-push-notification'
 import { msgsFromDispenserTypes } from '../../../Config/constants'
+import { timeIntervalForFeedbackReminder } from '../../../Config/constants'
 
 /**
  * Manages a selected device connection.  The selected Device should
@@ -212,8 +213,8 @@ export default class ConnectionScreen extends React.Component {
     }
   }
 
-  getUserTime() {
-    const tzoffset = new Date().getTimezoneOffset() * 60000 //offset in milliseconds
+  getUserTime(date) {
+    const tzoffset = date.getTimezoneOffset() * 60000 //offset in milliseconds
     return new Date(Date.now() - tzoffset).toISOString().slice(0, -1)
   }
 
@@ -221,12 +222,19 @@ export default class ConnectionScreen extends React.Component {
     const { controller } = this.props
     try {
       await controller.registerPod(podSerial, podType)
-      const dosingTime = this.getUserTime()
-      console.log('the date of dose is: ', dosingTime)
+      const dosingTime = this.getUserTime(new Date())
       await controller.dose(podSerial, parseFloat(amount), dosingTime)
     } catch (e) {
       console.log(e)
     }
+  }
+  setFeedbackReminderTime = (dosingTime) => {
+    let dosingTimeObj = new Date(dosingTime)
+    dosingTimeObj.setHours(
+      dosingTimeObj.getHours() + timeIntervalForFeedbackReminder
+    )
+    console.log('the feedback reminder will be at:', dosingTimeObj)
+    return dosingTimeObj
   }
 
   async addDataMessage(message) {
@@ -235,16 +243,28 @@ export default class ConnectionScreen extends React.Component {
       console.log(message.data.substring(message.data.indexOf('{')))
       const messageObj = message.data.substring(message.data.indexOf('{'))
       const messageContent = JSON.parse(messageObj)
+      const localTime = this.getUserTime(new Date(message.timestamp))
+      console.log(localTime)
+      const timeToRemindFeedBack = this.setFeedbackReminderTime(localTime)
       await this.doseRequests(
         messageContent.podSerial,
         messageContent.podType,
         messageContent.amount
       )
       if (messageContent.type === msgsFromDispenserTypes.DOSING) {
+        console.log(message.timestamp)
         PushNotification.localNotification({
           channelId: this.props.consumer.email || 'gilgu@gmail.com',
           title: `Message from dispneser ${this.props.device.name}`,
-          message: `Dispense has been made:\n  time: ${message.timestamp} \n pod type: ${messageContent.podType}\n dosage:${messageContent.amount} mg` // (required)
+          message: `Dose has been made:\n  time: ${localTime.toString()} \n pod type: ${
+            messageContent.podType
+          }\n dosage:${messageContent.amount} mg` // (required)
+        })
+        PushNotification.localNotificationSchedule({
+          channelId: this.props.consumer.email || 'gilgu@gmail.com',
+          date: timeToRemindFeedBack,
+          title: `Reminder For Feeback`,
+          message: `This is reminder for dose feedback that has been made in: ${this.props.device.name}:\n  time: ${message.timestamp} \n pod type: ${messageContent.podType}\n dosage:${messageContent.amount} mg` // (required)
         })
       } else {
         PushNotification.localNotification({
