@@ -40,6 +40,7 @@ export default function OldPersonalPage({ route, navigation }) {
       />
       <ScrollView>
         <View bg-white>
+          <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
           <View style={styles.container}>
             <Text text50 marginL-s5 marginV-s3 style={styles.header}>
               {`Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`}
@@ -51,11 +52,11 @@ export default function OldPersonalPage({ route, navigation }) {
                 return (
                   <TouchableOpacity
                     activeOpacity={1}
-                    bg-blue40
+                    bg-grey40
                     paddingH-s5
                     paddingV-s4
                     key={screen.title}
-                    activeBackgroundColor={Colors.blue20}
+                    activeBackgroundColor={Colors.grey30}
                     style={{
                       borderBottomWidth: 1,
                       borderColor: Colors.white,
@@ -86,7 +87,7 @@ export default function OldPersonalPage({ route, navigation }) {
               )}
             <TouchableOpacity
               activeOpacity={1}
-              bg-red40
+              bg-red20
               paddingH-s5
               paddingV-s4
               key={'logout'}
@@ -119,6 +120,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     fontWeight: 'bold'
+  },
+  image: {
+    // alignContent: 'center'
   },
   option: {
     color: 'white'

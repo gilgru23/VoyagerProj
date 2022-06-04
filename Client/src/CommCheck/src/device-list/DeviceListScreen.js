@@ -336,11 +336,11 @@ export const DeviceListItem = ({
   return (
     <TouchableOpacity
       activeOpacity={1}
-      bg-blue40
+      bg-grey40
       paddingH-s5
       paddingV-s4
       key={device.address}
-      activeBackgroundColor={Colors.blue20}
+      activeBackgroundColor={Colors.grey20}
       style={{
         borderBottomWidth: 1,
         borderColor: Colors.white,

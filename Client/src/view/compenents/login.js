@@ -70,7 +70,7 @@ export default class Login extends Component {
     }
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/voyagerLogo.png')} />
+        <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
         <TextInput
           style={styles.inputStyle}
           placeholder="Email"
@@ -103,7 +103,7 @@ export default class Login extends Component {
         />
         <Text
           style={styles.loginText}
-          onPress={() => this.props.navigation.navigate('SignUp')}
+          onPress={() => this.props.navigation.navigate('signUp')}
         >
           Don't have account? Click here to signup
         </Text>

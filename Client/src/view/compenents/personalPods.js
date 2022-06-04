@@ -25,7 +25,7 @@ export default function PersonalPods({ route, navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('./assets/voyagerLogo.png')} />
+        <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
         <Text>{`The pods that are connected to the dispenser:${route.params.device.name}`}</Text>
       </View>
       {pods.map((pod) => (

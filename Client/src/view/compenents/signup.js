@@ -78,7 +78,7 @@ export default function Signup({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/voyagerLogo.png')} />
+      <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
       <TextInput
         style={styles.inputStyle}
         placeholder="First Name"
@@ -139,7 +139,12 @@ export default function Signup({ navigation, route }) {
           <Picker.Item label="Care Giver" value="Care Giver" />
         </Picker> */}
 
-      <Button color="#3740FE" title="Signup" onPress={() => register()} testID={ids.reg_submit_btn}/>
+      <Button
+        color="#3740FE"
+        title="Signup"
+        onPress={() => register()}
+        testID={ids.reg_submit_btn}
+      />
       <Text
         style={styles.loginText}
         onPress={() => navigation.navigate('Login')}
