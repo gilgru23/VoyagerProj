@@ -11,7 +11,7 @@ import { responseStatus } from '../../../Config/constants'
  */
 const requestAccessFineLocationPermission = async () => {
   const granted = await PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
     {
       title: 'Access fine location required for discovery',
       message:
@@ -51,6 +51,7 @@ export default class DeviceListScreen extends React.Component {
   }
 
   async componentDidMount() {
+    await requestAccessFineLocationPermission()
     const response = await this.props.controller.getDispenserOfConsumer()
     if ((response.status = responseStatus.SUCCESS)) {
       this.setState({ registerdDevices: response.content })

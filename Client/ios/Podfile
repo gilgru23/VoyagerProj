@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, '11.0'
 install! 'cocoapods', :deterministic_uuids => false
 
-target 'AwesomeProject' do
+target 'VoyagerApp' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -21,7 +21,7 @@ target 'AwesomeProject' do
 
   pod 'RNNumberPickerLibrary', :path => '../node_modules/react-native-number-picker-library'
 
-  target 'AwesomeProjectTests' do
+  target 'VoyagerAppTests' do
     inherit! :complete
     # Pods for testing
   end
