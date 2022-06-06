@@ -35,7 +35,7 @@ export default function HomeScreen({ navigation, test }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('./assets/voyagerLogo.png')} />
+      <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
       <Image source={require('./assets/dispenser.png')} />
       <View style={styles.buttonLayout}>
         <TouchableOpacity

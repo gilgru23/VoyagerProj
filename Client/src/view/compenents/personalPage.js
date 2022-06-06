@@ -3,7 +3,7 @@ import { ScrollView, TextInput, StyleSheet, Text, Image } from 'react-native'
 import { Colors, TouchableOpacity, View } from 'react-native-ui-lib'
 import { responseStatus } from '../../Config/constants'
 
-export default function OldPersonalPage({ route, navigation }) {
+export default function PersonalPage({ route, navigation }) {
   const [searchText, setSearchText] = React.useState('')
   const screens = [
     {
@@ -20,6 +20,11 @@ export default function OldPersonalPage({ route, navigation }) {
       id: 'Schedule',
       title: 'Set Dosing Reminder',
       img: require('./assets/dispenser.png')
+    },
+    {
+      id: 'Scheduled Reminders',
+      title: 'Watch Your Scheduled Reminders',
+      img: require('./assets/clock.png')
     }
   ]
 
@@ -128,7 +133,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   image: {
-    width: 20,
+    width: 30,
     height: 40,
     marginLeft: 'auto'
   },

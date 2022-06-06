@@ -18,6 +18,7 @@ import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
 import History from './src/view/compenents/history'
 import PersonalPage from './src/view/compenents/personalPage'
 import Feeback from './src/view/compenents/feedback'
+import ScheduledReminders from './src/view/compenents/scheduledReminders'
 
 const Stack = createNativeStackNavigator()
 
@@ -95,6 +96,11 @@ function App() {
         <Stack.Screen
           name="Schedule"
           component={Schedule}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Scheduled Reminders"
+          component={ScheduledReminders}
           initialParams={{ controller: controller }}
         />
       </Stack.Navigator>
