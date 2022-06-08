@@ -37,7 +37,7 @@ class TestConsumers(TestCase):
 
     def setUp(self):
         # Create 13 authors for pagination tests
-        print('\nset up guest acceptance test')
+        print('\nset up consumer acceptance test')
         self.setup_accounts()
         self.setup_pods()
         self.setup_dispensers()
@@ -53,7 +53,7 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
         # create consumer 1 profile
         body = json.dumps(self.consumer1)
-        response = self.client1.generic('get', reverse('create consumer profile'), body)
+        response = self.client1.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 200)
         # register account 2
         body = json.dumps(self.account2)
@@ -61,7 +61,7 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
         # login account 2
         body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
-        response = self.client2.generic('get', reverse('login'), body)
+        response = self.client2.generic('GET', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
 
     def setup_pods(self):
@@ -121,9 +121,9 @@ class TestConsumers(TestCase):
 
     def get_feedback(self, dosing_id):
         params = {"dosing_id": dosing_id}
-        body = json.dumps(params)
-        response = self.client1.generic('POST', reverse('get_feedback_for_dosing'), body)
+        response = self.client1.get(reverse('get_feedback_for_dosing'), params)
         return response
+
 
     def test_register_pod(self):
         response = self.register_pod_to_consumer(self.pod_details1)
@@ -188,3 +188,10 @@ class TestConsumers(TestCase):
         feedback = json.loads(response.content)
         self.assertEqual(feedback['rating'], 8)
         self.assertEqual(feedback['comment'], "it was good")
+
+    def test_get_feedback_fail(self):
+        print(f'no feedback was provided for the requested dosing')
+        dosing_id = 1
+        response = self.get_feedback(dosing_id=dosing_id)
+        self.assertEqual(response.status_code, 400)
+

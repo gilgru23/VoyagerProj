@@ -13,14 +13,18 @@ def get_acount_id(request: HttpRequest) -> int:
     email = request.user.username
     acct: Account = Account.objects.get(email=email)
     account_id = acct.pk
-    print('acct id is: ' + str(account_id))
+    # print('acct id is: ' + str(account_id))
     return account_id
 
 def keys_to_values(request: HttpRequest, keys):
     # body_unicode = request.body.decode('utf-8')
-    body = json.loads(request.body)
     # body = request.POST
+    body = json.loads(request.body)
     return [body[key] for key in keys]
+
+def get_parameters(request: HttpRequest, keys):
+    params_dict = request.GET
+    return [params_dict.get(key, '') for key in keys]
 
 def result_to_response(res):
     (succeeded, val) = res

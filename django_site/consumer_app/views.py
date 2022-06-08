@@ -97,8 +97,12 @@ def provide_feedback(request: HttpRequest):
 def get_feedback_for_dosing(request: HttpRequest):
     account_id = rh.get_acount_id(request)
     keys = ['dosing_id']
-    dosing_id, = rh.keys_to_values(request, keys)
-    res = service.get_consumer_service().get_feedback_for_dosing(account_id, dosing_id)
+    dosing_id, = rh.get_parameters(request, keys)
+    if dosing_id.isnumeric():
+        dosing_id = int(dosing_id)
+        res = service.get_consumer_service().get_feedback_for_dosing(account_id, dosing_id)
+    else:
+        res = (False, "parameter dosing_id should be an int.")
     return rh.result_to_response(res)
 
 
