@@ -64,7 +64,8 @@ export const loginUser = async (email, pwd) => {
       pwd
     })
     if (response) {
-      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+      console.log('response from server:', response.data)
+      return createResponseObj(responseStatus.SUCCESS, response.data)
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
@@ -72,12 +73,14 @@ export const loginUser = async (email, pwd) => {
   }
 }
 
-export const registerDispenser = async (address) => {
+export const registerDispenser = async (id, name) => {
   try {
+    console.log('sending to server: ', id, name)
     const response = await axios.post(
       `${baseURL}/consumers/register_dispenser`,
       {
-        address
+        serial_num: id,
+        version: name
       }
     )
     if (response) {
@@ -86,5 +89,106 @@ export const registerDispenser = async (address) => {
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const registerPod = async (id, podType) => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/register_pod`, {
+      serial_num: id,
+      pod_type: podType
+    })
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const dose = async (pod, amount, time) => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/dose`, {
+      pod_serial_num: pod,
+      amount: amount,
+      time: time
+    })
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const getDispensersOfConsumer = async () => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/consumers/get_dispensers_of_consumer`
+    )
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const getDosingHistory = async () => {
+  try {
+    const response = await axios.post(`${baseURL}/consumers/get_dosing_history`)
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const getPods = async () => {
+  try {
+    const response = await axios.post(
+      `${baseURL}/consumers/get_pods_of_consumer`
+    )
+    if (response) {
+      console.log('pods from server:', response.data)
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
+  }
+}
+
+export const logout = async () => {
+  try {
+    const response = await axios.post(`${baseURL}/accounts/logout_user`)
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'logout succeeded')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'logout failed')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'logout failed')
+  }
+}
+
+export const provideFeedback = async (dosingId, rating, comment) => {
+  console.log('sending comment: ', comment)
+  try {
+    const response = await axios.post(`${baseURL}/consumers/provide_feedback`, {
+      dosing_id: dosingId,
+      rating: rating,
+      comment: comment
+    })
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, 'feedback accepted')
+    }
+    return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
   }
 }

@@ -5,6 +5,9 @@ import RNBluetoothClassic from 'react-native-bluetooth-classic'
 import DeviceListScreen from './device-list/DeviceListScreen'
 import ConnectionScreen from './connection/ConnectionScreen'
 import { Consumer } from '../../model/Consumer'
+import { responseStatus } from '../../Config/constants'
+import { alert } from '../../view/compenents/utils'
+// import DispenserDemo from '../../Communication/dispenserDemo'
 export default class BluetoothScreen extends React.Component {
   constructor(props) {
     super(props)
@@ -21,11 +24,27 @@ export default class BluetoothScreen extends React.Component {
    * - multiple devices
    * - more advanced state management (redux)
    * - etc
-   *
+   *z  n nmnmji8
    * @param device the BluetoothDevice selected or connected
    */
-  selectDevice = (device) => {
-    this.setState({ device })
+  selectDevice = async (device, registered) => {
+    console.log(registered)
+    if (!registered) {
+      const response =
+        await this.props.route.params.controller.registerDispenser(
+          device.address,
+          device.name
+        )
+      if (response.status === responseStatus.SUCCESS) {
+        this.setState({ device })
+      } else {
+        alert('Error', 'Can not connect to the device')
+      }
+    } else {
+      this.setState({ device })
+    }
+
+    // this.setState({ device })
   }
 
   /**
@@ -135,6 +154,7 @@ export default class BluetoothScreen extends React.Component {
           <DeviceListScreen
             bluetoothEnabled={this.state.bluetoothEnabled}
             selectDevice={this.selectDevice}
+            controller={this.props.route.params.controller}
           />
         ) : (
           <ConnectionScreen
@@ -145,7 +165,17 @@ export default class BluetoothScreen extends React.Component {
               this.props.route.params.consumer ||
               new Consumer('gil@gmail.com', 'Gil', 'Gruber', new Date())
             }
+            controller={this.props.route.params.controller}
           />
+          // <DispenserDemo
+          //   device={this.state.device}
+          //   onBack={() => this.setState({ device: undefined })}
+          //   navigation={this.props.navigation}
+          //   consumer={
+          //     this.props.route.params.consumer ||
+          //     new Consumer('gil@gmail.com', 'Gil', 'Gruber', new Date())
+          //   }
+          // />
         )}
       </View>
       // </Root>

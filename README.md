@@ -1,18 +1,18 @@
 Final proj
 
 Dev Team notes for React-Native, to run the application in dev mode:
-1) Connect your device to the computer and running in the cmd the command: react-native run-android
-2) run in the terminal: "adb devices" to get your device id and then update the line:"adb -s <device_id> reverse tcp:8000 tcp:8000 && react-native run-android" with your device id in package.json under scripts/dev.
 
+1. Connect your device to the computer and running in the cmd the command: react-native run-android
+2. run in the terminal: "adb devices" to get your device id and then update the line:"adb -s <device_id> reverse tcp:8000 tcp:8000 && react-native run-android" with your device id in package.json under scripts/dev.
 
 Dev Team notes for django:
 
-1) vid explaining initial setup and adding initial functionality:
-https://www.youtube.com/watch?v=cW1_OoTiWg8
+1. vid explaining initial setup and adding initial functionality:
+   https://www.youtube.com/watch?v=cW1_OoTiWg8
 
-2) if you cant run django, try setting up a virtual env:
-answered by 'Nids Barthwal' (don't do the last step, thats what creates the project, which we already have)
-https://stackoverflow.com/questions/17769430/command-django-admin-py-startproject-mysite-not-recognized
+2. if you cant run django, try setting up a virtual env:
+   answered by 'Nids Barthwal' (don't do the last step, thats what creates the project, which we already have)
+   https://stackoverflow.com/questions/17769430/command-django-admin-py-startproject-mysite-not-recognized
 
 3)general flow:
 -the project/folder (django_site) has many apps/subfolders (e.g. consumer_app, physician_app, etc..)
@@ -21,6 +21,10 @@ https://stackoverflow.com/questions/17769430/command-django-admin-py-startprojec
 -an app's functions are defined in django_site/app_name/views.py
 
 4)commands:
-run the server from VoyagerProject/django_site with the command python manage.py runserver 
+run the server from VoyagerProject/django_site with the command python manage.py runserver
+
+to apply migrations, from VoyagerProj/django_site, run these 2 commands
+python manage.py makemigrations
+pythons manage.py migrate
 
 tzuri-mrvoyager

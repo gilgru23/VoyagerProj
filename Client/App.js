@@ -8,7 +8,6 @@ import Signup from './src/view/compenents/signup'
 import Login from './src/view/compenents/login'
 import Communication from './src/view/compenents/Communication.js'
 import PersonalInfo from './src/view/compenents/personalInfo'
-import PersonalPage from './src/view/compenents/personalPage'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
 import Schedule from './src/view/compenents/Schedule'
@@ -16,6 +15,10 @@ import { MockServer } from './src/Communication/mockServer'
 import { Controller } from './src/controller/controller'
 import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
 import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
+import History from './src/view/compenents/history'
+import PersonalPage from './src/view/compenents/personalPage'
+import Feeback from './src/view/compenents/feedback'
+import ScheduledReminders from './src/view/compenents/scheduledReminders'
 
 const Stack = createNativeStackNavigator()
 
@@ -26,7 +29,27 @@ function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
+          name="Feedback"
+          component={Feeback}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Personal Page"
+          component={PersonalPage}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="History"
+          component={History}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
           name="Connection"
+          component={ConnectionScreen}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="RegisterPod"
           component={ConnectionScreen}
           initialParams={{ controller: controller }}
         />
@@ -66,18 +89,18 @@ function App() {
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
-          name="PersonalPods"
-          component={PersonalPods}
-          initialParams={{ controller: controller }}
-        />
-        <Stack.Screen
-          name="Current Pod"
+          name="Current Pods"
           component={CurrPod}
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
-          name="Scheduler"
+          name="Schedule"
           component={Schedule}
+          initialParams={{ controller: controller }}
+        />
+        <Stack.Screen
+          name="Scheduled Reminders"
+          component={ScheduledReminders}
           initialParams={{ controller: controller }}
         />
       </Stack.Navigator>

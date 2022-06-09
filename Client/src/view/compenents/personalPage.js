@@ -1,112 +1,146 @@
-import React, { useState } from 'react'
-import RNBluetoothClassic, {
-  BluetoothDevice
-} from 'react-native-bluetooth-classic'
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  Button,
-  TouchableOpacity,
-  PermissionsAndroid
-} from 'react-native'
+import React from 'react'
+import { ScrollView, TextInput, StyleSheet, Text, Image } from 'react-native'
+import { Colors, TouchableOpacity, View } from 'react-native-ui-lib'
+import { responseStatus } from '../../Config/constants'
 
 export default function PersonalPage({ route, navigation }) {
+  const [searchText, setSearchText] = React.useState('')
+  const screens = [
+    {
+      id: 'Current Pods',
+      title: 'Personal pods page',
+      img: require('./assets/pod.png')
+    },
+    {
+      id: 'History',
+      title: 'Dosing History',
+      img: require('./assets/dosing.png')
+    },
+    {
+      id: 'Schedule',
+      title: 'Set Dosing Reminder',
+      img: require('./assets/dispenser.png')
+    },
+    {
+      id: 'Scheduled Reminders',
+      title: 'Watch Your Scheduled Reminders',
+      img: require('./assets/clock.png')
+    }
+  ]
+
+  const handleLogout = async () => {
+    const response = await route.params.controller.logout()
+    if (response.status === responseStatus.SUCCESS) {
+      navigation.navigate('Home')
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('./assets/voyagerLogo.png')} />
-        <Text>{`Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`}</Text>
-      </View>
-      <Text>Explore:</Text>
-      <View style={styles.menu}>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('PersonalPods', {
-              device: route.params.device
-            })
-          }
-        >
-          <Text style={{ color: 'white' }}>{`Personal pods page`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('RecommendationPage', {
-              device: route.params.device
-            })
-          }
-        >
-          <Text style={{ color: 'white' }}>{`Recommendation Page`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('TrackingPage', {
-              device: route.params.device
-            })
-          }
-        >
-          <Text style={{ color: 'white' }}>{`Track Usage Page`}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.submitBtn}
-          onPress={() =>
-            navigation.navigate('Scheduler', {
-              consumerId: route.params.consumer.email
-            })
-          }
-        >
-          <Text style={{ color: 'white' }}>{`Schedule Page`}</Text>
-        </TouchableOpacity>
-      </View>
+    <View>
+      <TextInput
+        style={{ padding: 10, marginBottom: 0, fontSize: 18 }}
+        placeholder="Search for an option..."
+        onChangeText={(text) => setSearchText(text)}
+        value={searchText}
+      />
+      <ScrollView>
+        <View bg-white>
+          <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
+          <View style={styles.container}>
+            <Text text50 marginL-s5 marginV-s3 style={styles.header}>
+              {`Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`}
+            </Text>
+            {screens
+              .map((screen) => {
+                console.log(screen.img)
+                const imgPath = `./assets/${screen.img}`
+                return (
+                  <TouchableOpacity
+                    activeOpacity={1}
+                    bg-grey40
+                    paddingH-s5
+                    paddingV-s4
+                    key={screen.title}
+                    activeBackgroundColor={Colors.grey30}
+                    style={{
+                      borderBottomWidth: 1,
+                      borderColor: Colors.white,
+                      textAlign: 'left'
+                    }}
+                    onPress={() => {
+                      // convert "unicorn.components.ActionBarScreen" -> "ActionBar"
+
+                      navigation.navigate(screen.id, {
+                        consumer: route.params.consumer,
+                        device: route.params.device
+                      })
+                    }}
+                  >
+                    <View style={styles.card}>
+                      <Text white text70M style={styles.option}>
+                        {screen.title}
+                      </Text>
+                      <Image source={screen.img} style={styles.image} />
+                    </View>
+                  </TouchableOpacity>
+                )
+              })
+              .filter(
+                (item) =>
+                  item.key.toLowerCase().indexOf(searchText.toLowerCase()) !==
+                  -1
+              )}
+            <TouchableOpacity
+              activeOpacity={1}
+              bg-red20
+              paddingH-s5
+              paddingV-s4
+              key={'logout'}
+              activeBackgroundColor={Colors.red20}
+              style={{
+                borderBottomWidth: 1,
+                borderColor: Colors.white
+              }}
+              onPress={async () => await handleLogout()}
+            >
+              <View style={styles.card}>
+                <Text white text70M style={styles.option}>
+                  Logout
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'flex-end'
+    textAlign: 'center'
   },
-  menu: {
-    marginRight: 10
-  },
-
   header: {
-    alignItems: 'center',
-    marginBottom: 20
-  },
-
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20
-  },
-
-  connection_button: {
-    height: 30,
-    marginBottom: 30
-  },
-
-  buttonLayout: {
-    display: 'flex',
-    flexDirection: 'row'
-  },
-
-  submitBtn: {
-    marginTop: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: 'gray',
-    borderRadius: 10,
-    borderWidth: 1,
+    fontSize: 20,
+    marginBottom: 10,
     textAlign: 'center',
-    borderColor: '#fff'
+    fontWeight: 'bold'
+  },
+  image: {
+    // alignContent: 'center'
+  },
+  option: {
+    color: 'white'
+  },
+  image: {
+    width: 30,
+    height: 40,
+    marginLeft: 'auto'
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+    alignContent: 'space-between'
   }
 })

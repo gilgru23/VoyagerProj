@@ -1,14 +1,13 @@
 import unittest
 
-from voyager_system.dal.Util import DataAccessError
-from voyager_system.domain.common.Util import AppOperationError
+from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.tests.test_objects.DummyMapper import DummyMapper
 from voyager_system.domain.DatabaseProxy import *
 from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
-from voyager_system.domain.medicalCenter.Consumer import Consumer
-from voyager_system.domain.medicalCenter.Dosing import Dosing
-from voyager_system.domain.medicalCenter.MedicalCenter import MedicalCenter
-from voyager_system.domain.medicalCenter.Pod import *
+from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Dosing import Dosing
+from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
+from voyager_system.domain.medical_center.Pod import *
 
 import os
 
@@ -74,11 +73,11 @@ class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
     async def test_get_consumer_pods(self):
         print(f'Test: get consumer pods')
         consumer_id = 1
-        pods = await self.medical_center.get_consumer_pods(consumer_id)
+        pods = self.medical_center.get_consumer_pods(consumer_id)
         self.assertTrue(pods is not None)
-        real_pods = await consumer_factory(consumer_id).get_pods()
+        real_pods = consumer_factory(consumer_id).get_pods()
         for pod1, pod2 in zip(pods, real_pods):
-            self.assertEqual(pod1.id, pod2.id)
+            self.assertEqual(pod1.pod_serial_number, pod2.serial_number)
 
     async def test_consumer_dose_success(self):
         print(f'Test: consumer dose - success')
@@ -94,7 +93,7 @@ class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(real_pod.remainder, 100 - amount)
         real_dosing = consumer1.dosing_history[0]
         self.assertEqual(real_dosing.amount, amount)
-        self.assertEqual(real_dosing.pod_id, pod_id)
+        self.assertEqual(real_dosing.pod_serial_number, pod_id)
 
 
     async def test_consumer_dose_fail_1(self):

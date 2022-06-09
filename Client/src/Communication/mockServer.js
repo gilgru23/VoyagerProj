@@ -12,7 +12,6 @@ import {
 export class MockServer {
   constructor(users, dispensers) {
     this.users = users
-    this.dispensers = dispensers
   }
 
   registerUser = (email, password, firstName, lastName, birthDate) => {
@@ -38,13 +37,12 @@ export class MockServer {
       return createResponseObj(responseStatus.FAILURE, 'password is weak')
     }
 
-    if (this.users.every((user) => user.email !== email)) {
+    if (this.users.every((user) => user.consumer.email !== email)) {
       this.users.push({
-        email: email,
-        pwd: password,
-        firstName: firstName,
-        lastName: lastName,
-        birthDate: birthDate
+        consumer: new Consumer(email, firstName, lastName, birthDate),
+        password: password,
+        dispensers: [],
+        pods: []
       })
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
@@ -65,29 +63,57 @@ export class MockServer {
     if (!checkStrongPassword(pwd)) {
       return createResponseObj(responseStatus.FAILURE, 'password is weak')
     }
-
-    if (this.users.some((user) => user.email === email && user.pwd === pwd)) {
+    const user = this.users.find(
+      (user) => user.consumer.email === email && user.password === pwd
+    )
+    if (user) {
       return createResponseObj(responseStatus.SUCCESS, {
-        firstName: 'Gil',
-        lastName: 'Gruber',
-        birthDate: toDateString(new Date())
+        first_name: user.consumer.firstName,
+        last_name: user.consumer.lastName,
+        date_of_birth: user.consumer.birthDate
       })
     }
     return createResponseObj(responseStatus.FAILURE, 'User not found')
   }
 
-  registerDispenser = (id, name) => {
+  registerDispenser = (id, name, email) => {
     if (!checkTheParametersAreValid(id, name)) {
       return createResponseObj(
         responseStatus.FAILURE,
         'one of the paramter is invalid'
       )
     }
-    if (!this.dispensers.includes(id)) {
-      this.dispensers.push(id)
-      return createResponseObj(responseStatus.SUCCESS, new Dispenser(id, name))
+    console.log('******')
+    console.log(this.users)
+    console.log(email)
+    console.log('******')
+    const user = this.users.find((user) => user.consumer.email === email)
+    if (!user.dispensers.includes(id)) {
+      user.dispensers.push(id)
+      return createResponseObj(
+        responseStatus.SUCCESS,
+        'Adding dispenser succeeded'
+      )
     }
-    return createResponseObj(responseStatus.FAILURE, 'User already exists')
+    return createResponseObj(responseStatus.FAILURE, 'Dispenser already exists')
+  }
+
+  registerPod = (id, name, email) => {
+    if (!checkTheParametersAreValid(id, name)) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    const user = this.users.find((user) => user.consumer.email === email)
+    if (!user.pods.includes(id)) {
+      user.pods.push(id)
+      return createResponseObj(
+        responseStatus.SUCCESS,
+        'Adding dispenser succeeded'
+      )
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Pod already exists')
   }
 
   createConsumerProfile = (residence, height, weight, units, gender, goal) => {

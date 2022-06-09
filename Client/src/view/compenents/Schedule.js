@@ -5,6 +5,7 @@ import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import PushNotification from 'react-native-push-notification'
 import { alert } from './utils'
+import { Switch } from 'react-native-ui-lib'
 
 export default function Schedule({ navigation, route }) {
   const [dateModalOpen, setDateModalOpen] = useState(false)
@@ -12,16 +13,23 @@ export default function Schedule({ navigation, route }) {
   const [alarmDate, setAlarmDate] = useState(
     new Date(new Date().setSeconds(0, 0))
   )
+  const [scheduledReminders, setScheduledReminders] = useState([])
 
   useEffect(() => {
     PushNotification.getScheduledLocalNotifications((notifications) =>
-      notifications.forEach((notifcation) => console.log(notifcation))
+      setScheduledReminders(
+        notifications.map((notification) => ({
+          notification: notification,
+          enabled: true
+        }))
+      )
     )
   }, [])
   function onSubmit() {
+    console.log(route.params.consumer, '*********')
     try {
       PushNotification.localNotificationSchedule({
-        channelId: route.params.consumerId || 'gilgu@gmail.com',
+        channelId: route.params.consumer.email || 'gilgu@gmail.com',
         date: alarmDate, // in 60 secs
         title: 'Time to dose',
         message: 'This is a reminder for dosing' // (required)
@@ -46,6 +54,19 @@ export default function Schedule({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Set Dosing Reminder</Text>
+      {scheduledReminders.map((scheduledReminder) => (
+        <View style={styles.option}>
+          <Text>{`Date of dosing: ${new Date(
+            scheduledReminder.notification.date
+          ).toDateString()} on time: ${new Date(
+            scheduledReminder.notification.date
+          ).toTimeString()}`}</Text>
+          <Switch
+            value={true}
+            onValueChange={() => console.log('value changed')}
+          />
+        </View>
+      ))}
       <View style={styles.option}>
         <Button
           onPress={() => setDateModalOpen(true)}

@@ -1,14 +1,9 @@
 import React from 'react'
-import { Platform } from 'react-native'
+import { Platform, Image } from 'react-native'
 import RNBluetoothClassic from 'react-native-bluetooth-classic'
-import {
-  PermissionsAndroid,
-  View,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Text
-} from 'react-native'
+import { PermissionsAndroid, FlatList, StyleSheet, Text } from 'react-native'
+import { Colors, TouchableOpacity, View, ListItem } from 'react-native-ui-lib'
+import { responseStatus } from '../../../Config/constants'
 
 /**
  * See https://reactnative.dev/docs/permissionsandroid for more information
@@ -16,7 +11,7 @@ import {
  */
 const requestAccessFineLocationPermission = async () => {
   const granted = await PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
     {
       title: 'Access fine location required for discovery',
       message:
@@ -47,6 +42,7 @@ export default class DeviceListScreen extends React.Component {
     super(props)
 
     this.state = {
+      registerdDevices: [],
       devices: [],
       accepting: false,
       discovering: false,
@@ -54,7 +50,12 @@ export default class DeviceListScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await requestAccessFineLocationPermission()
+    const response = await this.props.controller.getDispenserOfConsumer()
+    if ((response.status = responseStatus.SUCCESS)) {
+      this.setState({ registerdDevices: response.content })
+    }
     this.getBondedDevices()
   }
 
@@ -99,10 +100,11 @@ export default class DeviceListScreen extends React.Component {
     this.setState({ accepting: true })
 
     try {
-      let device = await RNBluetoothClassic.accept({ delimiter: '\r' })
+      let device = await RNBluetoothClassic.accept({ delimiter: '\n' })
       if (device) {
         this.display('device accepted!')
-        this.props.selectDevice(device)
+        console.log('device accepted')
+        this.props.selectDevice(device, true)
       }
     } catch (error) {
       // If we're not in an accepting state, then chances are we actually
@@ -224,11 +226,31 @@ export default class DeviceListScreen extends React.Component {
       ? 'Discovering (cancel)... '
       : 'Discover Devices'
 
-    const devicesToDisplay = this.state.devices.filter((d) =>
-      this.isDeviceOfInterest(d)
-    )
+    const registerdDevicesToDisplay = this.state.devices.filter((d) => {
+      try {
+        return this.state.registerdDevices.some(
+          (registerdDevice) => registerdDevice.id === d.address
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })
+    const unRegisterdDevicesToDisplay = this.state.devices.filter((d) => {
+      try {
+        return (
+          !this.state.registerdDevices.some(
+            (registerdDevice) => registerdDevice.id === d.address
+          ) && this.isDeviceOfInterest(d)
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })
     return (
       <View>
+        <Text text50 marginL-s5 marginV-s3 style={styles.title}>
+          Connect to dispenser
+        </Text>
         <Text>{this.state.msg}</Text>
         {this.props.bluetoothEnabled ? (
           <>
@@ -237,18 +259,26 @@ export default class DeviceListScreen extends React.Component {
                 <TouchableOpacity block onPress={toggleAccept}>
                   <Text> {acceptTxt} </Text>
                 </TouchableOpacity>
-                <TouchableOpacity block onPress={toggleDiscovery}>
-                  <Text> {discoveringTxt} </Text>
-                </TouchableOpacity>
               </View>
             ) : undefined}
 
             <View>
+              <Text text50 marginL-s5 marginV-s3 style={styles.subTitle}>
+                Available and registered devices
+              </Text>
               <DeviceList
-                devices={devicesToDisplay}
+                devices={registerdDevicesToDisplay}
                 onPress={this.props.selectDevice}
+                registered={true}
               />
-              <Text>End of List</Text>
+              <Text text50 marginL-s5 marginV-s3 style={styles.subTitle}>
+                Available and unrregistered devices
+              </Text>
+              <DeviceList
+                devices={unRegisterdDevicesToDisplay}
+                onPress={this.props.selectDevice}
+                registered={false}
+              />
             </View>
           </>
         ) : (
@@ -271,13 +301,14 @@ export default class DeviceListScreen extends React.Component {
  * @param {function} onPress
  * @param {function} onLongPress
  */
-export const DeviceList = ({ devices, onPress, onLongPress }) => {
+export const DeviceList = ({ devices, onPress, onLongPress, registered }) => {
   const renderItem = ({ item }) => {
     return (
       <DeviceListItem
         device={item}
         onPress={onPress}
         onLongPress={onLongPress}
+        registered={registered}
       />
     )
   }
@@ -289,24 +320,46 @@ export const DeviceList = ({ devices, onPress, onLongPress }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.address}
       />
-      <Text>My end</Text>
     </View>
   )
 }
 
-export const DeviceListItem = ({ device, onPress, onLongPress }) => {
+export const DeviceListItem = ({
+  device,
+  onPress,
+  onLongPress,
+  registered
+}) => {
   let bgColor = device.connected ? '#0f0' : '#fff'
   let icon = device.bonded ? 'ios-bluetooth' : 'ios-cellular'
 
   return (
     <TouchableOpacity
-      onPress={() => onPress(device)}
+      activeOpacity={1}
+      bg-grey40
+      paddingH-s5
+      paddingV-s4
+      key={device.address}
+      activeBackgroundColor={Colors.grey20}
+      style={{
+        borderBottomWidth: 1,
+        borderColor: Colors.white,
+        textAlign: 'left'
+      }}
+      onPress={() => onPress(device, registered)}
       onLongPress={() => onLongPress(device)}
-      style={styles.deviceListItem}
     >
-      <View>
-        <Text>{device.name}</Text>
-        <Text note>{device.address}</Text>
+      <View style={styles.card}>
+        <Text white text70M style={styles.option}>
+          {device.name}
+        </Text>
+        <Image
+          source={require('../assets/dispenser.png')}
+          style={styles.image}
+        />
+        {/* <Text white text70M style={styles.option}>
+          {device.address}
+        </Text> */}
       </View>
     </TouchableOpacity>
   )
@@ -328,5 +381,36 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  container: {
+    textAlign: 'center'
+  },
+  subTitle: {
+    fontSize: 15,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+  title: {
+    fontSize: 25,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+
+  option: {
+    color: 'white',
+    alignContent: 'flex-start'
+  },
+  image: {
+    width: 20,
+    height: 40,
+    marginLeft: 'auto'
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+    alignContent: 'space-between'
   }
 })
