@@ -28,12 +28,17 @@ class TestConsumers(TestCase):
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
 
-    pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
+    pod_type_details = {"name": "corpDrops",
+                        'capacity': 40, 'company': company_details['name']}
 
-    pod_details1 = {"serial_number": "1_1", "type_name": pod_type_details["name"]}
-    pod_details2 = {"serial_number": "1_2", "type_name": pod_type_details["name"]}
-    pod_details3 = {"serial_number": "1_3", "type_name": pod_type_details["name"]}
-    pod_details4 = {"serial_number": "1_4", "type_name": pod_type_details["name"]}
+    pod_details1 = {"serial_number": "1_1",
+                    "type_name": pod_type_details["name"]}
+    pod_details2 = {"serial_number": "1_2",
+                    "type_name": pod_type_details["name"]}
+    pod_details3 = {"serial_number": "1_3",
+                    "type_name": pod_type_details["name"]}
+    pod_details4 = {"serial_number": "1_4",
+                    "type_name": pod_type_details["name"]}
 
     def setUp(self):
         # Create 13 authors for pagination tests
@@ -54,6 +59,7 @@ class TestConsumers(TestCase):
         # create consumer 1 profile
         body = json.dumps(self.consumer1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
+
         self.assertEqual(response.status_code, 200)
         # register account 2
         body = json.dumps(self.account2)
@@ -62,7 +68,7 @@ class TestConsumers(TestCase):
         # login account 2
         body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
         response = self.client2.generic('GET', reverse('login'), body)
-        self.assertEqual(response.status_code, 200)
+sertEqual(response.status_code, 200)
 
     def setup_pods(self):
         self.db_proxy.add_company(self.company_details['name'])
@@ -91,7 +97,8 @@ class TestConsumers(TestCase):
         params = {"serial_num": dispenser_details['serial_number'],
                   "version": dispenser_details['version']}
         body = json.dumps(params)
-        response = self.client1.generic('POST', reverse('register dispenser'), body)
+        response = self.client1.generic(
+            'POST', reverse('register dispenser'), body)
         return response
 
     def register_pod_to_consumer(self, pod_details):
@@ -109,19 +116,22 @@ class TestConsumers(TestCase):
         return response
 
     def get_dosing_history(self):
-        response = self.client1.generic('GET', reverse('get_dosing_history'), '')
+        response = self.client1.generic(
+            'GET', reverse('get_dosing_history'), '')
         return response
 
     def add_feedback(self, dosing_id, feedback_rating: int, feedback_comment: str):
         params = {"dosing_id": dosing_id,
                   "rating": feedback_rating, "comment": feedback_comment}
         body = json.dumps(params)
-        response = self.client1.generic('POST', reverse('provide_feedback'), body)
+        response = self.client1.generic(
+            'POST', reverse('provide_feedback'), body)
         return response
 
     def get_feedback(self, dosing_id):
         params = {"dosing_id": dosing_id}
         response = self.client1.get(reverse('get_feedback_for_dosing'), params)
+
         return response
 
 
@@ -139,7 +149,8 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get consumer's dispensers
-        response = self.client1.generic('GET', reverse('get_dispensers_of_consumer'), '')
+        response = self.client1.generic(
+            'GET', reverse('get_dispensers_of_consumer'), '')
         self.assertEqual(response.status_code, 200)
         dispensers = json.loads(response.content)
         self.assertEqual(len(dispensers), 2)
@@ -156,11 +167,14 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # perform dosings
-        response = self.consumer_dose(self.pod_details1, amount=1.5, time='2020-05-20 16:05:00')
+        response = self.consumer_dose(
+            self.pod_details1, amount=1.5, time='2020-05-20 16:05:00')
         self.assertEqual(response.status_code, 200)
-        response = self.consumer_dose(self.pod_details1, amount=1.0, time='2020-05-20 16:10:00')
+        response = self.consumer_dose(
+            self.pod_details1, amount=1.0, time='2020-05-20 16:10:00')
         self.assertEqual(response.status_code, 200)
-        response = self.consumer_dose(self.pod_details2, amount=0.5, time='2020-05-20 16:15:00')
+        response = self.consumer_dose(
+            self.pod_details2, amount=0.5, time='2020-05-20 16:15:00')
         self.assertEqual(response.status_code, 200)
 
     def test_get_dosing_history(self):
