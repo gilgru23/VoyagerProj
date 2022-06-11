@@ -1,11 +1,9 @@
 // components/login.js
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, TextInput, Button, Alert } from 'react-native'
-import { Picker } from '@react-native-picker/picker'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import { StyleSheet, Text, View, TextInput, Alert } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { alert } from './utils'
-import { Switch } from 'react-native-ui-lib'
+import { Switch, Button } from 'react-native-ui-lib'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function ScheduledReminders({ navigation, route }) {
@@ -68,7 +66,7 @@ export default function ScheduledReminders({ navigation, route }) {
 
   const changeReminderStatus = async (reminder) => {
     if (reminder.enabled) {
-      PushNotification.cancelAllLocalNotifications(reminder.notification.id)
+      PushNotification.cancelLocalNotification(reminder.notification.id)
       const parsedNotification = JSON.stringify(reminder.notification)
       console.log('stringify notification', parsedNotification)
       await AsyncStorage.setItem(
@@ -96,27 +94,53 @@ export default function ScheduledReminders({ navigation, route }) {
     )
   }
 
+  const deleteReminder = async (reminder) => {
+    if (reminder.enabled) {
+      PushNotification.cancelLocalNotification(reminder.notification.id)
+    } else {
+      await AsyncStorage.removeItem(`notification_${reminder.notification.id}`)
+    }
+    const filteredScheduledReminders = scheduledReminders.filter(
+      (scheduledReminder) =>
+        scheduledReminder.notification.id !== reminder.notification.id
+    )
+    console.log('filtered reminders: ', filteredScheduledReminders)
+    setScheduledReminders(filteredScheduledReminders)
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Current Reminders</Text>
       {
         (console.log('The reminders are', scheduledReminders),
         scheduledReminders.map((scheduledReminder) => (
-          <View style={styles.option}>
-            <Text>{`Date of dosing: ${new Date(
-              scheduledReminder.notification.date
-            ).toDateString()}\n Time of dosing: ${new Date(
-              scheduledReminder.notification.date
-            ).toTimeString()}\n Title: ${
-              scheduledReminder.notification.title
-            }`}</Text>
-            <Switch
-              value={scheduledReminder.enabled}
-              onValueChange={async () =>
-                await changeReminderStatus(scheduledReminder)
-              }
-            />
-          </View>
+          <>
+            <View style={styles.reminder}>
+              <Text>{`Date of dosing: ${new Date(
+                scheduledReminder.notification.date
+              ).toDateString()}\n Time of dosing: ${new Date(
+                scheduledReminder.notification.date
+              ).toTimeString()}\n Title: ${
+                scheduledReminder.notification.title
+              }`}</Text>
+              <Switch
+                value={scheduledReminder.enabled}
+                onValueChange={async () =>
+                  await changeReminderStatus(scheduledReminder)
+                }
+              />
+            </View>
+            <View style={styles.option}>
+              <Button
+                style={styles.deletButton}
+                backgroundColor="red"
+                label="Delete reminder"
+                onPress={async () => await deleteReminder(scheduledReminder)}
+                center
+                size="small"
+              />
+            </View>
+          </>
         )))
       }
     </View>
@@ -130,7 +154,7 @@ const styles = StyleSheet.create({
   },
   option: {
     display: 'flex',
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
     marginBottom: 15,
@@ -138,6 +162,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: '#ccc',
     borderBottomWidth: 1
+  },
+  reminder: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignSelf: 'center'
   },
   container: {
     display: 'flex',

@@ -21,10 +21,10 @@ import PushNotification from 'react-native-push-notification'
 import { toDateString } from '../../utilsFunctions'
 
 export default function Signup({ navigation, route }) {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('gg')
+  const [lastName, setLastName] = useState('gg')
+  const [email, setEmail] = useState('gil@g.com')
+  const [password, setPassword] = useState('Aa12345678!')
   const [role, setRole] = useState('Consumer')
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [birthDate, setBirthDate] = useState(new Date())
