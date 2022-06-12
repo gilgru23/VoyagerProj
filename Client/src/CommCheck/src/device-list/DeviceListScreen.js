@@ -2,7 +2,13 @@ import React from 'react'
 import { Platform, Image } from 'react-native'
 import RNBluetoothClassic from 'react-native-bluetooth-classic'
 import { PermissionsAndroid, FlatList, StyleSheet, Text } from 'react-native'
-import { Colors, TouchableOpacity, View, ListItem } from 'react-native-ui-lib'
+import {
+  Colors,
+  TouchableOpacity,
+  View,
+  ListItem,
+  Button
+} from 'react-native-ui-lib'
 import { responseStatus } from '../../../Config/constants'
 
 /**
@@ -52,8 +58,7 @@ export default class DeviceListScreen extends React.Component {
 
   async componentDidMount() {
     await requestAccessFineLocationPermission()
-    // const response = await this.props.controller.getDispenserOfConsumer()
-    const response = { status: responseStatus.SUCCESS, content: [] }
+    const response = await this.props.controller.getDispenserOfConsumer()
     console.log(response)
     if ((response.status = responseStatus.SUCCESS)) {
       this.setState({ registerdDevices: response.content })
@@ -206,11 +211,12 @@ export default class DeviceListScreen extends React.Component {
     const lcName = d.name.toLowerCase()
     console.log(d.name)
     return (
-      lcName.includes('red') ||
-      lcName.includes('gal') ||
-      lcName.includes('lg') ||
-      lcName.includes('plt') ||
-      lcName.includes('21')
+      // lcName.includes('red') ||
+      // lcName.includes('gal') ||
+      // lcName.includes('lg') ||
+      // lcName.includes('plt') ||
+      // lcName.includes('21')
+      lcName.includes('dispenser')
     )
   }
 
@@ -291,6 +297,19 @@ export default class DeviceListScreen extends React.Component {
             </TouchableOpacity>
           </View>
         )}
+        <View style={styles.option}>
+          <Button
+            backgroundColor="grey"
+            label="Continue with offline mode"
+            borderRadius={7}
+            marginT={true}
+            onPress={() =>
+              this.props.navigation.navigate('Personal Page', {
+                consumer: this.props.consumer
+              })
+            }
+          />
+        </View>
       </View>
     )
   }
@@ -402,7 +421,8 @@ const styles = StyleSheet.create({
 
   option: {
     color: 'white',
-    alignContent: 'flex-start'
+    alignContent: 'flex-start',
+    marginTop: 10
   },
   image: {
     width: 20,

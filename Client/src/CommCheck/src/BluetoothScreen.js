@@ -154,7 +154,12 @@ export default class BluetoothScreen extends React.Component {
           <DeviceListScreen
             bluetoothEnabled={this.state.bluetoothEnabled}
             selectDevice={this.selectDevice}
+            navigation={this.props.navigation}
             controller={this.props.route.params.controller}
+            consumer={
+              this.props.route.params.consumer ||
+              new Consumer('gil@gmail.com', 'Gil', 'Gruber', new Date())
+            }
           />
         ) : (
           <ConnectionScreen

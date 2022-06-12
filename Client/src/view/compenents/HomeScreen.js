@@ -36,14 +36,17 @@ export default function HomeScreen({ navigation, test }) {
   return (
     <View style={styles.container}>
       <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
-      <Image source={require('./assets/dispenser.png')} />
+      <Image
+        source={require('./assets/dispenser.png')}
+        style={styles.dispenserImg}
+      />
       <View style={styles.buttonLayout}>
         <TouchableOpacity
           style={styles.loginBtn}
           onPress={() => navigation.navigate('Login')}
           testID={ids.home_login_btn}
         >
-          <Text style={styles.loginText}>LOGIN</Text>
+          <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
