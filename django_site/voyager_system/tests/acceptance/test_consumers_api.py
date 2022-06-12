@@ -68,7 +68,7 @@ class TestConsumers(TestCase):
         # login account 2
         body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
         response = self.client2.generic('GET', reverse('login'), body)
-sertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def setup_pods(self):
         self.db_proxy.add_company(self.company_details['name'])
