@@ -1,4 +1,4 @@
-# from django.utils.datetime_safe import datetime
+
 
 from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
 from voyager_system.dal_DEPRECATED.IMapper import IMapper
@@ -21,7 +21,6 @@ from voyager_system.common import Logger
 # noinspection SpellCheckingInspection
 class MedicalCenter:
     def __init__(self, db_proxy: DatabaseProxy, marketplace=None, notifier=None) -> None:
-        self.object_mapper: IMapper = None  # mapper is deprecated
         self.db = db_proxy
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
@@ -102,7 +101,7 @@ class MedicalCenter:
         consumer = self.get_consumer(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
-        new_dosing: Dosing = consumer.dose(pod_serial_number=pod_serial_num, amount=amount, time=time,
+        new_dosing: Dosing = consumer.dose(pod_serial_number=pod_serial_num, amount=amount, time_str=time,
                                            latitude=latitude, longitude=longitude)
         pod: Pod = consumer.get_pod_by_serial_number(pod_serial_num)
         self.db.add_dosing(new_dosing)

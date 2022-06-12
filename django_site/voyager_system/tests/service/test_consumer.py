@@ -1,8 +1,6 @@
 
 from django.test import TestCase
-from django.utils.datetime_safe import datetime
-
-from datetime import datetime
+from django.utils import timezone
 
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import PodType, Pod
@@ -142,10 +140,10 @@ class TestConsumer(TestCase):
         self.consumer_service.register_pod_to_consumer(c_id1,p_d3['serial_number'],p_d3['type_name'])
 
         result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d2['serial_number'],
-                                                     amount=0.5, time=datetime.now(), longitude=42.76, latitude=36.43)
+                                                     amount=0.5, time=timezone.now(), longitude=42.76, latitude=36.43)
         self.assertTrue(Res.is_successful(result))
         result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d3['serial_number'],
-                                                     amount=1.5, time=datetime.now(), longitude=42.76, latitude=36.43)
+                                                     amount=1.5, time=timezone.now(), longitude=42.76, latitude=36.43)
         self.assertTrue(Res.is_successful(result))
 
         result = self.consumer_service.get_consumer_dosing_history(c_id1)
