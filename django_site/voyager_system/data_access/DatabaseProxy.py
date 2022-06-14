@@ -1,6 +1,7 @@
 from voyager_system.common.ErrorTypes import DataAccessError
 from voyager_system.data_access.dtos import *
 from voyager_system.domain.medical_center.Consumer import Consumer
+from voyager_system.domain.medical_center.Caregiver import Caregiver
 from voyager_system.domain.medical_center.Dosing import *
 from voyager_system.domain.medical_center.Pod import *
 from voyager_system.domain.medical_center.Dispenser import Dispenser
@@ -115,6 +116,30 @@ class DatabaseProxy:
         pass
 
     # endregion Consumer
+
+    def has_caregiver(self, caregiver_id):
+        return db.has_caregiver(caregiver_id)
+
+
+    def add_caregiver(self, caregiver_id):
+        return db.add_caregiver(caregiver_id)
+
+
+    def get_caregiver(self, caregiver_id):
+        try:
+            account_dto = db.get_account_by_id(caregiver_id)
+            caregiver_dto = db.get_caregiver(caregiver_id)
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve caregiver from db, with id [{caregiver_id}]." + "\n" + str(e)
+            raise DataAccessError(err_str)
+        caregiver = self.dto_to_caregiver(caregiver_dto, account_dto)
+        return caregiver
+
+    # region Caregiver
+
+    # endregion Caregiver
 
     # region Pod
     def add_pod(self, pod: Pod):
@@ -326,6 +351,28 @@ class DatabaseProxy:
         consumer.dosing_reminders = None
 
         return consumer
+
+    @staticmethod
+    def caregiver_to_dto(caregiver: Caregiver):
+        dto = CaregiverDto()
+        dto.id = caregiver.id
+        dto.consumers = caregiver.consumers
+        return dto
+
+    @staticmethod
+    def dto_to_caregiver(caregiver_dto: CaregiverDto, account_dto: AccountDto):
+        caregiver = Caregiver()
+        # caregiver associations
+        caregiver.consumers = caregiver_dto.consumers
+        # account info
+        caregiver.id = account_dto.id
+        caregiver.email = account_dto.email
+        caregiver.first_name = account_dto.f_name
+        caregiver.last_name = account_dto.l_name
+        caregiver.date_of_birth = account_dto.dob
+        # caregiver.phone = account_dto.phone
+        caregiver.registration_date = account_dto.registration_date
+        return caregiver
 
     @staticmethod
     def dispenser_to_dto(dispenser: Dispenser, consumer_id: int = None):

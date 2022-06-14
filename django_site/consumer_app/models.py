@@ -104,6 +104,13 @@ class FeedbackReminder(models.Model):
     time = models.DateTimeField()
 
 
+class Caregiver(models.Model):
+    account = models.OneToOneField(Account, primary_key=True, parent_link=True, on_delete=models.CASCADE)
+    consumers = models.ManyToManyField(Consumer, blank=True, default=None)
+
+    def __str__(self):
+        return str(self.pk)
+
 #Voyager Manager
 # class VoyagerManager(models.Model):
 #     account = models.OneToOneField(Account, primary_key=True)

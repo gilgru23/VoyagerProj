@@ -134,6 +134,17 @@ class TestConsumers(TestCase):
 
         return response
 
+    def test_register_consumer(self):
+        body = json.dumps(self.consumer2)
+        response = self.client2.generic('GET', reverse('create consumer profile'), body)
+        self.assertEqual(response.status_code, 200)
+
+    def test_register_consumer_fail(self):
+        print(f'case should fail:')
+        print(f'consumer profile already exists')
+        body = json.dumps(self.consumer1)
+        response = self.client1.generic('GET', reverse('create consumer profile'), body)
+        self.assertEqual(response.status_code, 400)
 
     def test_register_pod(self):
         response = self.register_pod_to_consumer(self.pod_details1)
@@ -204,6 +215,7 @@ class TestConsumers(TestCase):
         self.assertEqual(feedback['comment'], "it was good")
 
     def test_get_feedback_fail(self):
+        print(f'case should fail:')
         print(f'no feedback was provided for the requested dosing')
         dosing_id = 1
         response = self.get_feedback(dosing_id=dosing_id)

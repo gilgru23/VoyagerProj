@@ -30,6 +30,15 @@ class GuestService:
             return Result.failure("Unable to complete the operation")
 
 
+    def create_caregiver_profile(self, caregiver_id:int):
+        try:
+            self.system_management.create_caregiver_profile(caregiver_id)
+            return Result.success()
+        except AppOperationError as e:
+            return Result.failure(str(e))
+        except DataAccessError as e:
+            return Result.failure("Unable to complete the operation")
+
     def get_account_details(self, account_id: int):
         try:
             account_details = self.system_management.get_account_details(account_id)
@@ -38,7 +47,6 @@ class GuestService:
             return Result.failure(str(e))
         except DataAccessError as e:
             return Result.failure("Unable to complete the operation")
-
 
 
     def get_consumer_profile(self, consumer_id: int):

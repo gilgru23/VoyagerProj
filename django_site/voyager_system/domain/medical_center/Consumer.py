@@ -13,7 +13,7 @@ class Consumer(Account):
     def __init__(self) -> None:
         super().__init__()
         # dispenser-related relations
-        self.dispensers = []  # 1-to-n (?)
+        self.dispensers = []  # 1-to-n
         self.pods = []  # 1-to-n
         self.dosing_history = []  # 1-to-n
         self.dosing_reminders = []  # 1-to-n
