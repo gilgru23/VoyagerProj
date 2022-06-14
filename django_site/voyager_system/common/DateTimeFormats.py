@@ -17,7 +17,7 @@ def parse_string_to_timezone(date_time_str:str):
     :param date_time_str: string of format "%Y-%m-%d %H:%M:%S"
     :return: if succeeds returns timezone of the given string. else returns timezone.now()
     """
-    
+
     try:
         raw_time = timezone.now().fromisoformat(date_time_str)
         time = timezone.make_aware(raw_time, timezone.get_current_timezone())
