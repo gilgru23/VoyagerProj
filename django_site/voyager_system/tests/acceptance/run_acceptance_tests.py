@@ -5,8 +5,8 @@ import manage
 
 
 if __name__ == '__main__':
-    # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance']
-    args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api']
+    args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance']
+    # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api']
     # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api.TestConsumers.test_add_feedback_to_dosing']
     sys.argv = args
     manage.main()

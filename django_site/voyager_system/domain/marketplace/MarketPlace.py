@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from voyager_system.domain.DatabaseProxy import DatabaseProxy
+from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import Pod, PodType
 

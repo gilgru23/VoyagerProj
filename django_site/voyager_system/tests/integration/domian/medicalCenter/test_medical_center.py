@@ -2,23 +2,20 @@ import unittest
 
 from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.tests.test_objects.DummyMapper import DummyMapper
-from voyager_system.domain.DatabaseProxy import *
+from voyager_system.data_access.DatabaseProxy import *
 from voyager_system.tests.test_objects.DummyDatabase import DummyDatabase
 from voyager_system.domain.medical_center.Consumer import Consumer
 from voyager_system.domain.medical_center.Dosing import Dosing
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 from voyager_system.domain.medical_center.Pod import *
 
-import os
-
-os.system("echo Hello from the other side!")
 
 class TestMedicalCenter(unittest.IsolatedAsyncioTestCase):
     def __init__(self, *args, **kwargs):
         super(TestMedicalCenter, self).__init__(*args, **kwargs)
         self.test_mapper = DummyMapper(consumer_factory=consumer_factory)
         self.test_db = DummyDatabase(consumer_factory=consumer_factory)
-        self.medical_center = MedicalCenter(mapper=self.test_mapper, db_proxy=DatabaseProxy(self.test_db))
+        self.medical_center = MedicalCenter(db_proxy=DatabaseProxy(self.test_db))
 
     def setUp(self):
         print('\nset up integration test')

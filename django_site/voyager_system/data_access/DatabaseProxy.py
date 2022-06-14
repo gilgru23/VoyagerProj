@@ -8,9 +8,8 @@ import voyager_system.data_access.database as db
 from django.core.exceptions import ObjectDoesNotExist
 from voyager_system.domain.system_management.Account import Account
 
-# TODO: add loggings
-
 # TODO:: add logging
+
 class DatabaseProxy:
     def __init__(self, db_impl, object_cache=None):
         super().__init__()
@@ -383,13 +382,7 @@ class DatabaseProxy:
         pod.remainder = pod_dto.remainder
         return pod
 
-    # @staticmethod
-    # def dto_to_pod_with_type(pod_dto: PodDto,pod_type_dto: PodTypeDto):
-    #     pod: Pod = Pod()
-    #     pod.serial_number = pod_dto.serial_num
-    #     pod.type = DatabaseProxy.dto_to_pod_type(pod_type_dto)
-    #     pod.remainder = pod_dto.remainder
-    #     return pod
+
 
     @staticmethod
     def dosing_to_dto(dosing: Dosing):

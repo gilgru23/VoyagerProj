@@ -1,8 +1,8 @@
 import re
 from voyager_system.common.ErrorTypes import AppOperationError
-from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
+from voyager_system.common.DateTimeFormats import date_to_str
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
-from voyager_system.domain.DatabaseProxy import DatabaseProxy
+from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 
 
 # @TODO:: add logs
