@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db import models
-from accounts.models import Account
+from account_api.models import Account
+
 
 # Create your models here.
 class Consumer(models.Model):
@@ -19,12 +20,14 @@ class Consumer(models.Model):
     weight = models.IntegerField()
     units = models.IntegerField(choices=Unit.choices)
     gender = models.IntegerField(choices=Gender.choices)
+
     # goal = models.CharField(max_length=50)
 
     def __str__(self):
         return str(self.pk)
         # act : Account = self.account
         # return act.f_name + ' ' + act.l_name + ' ' + act.email
+
 
 class Dispenser(models.Model):
     serial_num = models.CharField(max_length=100, unique=True, null=False)
@@ -35,13 +38,16 @@ class Dispenser(models.Model):
     def __str__(self):
         return self.serial_num
 
-#Company
+
+# Company
 class Business(models.Model):
     name = models.CharField(max_length=50, unique=True)
     docs_path = models.CharField(max_length=200, null=True, blank=True)
+
     # first_rep = models.ForeignKey('Representative')
     def __str__(self):
         return "Business: " + self.name
+
 
 class Representative(models.Model):
     account = models.OneToOneField(Account, primary_key=True, on_delete=models.CASCADE)
@@ -51,11 +57,13 @@ class Representative(models.Model):
     def __str__(self):
         return str(self.pk)
 
+
 class Company(models.Model):
     business = models.OneToOneField(Business, primary_key=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)
+
 
 class PodType(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
@@ -67,6 +75,7 @@ class PodType(models.Model):
     def __str__(self):
         return self.name
 
+
 class Pod(models.Model):
     serial_num = models.CharField(max_length=100, unique=True)
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE, null=True, blank=True)
@@ -75,6 +84,7 @@ class Pod(models.Model):
 
     def __str__(self):
         return str(self.pod_type) + " " + self.serial_num
+
 
 class Regimen(models.Model):
     consumer = models.OneToOneField(Consumer, on_delete=models.CASCADE)
@@ -86,6 +96,7 @@ class Regimen(models.Model):
     def __str__(self):
         return str(self.consumer) + " regimen"
 
+
 class Dosing(models.Model):
     pod = models.ForeignKey(Pod, on_delete=models.CASCADE)
     time = models.DateTimeField()
@@ -93,11 +104,13 @@ class Dosing(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
+
 class Feedback(models.Model):
     dosing = models.OneToOneField(Dosing, on_delete=models.CASCADE)
     rating = models.IntegerField()
     time = models.DateTimeField(default=timezone.now)
     comment = models.CharField(max_length=200, null=True, blank=True)
+
 
 class FeedbackReminder(models.Model):
     dosing = models.OneToOneField(Dosing, on_delete=models.CASCADE)
@@ -111,7 +124,7 @@ class Caregiver(models.Model):
     def __str__(self):
         return str(self.pk)
 
-#Voyager Manager
+# Voyager Manager
 # class VoyagerManager(models.Model):
 #     account = models.OneToOneField(Account, primary_key=True)
 #     can_appoint = models.BooleanField()

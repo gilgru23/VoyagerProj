@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpRequest
 
-from accounts.models import Account
+from account_api.models import Account
 import voyager_system.service.ManagerService as manager_service
 import json
 

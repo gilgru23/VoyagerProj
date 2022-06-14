@@ -2,8 +2,8 @@ from time import time
 from turtle import pos
 from typing import List
 
-from accounts.models import Account
-from consumer_app.models import Consumer, Dispenser, Pod, PodType, Business, Company, Dosing, Feedback, \
+from account_api.models import Account
+from consumer_api.models import Consumer, Dispenser, Pod, PodType, Business, Company, Dosing, Feedback, \
     FeedbackReminder, Regimen, Caregiver
 from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto, PodTypeDto, PodDto, DosingDto, \
     RegimenDto, FeedbackDto, FeedbackReminderDto, CaregiverDto
