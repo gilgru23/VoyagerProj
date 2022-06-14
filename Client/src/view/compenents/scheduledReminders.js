@@ -116,9 +116,9 @@ export default function ScheduledReminders({ navigation, route }) {
         scheduledReminders.map((scheduledReminder) => (
           <>
             <View style={styles.reminder}>
-              <Text>{`Date of dosing: ${new Date(
+              <Text>{`Date of alert: ${new Date(
                 scheduledReminder.notification.date
-              ).toDateString()}\n Time of dosing: ${new Date(
+              ).toDateString()}\n Time of alert: ${new Date(
                 scheduledReminder.notification.date
               ).toTimeString()}\n Title: ${
                 scheduledReminder.notification.title

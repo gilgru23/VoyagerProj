@@ -4,7 +4,6 @@ import { Text, View, StyleSheet, ScrollView } from 'react-native'
 import RNBluetoothClassic from 'react-native-bluetooth-classic'
 import DeviceListScreen from './device-list/DeviceListScreen'
 import ConnectionScreen from './connection/ConnectionScreen'
-import { Consumer } from '../../model/Consumer'
 import { responseStatus } from '../../Config/constants'
 // import DispenserDemo from '../../Communication/dispenserDemo'
 export default class BluetoothScreen extends React.Component {
@@ -160,11 +159,6 @@ export default class BluetoothScreen extends React.Component {
             device={this.state.device}
             onBack={() => this.setState({ device: undefined })}
             navigation={this.props.navigation}
-            consumer={
-              this.props.route.params.consumer ||
-              new Consumer('gil@gmail.com', 'Gil', 'Gruber', new Date())
-            }
-            controller={this.props.route.params.controller}
           />
           // <DispenserDemo
           //   device={this.state.device}

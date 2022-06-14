@@ -3,7 +3,6 @@ import { View, Text } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './src/view/compenents/HomeScreen'
-import Bluetooth from './src/view/compenents/Bluetooth'
 import Signup from './src/view/compenents/signup'
 import Login from './src/view/compenents/login'
 import Communication from './src/view/compenents/Communication.js'
@@ -56,11 +55,6 @@ function App() {
         <Stack.Screen
           name="BluetoothScreen"
           component={BluetoothScreen}
-          initialParams={{ controller: controller }}
-        />
-        <Stack.Screen
-          name="Bluetooth"
-          component={Bluetooth}
           initialParams={{ controller: controller }}
         />
         <Stack.Screen

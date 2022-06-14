@@ -236,44 +236,6 @@ export default class ConnectionScreen extends React.Component {
   }
 
   async addDataMessage(message) {
-    try {
-      console.log('message received: ' + JSON.stringify(message))
-      console.log(message.data.substring(message.data.indexOf('{')))
-      const messageObj = message.data.substring(message.data.indexOf('{'))
-      const messageContent = JSON.parse(messageObj)
-      const localTime = this.getUserTime(new Date(message.timestamp))
-      console.log(localTime)
-      const timeToRemindFeedBack = this.setFeedbackReminderTime(localTime)
-      await this.doseRequests(
-        messageContent.podSerial,
-        messageContent.podType,
-        messageContent.amount
-      )
-      if (messageContent.type === msgsFromDispenserTypes.DOSING) {
-        console.log(message.timestamp)
-        PushNotification.localNotification({
-          channelId: this.props.consumer.email || 'gilgu@gmail.com',
-          title: `Message from dispneser ${this.props.device.name}`,
-          message: `Dose has been made:\n  time: ${localTime.toString()} \n pod type: ${
-            messageContent.podType
-          }\n dosage:${messageContent.amount} mg` // (required)
-        })
-        PushNotification.localNotificationSchedule({
-          channelId: this.props.consumer.email || 'gilgu@gmail.com',
-          date: timeToRemindFeedBack,
-          title: `Reminder For Feeback`,
-          message: `This is reminder for dose feedback that has been made in: ${this.props.device.name}:\n  time: ${message.timestamp} \n pod type: ${messageContent.podType}\n dosage:${messageContent.amount} mg` // (required)
-        })
-      } else {
-        PushNotification.localNotification({
-          channelId: this.props.consumer.email || 'gilgu@gmail.com',
-          title: `Message from dispneser ${this.props.device.name}`,
-          message: `Pod  ${messageContent.podSerial} from type ${messageContent.podType} is running low` // (required)
-        })
-      }
-    } catch (e) {
-      console.log(e)
-    }
     this.setState({ data: [message, ...this.state.data] })
   }
 
@@ -328,29 +290,6 @@ export default class ConnectionScreen extends React.Component {
     // return <View><Text>Herro</Text></View>
     return (
       <View style={styles.container}>
-        {/* <View style={styles.connectionScreenWrapper}>
-          <FlatList
-            style={styles.connectionScreenOutput}
-            contentContainerStyle={{ justifyContent: 'flex-end' }}
-            inverted
-            ref="scannedDataList"
-            data={this.state.data}
-            keyExtractor={(item) => item.timestamp.toISOString()}
-            renderItem={({ item }) => (
-              <View
-                id={item.timestamp.toISOString()}
-                flexDirection={'row'}
-                justifyContent={'flex-start'}
-              >
-                <Text>{item.timestamp.toLocaleDateString()}</Text>
-                <Text>{item.type === 'sent' ? ' < ' : ' > '}</Text>
-                <Text flexShrink={1}>{item.data.trim()}</Text>
-              </View>
-            )}
-          /> */}
-        <Text
-          style={styles.header}
-        >{`Hello ${this.props.consumer.firstName} You are connected to dispneser: ${this.props.device.name}`}</Text>
         <View style={styles.option}>
           <TextInput
             style={styles.inputAreaTextInput}
@@ -378,7 +317,7 @@ export default class ConnectionScreen extends React.Component {
         <View style={styles.option}>
           <TextInput
             style={styles.inputAreaTextInput}
-            placeholder={'Enter pod typer'}
+            placeholder={'Enter pod type'}
             value={this.state.podTypeText}
             onChangeText={(text) => this.setState({ podTypeText: text })}
             autoCapitalize="none"

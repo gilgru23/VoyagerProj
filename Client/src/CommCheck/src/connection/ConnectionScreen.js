@@ -26,7 +26,7 @@ import { Consumer } from '../../../model/Consumer'
 import PushNotification from 'react-native-push-notification'
 import { msgsFromDispenserTypes } from '../../../Config/constants'
 import { timeIntervalForFeedbackReminder } from '../../../Config/constants'
-
+import { alert } from '../../../view/compenents/utils'
 /**
  * Manages a selected device connection.  The selected Device should
  * be provided as {@code props.device}, the device will be connected
@@ -106,11 +106,13 @@ export default class ConnectionScreen extends React.Component {
       this.setState({ connection })
       this.initializeRead()
     } catch (error) {
+      alert('Error', 'The connection to the dispenser was Failed')
       this.addData({
         data: `Connection failed: ${error.message}`,
         timestamp: new Date(),
         type: 'error'
       })
+      this.props.selectDevice(null, false)
     }
   }
 
@@ -350,14 +352,17 @@ export default class ConnectionScreen extends React.Component {
               </View>
             )}
           /> */}
-        <Text
-          style={styles.header}
-        >{`Hello ${this.props.consumer.firstName} You are connected to dispneser: ${this.props.device.name}`}</Text>
+        <Text style={styles.header}>{`Hello ${
+          this.props.consumer.firstName
+        } You are ${
+          this.state.connection ? '' : 'still not '
+        }connected to dispneser: ${this.props.device.name}`}</Text>
         <View style={styles.option}>
           <Button
             backgroundColor="green"
             label="Go to personal page"
             borderRadius={7}
+            disabled={!this.state.connection}
             onPress={() =>
               this.props.navigation.navigate('Personal Page', {
                 device: this.props.device,
