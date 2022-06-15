@@ -9,7 +9,7 @@ import { Button, TextField } from 'react-native-ui-lib'
 import { provideFeedback } from '../../Communication/ApiRequests'
 import { responseStatus } from '../../Config/constants'
 
-export default function Feeback({ navigation, route }) {
+export default function DosingFeeback({ navigation, route }) {
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [timeModalOpen, setTimeModalOpen] = useState(false)
   const [alarmDate, setAlarmDate] = useState(
@@ -24,18 +24,6 @@ export default function Feeback({ navigation, route }) {
       notifications.forEach((notifcation) => console.log(notifcation))
     )
   }, [])
-  function onSubmit() {}
-
-  const onChangeDatePicker = (event, selectedDate) => {
-    console.log(alarmDate)
-    setAlarmDate(selectedDate)
-    setDateModalOpen(false)
-  }
-
-  const onChangeTimePicker = (event, selectedDate) => {
-    setAlarmDate(selectedDate)
-    setTimeModalOpen(false)
-  }
   const ratingCompleted = (rating) => {
     setStarCount(rating)
   }

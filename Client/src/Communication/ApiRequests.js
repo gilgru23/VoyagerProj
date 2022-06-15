@@ -23,6 +23,7 @@ export const registerUser = async (
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
+    console.log(e)
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
@@ -88,6 +89,7 @@ export const registerDispenser = async (id, name) => {
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
+    console.log(e)
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
@@ -129,10 +131,12 @@ export const getDispensersOfConsumer = async () => {
       `${baseURL}/consumers/get_dispensers_of_consumer`
     )
     if (response) {
+      console.log('Got from the server:', response)
       return createResponseObj(responseStatus.SUCCESS, response.data)
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
+    console.log(e)
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
@@ -190,5 +194,23 @@ export const provideFeedback = async (dosingId, rating, comment) => {
     return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
   } catch (e) {
     return createResponseObj(responseStatus.FAILURE, 'feedback not accepted')
+  }
+}
+
+export const getFeedback = async (dosingId) => {
+  try {
+    console.log('dosing id of get feedback', dosingId)
+    const response = await axios.post(
+      `${baseURL}/consumers/get_feedback_for_dosing`,
+      {
+        dosing_id: dosingId
+      }
+    )
+    if (response) {
+      return createResponseObj(responseStatus.SUCCESS, response.data)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'No available feedback ')
+  } catch (e) {
+    return createResponseObj(responseStatus.FAILURE, 'No available feedback ')
   }
 }

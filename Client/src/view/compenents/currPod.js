@@ -1,10 +1,6 @@
 // components/login.js
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, FlatList, Image } from 'react-native'
-import { Picker } from '@react-native-picker/picker'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import PushNotification from 'react-native-push-notification'
-import { alert } from './utils'
 import { responseStatus } from '../../Config/constants'
 import {
   Colors,
@@ -36,7 +32,6 @@ export default function History({ navigation, route }) {
         activeBackgroundColor={Colors.grey60}
         activeOpacity={0.3}
         height={77.5}
-        onPress={() => Alert.alert(`pressed on order #${id + 1}`)}
       >
         <ListItem.Part left>
           <Image source={require('./assets/pod.png')} style={styles.image} />

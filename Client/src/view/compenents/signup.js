@@ -25,7 +25,7 @@ export default function Signup({ navigation, route }) {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('Consumer')
+  const [role, setRole] = useState('')
   const [dateModalOpen, setDateModalOpen] = useState(false)
   const [birthDate, setBirthDate] = useState(new Date())
   const [controller, setConroller] = useState(route.params.controller)

@@ -9,7 +9,8 @@ import {
   getDosingHistory as getDosingHistoryRequest,
   getPods as getPodsRequest,
   logout as logoutRequest,
-  provideFeedback as provideFeedbackRequest
+  provideFeedback as provideFeedbackRequest,
+  getFeedback as getFeedbackRequest
 } from '../Communication/ApiRequests.js'
 
 import { Consumer } from './Consumer.js'
@@ -19,7 +20,7 @@ import { Dosing } from './dosing.js'
 import { MockServer } from '../Communication/mockServer.js'
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj, toDateString } from '../utilsFunctions.js'
-
+import { Feedback } from './feedback'
 export class Model {
   constructor(testMode) {
     console.log(testMode)
@@ -50,6 +51,8 @@ export class Model {
     this.provideFeedbackReq = testMode
       ? this.mock.provideFeedback
       : provideFeedbackRequest
+
+    this.getFeedbackReq = testMode ? this.mock.getFeedback : getFeedbackRequest
   }
 
   registerUser = async (email, password, firstName, lastName, birthDate) => {
@@ -195,6 +198,20 @@ export class Model {
     if (response.status === responseStatus.SUCCESS) {
       console.log('provide feedback in model')
       return createResponseObj(responseStatus.SUCCESS, response.content)
+    }
+    return createResponseObj(responseStatus.FAILURE, 'Server error')
+  }
+
+  getFeedback = async (dosingId) => {
+    console.log('get feedback in model')
+    const response = await this.getFeedbackReq(dosingId)
+    if (response.status === responseStatus.SUCCESS) {
+      console.log('response about getFeeback', response.content)
+      const { dosing_id, time, rating, comment } = response.content
+      return createResponseObj(
+        responseStatus.SUCCESS,
+        new Feedback(dosing_id, time, rating, comment)
+      )
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }

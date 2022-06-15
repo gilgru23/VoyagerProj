@@ -24,6 +24,10 @@ export default function History({ navigation, route }) {
       const response = await route.params.controller.getDosingHistory()
       if (response.status === responseStatus.SUCCESS) {
         console.log(response.content)
+        const dosingFeedback = await route.params.controller.getFeedback(
+          response.content[0].id
+        )
+        console.log('dosing feeback:', dosingFeedback)
         setDosingHistory(response.content)
       }
     }
@@ -39,7 +43,7 @@ export default function History({ navigation, route }) {
         activeOpacity={0.3}
         height={77.5}
         onPress={() =>
-          navigation.navigate('Feedback', {
+          navigation.navigate('Dosing Feedback', {
             dosing: row,
             consumer: route.params.consumer
           })
