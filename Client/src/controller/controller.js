@@ -115,6 +115,12 @@ export class Controller {
   }
 
   provideFeedback = async (dosingId, rating, comment) => {
+    console.log('provide feedback in controller')
     return await this.model.provideFeedback(dosingId, rating, comment)
+  }
+
+  getFeedback = async (dosingId) => {
+    console.log('get feedback in controller')
+    return await this.model.getFeedback(dosingId)
   }
 }

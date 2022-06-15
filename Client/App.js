@@ -3,7 +3,6 @@ import { View, Text } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './src/view/compenents/HomeScreen'
-import Bluetooth from './src/view/compenents/Bluetooth'
 import Signup from './src/view/compenents/signup'
 import Login from './src/view/compenents/login'
 import Communication from './src/view/compenents/Communication.js'
@@ -17,7 +16,7 @@ import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
 import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
 import History from './src/view/compenents/history'
 import PersonalPage from './src/view/compenents/personalPage'
-import Feeback from './src/view/compenents/feedback'
+import DosingFeeback from './src/view/compenents/dosingFeedback'
 import ScheduledReminders from './src/view/compenents/scheduledReminders'
 
 const Stack = createNativeStackNavigator()
@@ -29,8 +28,8 @@ function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen
-          name="Feedback"
-          component={Feeback}
+          name="Dosing Feedback"
+          component={DosingFeeback}
           initialParams={{ controller: controller }}
         />
         <Stack.Screen
@@ -56,11 +55,6 @@ function App() {
         <Stack.Screen
           name="BluetoothScreen"
           component={BluetoothScreen}
-          initialParams={{ controller: controller }}
-        />
-        <Stack.Screen
-          name="Bluetooth"
-          component={Bluetooth}
           initialParams={{ controller: controller }}
         />
         <Stack.Screen

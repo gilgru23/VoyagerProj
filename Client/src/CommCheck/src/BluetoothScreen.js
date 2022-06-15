@@ -28,8 +28,9 @@ export default class BluetoothScreen extends React.Component {
    * @param device the BluetoothDevice selected or connected
    */
   selectDevice = async (device, registered) => {
-    console.log(registered)
-    if (!registered) {
+    if (!device) {
+      this.setState({ device })
+    } else if (!registered) {
       const response =
         await this.props.route.params.controller.registerDispenser(
           device.address,
@@ -154,11 +155,17 @@ export default class BluetoothScreen extends React.Component {
           <DeviceListScreen
             bluetoothEnabled={this.state.bluetoothEnabled}
             selectDevice={this.selectDevice}
+            navigation={this.props.navigation}
             controller={this.props.route.params.controller}
+            consumer={
+              this.props.route.params.consumer ||
+              new Consumer('gil@gmail.com', 'Gil', 'Gruber', new Date())
+            }
           />
         ) : (
           <ConnectionScreen
             device={this.state.device}
+            selectDevice={this.selectDevice}
             onBack={() => this.setState({ device: undefined })}
             navigation={this.props.navigation}
             consumer={

@@ -5,7 +5,7 @@ import { responseStatus } from '../../Config/constants'
 
 export default function PersonalPage({ route, navigation }) {
   const [searchText, setSearchText] = React.useState('')
-  const screens = [
+  const defaultScreens = [
     {
       id: 'Current Pods',
       title: 'Personal pods page',
@@ -28,6 +28,15 @@ export default function PersonalPage({ route, navigation }) {
     }
   ]
 
+  const dispenserConnectionScreen = {
+    id: 'BluetoothScreen',
+    title: 'Connect application to your dispenser',
+    img: require('./assets/dispenser.png')
+  }
+  const screens = route.params.device
+    ? defaultScreens
+    : [...defaultScreens, dispenserConnectionScreen]
+
   const handleLogout = async () => {
     const response = await route.params.controller.logout()
     if (response.status === responseStatus.SUCCESS) {
@@ -48,7 +57,9 @@ export default function PersonalPage({ route, navigation }) {
           <Image source={require('./assets/voyagerLogo.png')} marginLeft={50} />
           <View style={styles.container}>
             <Text text50 marginL-s5 marginV-s3 style={styles.header}>
-              {`Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`}
+              {route.params.device
+                ? `Hello ${route.params.consumer.firstName} you are connected to the dispenser:${route.params.device.name}`
+                : `Hello ${route.params.consumer.firstName} you are in offline mode`}
             </Text>
             {screens
               .map((screen) => {

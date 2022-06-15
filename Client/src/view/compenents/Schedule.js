@@ -54,19 +54,6 @@ export default function Schedule({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Set Dosing Reminder</Text>
-      {scheduledReminders.map((scheduledReminder) => (
-        <View style={styles.option}>
-          <Text>{`Date of dosing: ${new Date(
-            scheduledReminder.notification.date
-          ).toDateString()} on time: ${new Date(
-            scheduledReminder.notification.date
-          ).toTimeString()}`}</Text>
-          <Switch
-            value={true}
-            onValueChange={() => console.log('value changed')}
-          />
-        </View>
-      ))}
       <View style={styles.option}>
         <Button
           onPress={() => setDateModalOpen(true)}
