@@ -10,7 +10,7 @@ class TestAccounts(TestCase):
     guest_service = ServiceSetup.get_guest_service()
     db_proxy = guest_service.system_management.db_proxy
 
-    account1 = {'email': "micheal@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "micheal",
+    account1 = {'email': "michael@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "michael",
                 'l_name': "scott", 'dob': "1962-01-01"}
     consumer1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
                  'goal': 'is there?'}

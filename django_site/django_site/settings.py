@@ -151,7 +151,9 @@ LOGGING = {
         'domain_layer_log_file':{
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'Domain_Layer.log'
+            'filename': BASE_DIR / 'logs/Domain_Layer.log',
+            'formatter': 'verbose'
+
         }
     },
     'loggers': {

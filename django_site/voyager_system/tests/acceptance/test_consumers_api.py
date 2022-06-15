@@ -14,13 +14,13 @@ class TestConsumers(TestCase):
     client1 = Client()
     client2 = Client()
 
-    account1 = {'email': "micheal@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "micheal",
+    account_details1 = {'email': "michael@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "michael",
                 'l_name': "scott", 'dob': "1962-01-01"}
-    consumer1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
+    consumer_details1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
                  'goal': 'is there?'}
-    account2 = {'email': "jim@dundermifflin.com", 'pwd': '32edefdwQ', 'phone': "8888888", 'f_name': "jim",
+    account_details2 = {'email': "jim@dundermifflin.com", 'pwd': '32edefdwQ', 'phone': "8888888", 'f_name': "jim",
                 'l_name': "halpert", 'dob': "1979-01-01"}
-    consumer2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
+    consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                  'goal': 'pam'}
 
     company_details = {'name': "E-corp"}
@@ -49,24 +49,24 @@ class TestConsumers(TestCase):
 
     def setup_accounts(self):
         # register account 1
-        body = json.dumps(self.account1)
+        body = json.dumps(self.account_details1)
         response = self.client1.generic('POST', reverse('register'), body)
         self.assertEqual(response.status_code, 200)
         # login account 1
-        body = json.dumps(self.account1)
+        body = json.dumps(self.account_details1)
         response = self.client1.generic('POST', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
         # create consumer 1 profile
-        body = json.dumps(self.consumer1)
+        body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
 
         self.assertEqual(response.status_code, 200)
         # register account 2
-        body = json.dumps(self.account2)
+        body = json.dumps(self.account_details2)
         response = self.client2.generic('POST', reverse('register'), body)
         self.assertEqual(response.status_code, 200)
         # login account 2
-        body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
+        body = json.dumps({'email': self.account_details2['email'], 'pwd': self.account_details2['pwd']})
         response = self.client2.generic('GET', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
 
@@ -135,22 +135,25 @@ class TestConsumers(TestCase):
         return response
 
     def test_register_consumer(self):
-        body = json.dumps(self.consumer2)
+        print(f'Test: register consumer - success')
+        body = json.dumps(self.consumer_details2)
         response = self.client2.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 200)
 
     def test_register_consumer_fail(self):
-        print(f'case should fail:')
-        print(f'consumer profile already exists')
-        body = json.dumps(self.consumer1)
+        print(f'Test: register consumer - fail')
+        print(f'\tconsumer profile already exists')
+        body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 400)
 
     def test_register_pod(self):
+        print(f'Test: register pod - success')
         response = self.register_pod_to_consumer(self.pod_details1)
         self.assertEqual(response.status_code, 200)
 
     def test_register_dispenser(self):
+        print(f'Test: register dispenser - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -167,6 +170,7 @@ class TestConsumers(TestCase):
         self.assertEqual(len(dispensers), 2)
 
     def test_consumer_dose(self):
+        print(f'Test: consumer dose - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -189,6 +193,7 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_dosing_history(self):
+        print(f'Test: get dosing history - success')
         # perform dosings
         self.test_consumer_dose()
         # get history
@@ -198,7 +203,8 @@ class TestConsumers(TestCase):
         self.assertEqual(len(dosings), 3)
 
     def test_add_feedback_to_dosing(self):
-        # perform dosings
+        print(f'Test: add feedback to dosing - success')
+        # perform dosing
         self.test_consumer_dose()
         # get history
         response = self.get_dosing_history()
@@ -215,8 +221,8 @@ class TestConsumers(TestCase):
         self.assertEqual(feedback['comment'], "it was good")
 
     def test_get_feedback_fail(self):
-        print(f'case should fail:')
-        print(f'no feedback was provided for the requested dosing')
+        print(f'Test: get feedback - fail')
+        print(f'\tno feedback was provided for the requested dosing')
         dosing_id = 1
         response = self.get_feedback(dosing_id=dosing_id)
         self.assertEqual(response.status_code, 400)

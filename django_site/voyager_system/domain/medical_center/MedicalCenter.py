@@ -41,11 +41,11 @@ class MedicalCenter:
         try:
             consumer = self.db.get_consumer(consumer_id)
         except DataAccessError as e:
-            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] .\n' + str(e)
-            self.logger.info(err_str)
+            err_str = f'Error: get consumer - consumer [id: {consumer_id}]:\n\t' + str(e)
+            self.logger.error(err_str)
             raise e
         if not consumer:
-            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] is not registered in the system.'
+            err_str = f'Error: get consumer - consumer [id: {consumer_id}] is not registered in the system.'
             self.logger.debug(err_str)
             raise AppOperationError(err_str)
         self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
@@ -76,7 +76,6 @@ class MedicalCenter:
 
         type_names = dict()
         dosings = self.db.get_consumer_dosing(consumer_id)
-        # pod_serials = {dosing.pod_serial_number for dosing in dosings}
         history = [dosing_to_dict(d, get_pod_type(d.pod_serial_number)) for d in dosings]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] dosing history")
         return history

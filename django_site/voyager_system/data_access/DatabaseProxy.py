@@ -12,9 +12,8 @@ from voyager_system.domain.system_management.Account import Account
 # TODO:: add logging
 
 class DatabaseProxy:
-    def __init__(self, db_impl, object_cache=None):
+    def __init__(self, object_cache=None):
         super().__init__()
-        # self.db = db_impl
         self.object_cache = object_cache
 
     # region Account
@@ -73,7 +72,6 @@ class DatabaseProxy:
         return db.add_consumer(consumer_id, residence, height, weight, units, gender, goal)
 
     def update_consumer_personal_info(self, consumer: Consumer):
-        # Todo:: make a transaction
         consumer_dto = self.consumer_to_dto(consumer)
         try:
             db.update_consumer(consumer_dto)

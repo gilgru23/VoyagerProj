@@ -14,7 +14,7 @@ class TestConsumer(TestCase):
     db = ServiceSetup.get_db_proxy()
 
     # objects details for setUp
-    account_details1 = {'email': "micheal@dundermifflin.com", 'phone': "9999999", 'f_name': "micheal",
+    account_details1 = {'email': "michael@dundermifflin.com", 'phone': "9999999", 'f_name': "michael",
                         'l_name': "scott", 'dob': "1962-01-01"}
     consumer_details1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
                          'goal': 'is there?'}
