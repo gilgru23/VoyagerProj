@@ -1,8 +1,8 @@
-import unittest
 
-from voyager_system.tests.integration.domian.medicalCenter.test_medical_center import TestMedicalCenter
+import sys
+import manage
 
-
-
-if __name__ == '__main__':
-    unittest.main()
+# args = [sys.argv[0], 'test', 'voyager_system.tests.integration']
+args = [sys.argv[0], 'test', 'voyager_system.tests.integration.domain.medicalCenter']
+sys.argv = args
+manage.main()

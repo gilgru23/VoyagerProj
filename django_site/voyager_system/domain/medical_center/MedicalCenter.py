@@ -9,8 +9,8 @@ from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Dosing import Dosing, Feedback
 from voyager_system.domain.medical_center.Pod import *
 
-from voyager_system.common import Logger
-
+# from voyager_system.common import Logger
+import logging
 
 # imports for test purposes
 # from voyager_system.data_access.DatabaseProxy import DatabaseProxy
@@ -23,7 +23,7 @@ class MedicalCenter:
         self.db = db_proxy
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
-        self.logger = Logger.get_logger('Domain', 'MedicalCenter')
+        self.logger = logging.getLogger('voyager.domain')
         pass
 
     # region Consumer
@@ -250,4 +250,7 @@ class MedicalCenter:
 
     # endregion Consumer
 
+    # region Caregiver
+
+    # endregion Caregiver
 
