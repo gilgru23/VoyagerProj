@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Dosing import Dosing
@@ -95,16 +95,16 @@ class TestConsumer(TestCase):
         # create dosings
         dosing1 = Dosing(dosing_id=None, pod_serial_number=self.pod_details1['serial_number'],
                          pod_type_name= self.pod_details1['type_name'], amount=0.75,
-                         time=datetime.now(), longitude=42.76, latitude=36.43)
+                         time=timezone.now(), longitude=42.76, latitude=36.43)
         dosing2 = Dosing(dosing_id=None, pod_serial_number=self.pod_details1['serial_number'],
                          pod_type_name= self.pod_details1['type_name'], amount=0.5,
-                         time=datetime.now(), longitude=42.76, latitude=36.43)
+                         time=timezone.now(), longitude=42.76, latitude=36.43)
         dosing3 = Dosing(dosing_id=None, pod_serial_number=self.pod_details2['serial_number'],
                          pod_type_name= self.pod_details2['type_name'], amount=0.75,
-                         time=datetime.now(), longitude=42.76, latitude=36.43)
+                         time=timezone.now(), longitude=42.76, latitude=36.43)
         dosing4 = Dosing(dosing_id=None, pod_serial_number=self.pod_details2['serial_number'],
                          pod_type_name= self.pod_details2['type_name'], amount=0.5,
-                         time=datetime.now(), longitude=42.76, latitude=36.43)
+                         time=timezone.now(), longitude=42.76, latitude=36.43)
         # add dosings
         self.db.add_dosing(dosing1)
         self.db.add_dosing(dosing2)

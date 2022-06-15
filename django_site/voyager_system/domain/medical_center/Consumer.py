@@ -1,7 +1,6 @@
-from datetime import datetime
-from random import randint
+from django.utils import timezone
 
-from voyager_system.common.DateTimeFormats import date_time_to_str
+from voyager_system.common.DateTimeFormats import parse_string_to_timezone
 from voyager_system.domain.system_management.Account import Account
 from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.domain.medical_center.Dispenser import Dispenser
@@ -14,7 +13,7 @@ class Consumer(Account):
     def __init__(self) -> None:
         super().__init__()
         # dispenser-related relations
-        self.dispensers = []  # 1-to-n (?)
+        self.dispensers = []  # 1-to-n
         self.pods = []  # 1-to-n
         self.dosing_history = []  # 1-to-n
         self.dosing_reminders = []  # 1-to-n
@@ -32,15 +31,14 @@ class Consumer(Account):
     # * changes the current state of the relevant pod(?)
     # returns the new Dosing object.
     # throws AppOperationError if the given pod_id is wrong or does not have the required amount for the dosing.
-    def dose(self, pod_serial_number: str, amount: float, time, latitude=None, longitude=None):
-        if not self.is_valid_dosing_time(time):
-            raise AppOperationError(f"Error: consumer dosing - invalid dosing time [{time}] for consumer [{self.id}]")
+    def dose(self, pod_serial_number: str, amount: float, time_str, latitude=None, longitude=None):
         is_dosing = self.can_dose(pod_serial_number, amount)
         if not is_dosing:
             raise AppOperationError(
                 f"Error: consumer dosing - wrong serial number [{pod_serial_number}] or amount [{amount}] for consumer [{self.id}]")
         pod: Pod = self.get_pod_by_serial_number(pod_serial_number)
         pod.dose(amount)
+        time = parse_string_to_timezone(time_str)
         new_dosing = Dosing(dosing_id=None, pod_serial_number=pod_serial_number,
                             amount=amount, time=time, longitude=longitude, latitude=latitude)
         self.dosing_history.insert(0, new_dosing)
@@ -101,7 +99,7 @@ class Consumer(Account):
         if dosing.feedback is not None:
             raise AppOperationError(
                 f"Error: consumer provide feedback - dosing [{dosing_id}] already has feedback provided")
-        feedback_time = date_time_to_str(datetime.now())
+        feedback_time = timezone.now()
         new_feedback = Feedback(id=None, dosing_id=dosing_id, rating=feedback_rating, comment=feedback_comment,
                                 time=feedback_time)
         dosing.feedback = new_feedback

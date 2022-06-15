@@ -1,6 +1,6 @@
-from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
-from voyager_system.domain.DatabaseProxy import DatabaseProxy
+from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import Pod, PodType
 
@@ -24,5 +24,5 @@ class MarketPlace:
         disp = Dispenser()
         disp.serial_number = serial_num
         disp.version = version
-        disp.registration_date = datetime.now()
+        disp.registration_date = timezone.now()
         return disp

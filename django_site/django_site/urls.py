@@ -21,6 +21,6 @@ from django.conf.urls import include
 #add links to apps here
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('consumers/', include('consumer_app.urls')),
+    path('accounts/', include('account_api.urls')),
+    path('consumers/', include('consumer_api.urls')),
 ]

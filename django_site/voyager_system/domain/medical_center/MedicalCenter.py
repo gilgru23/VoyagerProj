@@ -1,8 +1,7 @@
-# from django.utils.datetime_safe import datetime
+
 
 from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
-from voyager_system.dal_DEPRECATED.IMapper import IMapper
-from voyager_system.domain.DatabaseProxy import DatabaseProxy
+from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
 from voyager_system.domain.marketplace.MarketPlace import MarketPlace
 from voyager_system.domain.medical_center.Consumer import Consumer
@@ -21,7 +20,6 @@ from voyager_system.common import Logger
 # noinspection SpellCheckingInspection
 class MedicalCenter:
     def __init__(self, db_proxy: DatabaseProxy, marketplace=None, notifier=None) -> None:
-        self.object_mapper: IMapper = None  # mapper is deprecated
         self.db = db_proxy
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
@@ -102,7 +100,7 @@ class MedicalCenter:
         consumer = self.get_consumer(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
-        new_dosing: Dosing = consumer.dose(pod_serial_number=pod_serial_num, amount=amount, time=time,
+        new_dosing: Dosing = consumer.dose(pod_serial_number=pod_serial_num, amount=amount, time_str=time,
                                            latitude=latitude, longitude=longitude)
         pod: Pod = consumer.get_pod_by_serial_number(pod_serial_num)
         self.db.add_dosing(new_dosing)
@@ -252,23 +250,4 @@ class MedicalCenter:
 
     # endregion Consumer
 
-    # region Marketplace
 
-    # def get_pod_type_from_typeId(self, pod_type_name: str) -> PodType:
-    #     return PodType(name=pod_type_name, substance="Nothing",description="even less")
-    #
-    # # todo: check in MarketPlace
-    # def validate_pod(self, serial_num: str, pod_type_name: str) -> Pod:
-    #     pod_type = self.get_pod_type_from_typeId(pod_type_name)
-    #     pod = Pod.from_type(serial_number=serial_num,pod_type=pod_type)
-    #     return pod
-    #
-    #
-    # def validate_dispenser(self, serial_num: str, version: str) -> Dispenser:
-    #     disp = Dispenser()
-    #     disp.serial_number = serial_num
-    #     disp.version = version
-    #     disp.registration_date = datetime.now()
-    #     return disp
-
-    # endregion Marketplace

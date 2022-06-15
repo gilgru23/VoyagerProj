@@ -56,7 +56,7 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
     # Unit Test Symbol: 1.3
     async def test_dose_success(self):
         print(f'Test: dose - success')
-        self.consumer1.dose(pod_serial_number='1', amount=42.5, time=None)
+        self.consumer1.dose(pod_serial_number='1', amount=42.5, time_str=None)
         # check a new dosing was added to history at the front of the list
         new_dosing: Dosing = self.consumer1.dosing_history[0]
         self.assertEqual(new_dosing.pod_serial_number, "1")
@@ -72,21 +72,21 @@ class TestConsumer(unittest.IsolatedAsyncioTestCase):
         print(f'\tno pods to dose from')
         self.consumer1.pods = []
         with self.assertRaises(AppOperationError):
-            self.consumer1.dose(pod_serial_number='1', amount=42.5, time=None)
+            self.consumer1.dose(pod_serial_number='1', amount=42.5, time_str=None)
 
     # Unit Test Symbol: 1.3
     async def test_dose_fail_2(self):
         print(f'Test: dose - fail')
         print(f'\tincorrect pod id')
         with self.assertRaises(AppOperationError):
-            self.consumer1.dose(pod_serial_number='1000', amount=42.5, time=None)
+            self.consumer1.dose(pod_serial_number='1000', amount=42.5, time_str=None)
 
     # Unit Test Symbol: 1.3
     async def test_dose_fail_3(self):
         print(f'Test: dose - fail')
         print(f'\tdosing amount too large')
         with self.assertRaises(AppOperationError):
-            self.consumer1.dose(pod_serial_number='1', amount=1000, time=None)
+            self.consumer1.dose(pod_serial_number='1', amount=1000, time_str=None)
 
     # Unit Test Symbol: 1.4
     async def test_get_dosing_history(self):

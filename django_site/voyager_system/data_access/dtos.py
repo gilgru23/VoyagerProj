@@ -23,7 +23,6 @@ class AccountDto:
         return self
 
 
-
 class ConsumerDto:
     def __init__(self) -> None:
         self.id = None
@@ -33,7 +32,7 @@ class ConsumerDto:
         self.gender = None
         self.units = None
         self.goal = None
-        
+
     def build(self, id, residence, height, weight, gender, units, goal):
         self.id = id
         self.residence = residence
@@ -43,6 +42,18 @@ class ConsumerDto:
         self.units = units
         self.goal = goal
         return self
+
+
+class CaregiverDto:
+    def __init__(self) -> None:
+        self.id = None
+        self.consumers = None
+
+    def build(self, id, consumers):
+        self.id = id
+        self.consumers = consumers
+        return self
+
 
 class DispenserDto:
     def __init__(self) -> None:
