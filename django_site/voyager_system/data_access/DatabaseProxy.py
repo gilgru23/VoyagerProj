@@ -16,33 +16,6 @@ class DatabaseProxy:
         super().__init__()
         self.object_cache = object_cache
 
-    # region test functions
-
-    def get_pod_for_update(self, serial_number: str):
-        try:
-            pod_dto = db.get_pod_by_serial_number(serial_number)
-            return self.dto_to_pod(pod_dto), pod_dto.obj_version
-        except ObjectDoesNotExist as e:
-            return None, None
-        except Exception as e:
-            err_str = f"Unable to retrieve pod from db, with serial number [{serial_number}]." + "\n\t" + str(e)
-            raise DataAccessError(err_str)
-
-    def update_pod2(self, pod: Pod, consumer_id: int):
-        pod_dto = self.pod_to_dto(pod)
-        try:
-            db.update_pod2(pod_dto=pod_dto, consumer_id=consumer_id)
-        except ConcurrentUpdateError as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] because of race condition. try again\n\t" + str(
-                e)
-            raise ConcurrentUpdateError(err_str)
-        except Exception as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(
-                e)
-            raise DataAccessError(err_str)
-
-    # endregion test
-
 
 
     # region Account
@@ -107,6 +80,11 @@ class DatabaseProxy:
         except ConcurrentUpdateError as e:
             err_str = f"Unable to update consumer [{consumer.id}] because of race condition. try again"
             raise ConcurrentUpdateError(err_str)
+        except ObjectDoesNotExist as e:
+            err_str = f"Unable to update consumer profile [{consumer.id}] - because consumer was not found.\n\t" + str(
+                e)
+            # log error
+            raise AppOperationError(err_str)
         except Exception as e:
             err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n\t" + str(e)
             raise DataAccessError(err_str)
@@ -267,6 +245,11 @@ class DatabaseProxy:
             err_str = f"Unable to update dispenser [{dispenser.serial_number}] because of race condition. try again!"
             # log error
             raise ConcurrentUpdateError(err_str)
+        except ObjectDoesNotExist as e:
+            err_str = f"Unable to update dispenser [{dispenser.serial_number}] - because dispenser was not found.\n\t" + str(
+                e)
+            # log error
+            raise AppOperationError(err_str)
         except Exception as e:
             err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer_id}]." + "\n\t" + str(
                 e)

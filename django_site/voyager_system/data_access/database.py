@@ -63,16 +63,16 @@ def get_account_by_id(id: int) -> AccountDto:
 
 
 def update_account(acct_dto: AccountDto):
-    acct: Account = Account.objects.get(id=acct_dto.id)
-    if acct.obj_version != acct_dto.obj_version:
-        raise ConcurrentUpdateError()
-    acct.email = acct_dto.email
-    acct.phone = acct_dto.phone
-    acct.f_name = acct_dto.f_name
-    acct.l_name = acct_dto.l_name
-    acct.phone = acct_dto.phone
-    acct.obj_version = acct_dto.obj_version + 1
-    acct.save()
+    old_ver = acct_dto.obj_version
+    new_ver = old_ver + 1
+    updated = Account.objects.filter(id=acct_dto.id, obj_version=old_ver).update(
+        obj_version=new_ver, email=acct_dto.email, phone=acct_dto.phone, f_name=acct_dto.f_name, l_name=acct_dto.l_name)
+    if not updated:
+        found = Account.objects.filter(id=acct_dto.id).exists()
+        if found:
+            raise ConcurrentUpdateError()
+        else:
+            raise ObjectDoesNotExist()
 
 
 # endregion Account
@@ -108,17 +108,17 @@ def has_consumer(id):
 
 
 def update_consumer(consumer_dto: ConsumerDto):
-    cons: Consumer = Consumer.objects.get(account_id=consumer_dto.id)
-    if cons.obj_version != consumer_dto.obj_version:
-        raise ConcurrentUpdateError()
-    cons.residence = consumer_dto.residence
-    cons.height = consumer_dto.height
-    cons.weight = consumer_dto.weight
-    cons.units = consumer_dto.units
-    cons.gender = consumer_dto.gender
-    cons.goal = consumer_dto.goal
-    cons.obj_version = consumer_dto.obj_version + 1
-    cons.save()
+    old_ver = consumer_dto.obj_version
+    new_ver = old_ver + 1
+    updated = Pod.objects.filter(account_id=consumer_dto.id, obj_version=old_ver).update(
+        obj_version=new_ver, residence=consumer_dto.residence, height=consumer_dto.height, weight=consumer_dto.weight,
+        units=consumer_dto.units, gender=consumer_dto.gender)
+    if not updated:
+        found = Consumer.objects.filter(account_id=consumer_dto.id).exists()
+        if found:
+            raise ConcurrentUpdateError()
+        else:
+            raise ObjectDoesNotExist()
 
 
 # endregion Consumer
@@ -175,14 +175,16 @@ def update_dispenser(dispenser_dto: DispenserDto):
     consumer: Consumer = None
     if dispenser_dto.consumer:
         consumer = Consumer.objects.get(account=dispenser_dto.consumer)
-
-    disp: Dispenser = Dispenser.objects.get(serial_num=dispenser_dto.serial_num)
-    if disp.obj_version != dispenser_dto.obj_version:
-        raise ConcurrentUpdateError()
-    disp.version = dispenser_dto.version
-    disp.consumer = consumer
-    disp.registration_date = dispenser_dto.registration_date
-    disp.save()
+    old_ver = dispenser_dto.obj_version
+    new_ver = old_ver + 1
+    updated = Dispenser.objects.filter(serial_num=dispenser_dto.serial_num, obj_version=old_ver).update(
+        obj_version=new_ver, consumer=consumer, registration_date=dispenser_dto.registration_date)
+    if not updated:
+        found = Dispenser.objects.filter(serial_num=dispenser_dto.serial_num).exists()
+        if found:
+            raise ConcurrentUpdateError()
+        else:
+            raise ObjectDoesNotExist()
 
 
 def get_dispensers_for_consumer_by_id(consumer_id: int) -> List[DispenserDto]:
@@ -271,14 +273,6 @@ def get_pod_by_serial_number(serial_number: str) -> PodDto:
     pod = Pod.objects.get(serial_num=serial_number)
     dto = pod_to_dto(pod)
     return dto
-
-
-def update_pod2(pod_dto: PodDto, consumer_id: int):
-    pod = Pod.objects.get(serial_num=pod_dto.serial_num)
-    pod.consumer = Consumer.objects.get(account_id=consumer_id)
-    pod.pod_type = PodType.objects.get(name=pod_dto.pod_type)
-    pod.remainder = pod_dto.remainder
-    pod.save()
 
 
 def update_pod(pod_dto: PodDto, consumer_id: int):

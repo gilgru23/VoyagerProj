@@ -303,6 +303,6 @@ class TestConsumer(TransactionTestCase):
         p_d2 = self.pod_details2
         result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
         self.assertTrue(Res.is_successful(result))
-        result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-        self.assertTrue(Res.is_successful(result))
+        # result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+        # self.assertTrue(Res.is_successful(result))
         # self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
