@@ -62,3 +62,4 @@ class ConsumerService:
                 return Result.failure(str(e))
             except DataAccessError as e:
                 return Result.failure("Unable to complete the operation")
+            return Result.failure("Unable to complete the operation")
