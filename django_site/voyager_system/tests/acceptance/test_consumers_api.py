@@ -135,25 +135,25 @@ class TestConsumers(TestCase):
         return response
 
     def test_register_consumer(self):
-        print(f'Test: register consumer - success')
+        print(f'\tTest: register consumer - success')
         body = json.dumps(self.consumer_details2)
         response = self.client2.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 200)
 
     def test_register_consumer_fail(self):
-        print(f'Test: register consumer - fail')
-        print(f'\tconsumer profile already exists')
+        print(f'\tTest: register consumer - fail')
+        print(f'\t\tconsumer profile already exists')
         body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 400)
 
     def test_register_pod(self):
-        print(f'Test: register pod - success')
+        print(f'\tTest: register pod - success')
         response = self.register_pod_to_consumer(self.pod_details1)
         self.assertEqual(response.status_code, 200)
 
     def test_register_dispenser(self):
-        print(f'Test: register dispenser - success')
+        print(f'\tTest: register dispenser - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -170,7 +170,7 @@ class TestConsumers(TestCase):
         self.assertEqual(len(dispensers), 2)
 
     def test_consumer_dose(self):
-        print(f'Test: consumer dose - success')
+        print(f'\tTest: consumer dose - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -193,7 +193,7 @@ class TestConsumers(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_dosing_history(self):
-        print(f'Test: get dosing history - success')
+        print(f'\tTest: get dosing history - success')
         # perform dosings
         self.test_consumer_dose()
         # get history
@@ -203,7 +203,7 @@ class TestConsumers(TestCase):
         self.assertEqual(len(dosings), 3)
 
     def test_add_feedback_to_dosing(self):
-        print(f'Test: add feedback to dosing - success')
+        print(f'\tTest: add feedback to dosing - success')
         # perform dosing
         self.test_consumer_dose()
         # get history
@@ -221,8 +221,8 @@ class TestConsumers(TestCase):
         self.assertEqual(feedback['comment'], "it was good")
 
     def test_get_feedback_fail(self):
-        print(f'Test: get feedback - fail')
-        print(f'\tno feedback was provided for the requested dosing')
+        print(f'\tTest: get feedback - fail')
+        print(f'\t\tno feedback was provided for the requested dosing')
         dosing_id = 1
         response = self.get_feedback(dosing_id=dosing_id)
         self.assertEqual(response.status_code, 400)

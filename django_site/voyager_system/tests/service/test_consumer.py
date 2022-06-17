@@ -2,17 +2,25 @@
 from django.test import TestCase
 from django.utils import timezone
 
+from voyager_system.common.ErrorTypes import ConcurrentUpdateError
 from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Pod import PodType, Pod
 from voyager_system.service import ServiceSetup
 import voyager_system.common.Result as Res
+
+from django.db import transaction
+import time
+import threading
+import concurrent.futures
+from django.db import connections
+from django.test import TransactionTestCase
 
 """
     testing the functionality of the entire Guest API 
 """
 
 
-class TestConsumer(TestCase):
+class TestConsumer(TransactionTestCase):
     # main units to be tested
     guest_service = ServiceSetup.get_guest_service()
     consumer_service = ServiceSetup.get_consumer_service()
@@ -37,7 +45,7 @@ class TestConsumer(TestCase):
     pod_details4 = {"serial_number": "1_4", 'type_name':pod_type_details['name']}
 
     def setUp(self):
-        print('\nset up acceptance test')
+        print('\nset up service test')
         #  register two accounts
         self.guest_service.create_account(email=self.account_details1['email'], phone=self.account_details1['phone'],
                                           f_name=self.account_details1['f_name'],
@@ -79,7 +87,7 @@ class TestConsumer(TestCase):
         self.db_proxy.add_dispenser(disp)
 
     def tearDown(self) -> None:
-        print('\ntear down acceptance test')
+        print('\ntear down service test')
 
     def test_register_pod_to_consumer(self):
         real_consumer1 = self.db_proxy.get_consumer(self.consumer_details1['id'])
@@ -151,3 +159,117 @@ class TestConsumer(TestCase):
         history = Res.get_value(result)
         self.assertEqual(len(history), 2)
 
+    def my_tests2(self):
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        db = self.db_proxy
+
+
+        # with transaction.atomic():
+        #     pod, db_pod = db.get_pod2(p_d1['serial_number'])
+        #     pod.remainder -= 1.5
+        #     print(f'task1 going to sleep')
+        #     time.sleep(4)
+        #     print(f'task1 woke up')
+        #     db.update_pod2(pod,db_pod,c_id1)
+
+        # self.helper_get_pod_lock()
+
+        # with concurrent.futures.ThreadPoolExecutor() as executor:
+        #     print('executor')
+        #     future1 = executor.submit(self.helper_get_pod_lock)
+        #     future1.add_done_callback(self.on_done)
+        #     future2 = executor.submit(self.helper_get_pod_no_lock)
+        #     future2.add_done_callback(self.on_done)
+        #
+        #     res1 = future1.result()
+        #     res2 = future2.result()
+
+
+        t1 = threading.Thread(target=self.helper_get_pod_lock, args=[])
+        t2 = threading.Thread(target=self.helper_get_pod_no_lock, args=[], daemon=True)
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+
+        print(f'Main task going to sleep')
+        time.sleep(2)
+        pods = db.get_consumer_pods(c_id1)
+        for pod0 in pods:
+            print(f'\tpod:{pod0.serial_number}, remainder:{pod0.remainder}')
+        print(f'Main task Done!')
+
+        # print("pods")
+        pass
+
+    def on_done(self, future):
+        connections.close_all()
+
+    def helper_get_pod_lock(self):
+        print(f'task1 is starting')
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        db = self.db_proxy
+
+        with transaction.atomic():
+            pod, db_pod = db.get_pod2(p_d1['serial_number'])
+            print(f'task1 got pod, pod:{pod.serial_number}, remainder:{pod.remainder}')
+            pod.remainder -= 1.5
+            print(f'task1 going to sleep')
+            time.sleep(5)
+            print(f'task1 woke up')
+            db.update_pod2(pod,db_pod,c_id1)
+            print(f'task1 Done!')
+
+        pass
+
+    def helper_get_pod_no_lock(self):
+        print(f'task2 is starting')
+        print(f'task2 going to sleep')
+        time.sleep(2)
+        print(f'task2 woke up')
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        db = self.db_proxy
+
+        with transaction.atomic():
+            pod0,sb_pod0 = db.get_pod2(p_d1['serial_number'])
+            print(f'task2 Done! pod:{pod0.serial_number}, remainder:{pod0.remainder}')
+        pass
+
+    def my_tests3(self):
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        db = self.db_proxy
+
+        pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
+        pod2, obj_ver2 = db.get_pod_for_update(p_d1['serial_number'])
+        pod1.remainder -= 1.5
+        print(f'task1 going to sleep')
+        pod2.remainder -= 5
+        print(f'task1 woke up')
+        db.update_pod2(pod2, obj_ver2, c_id1)
+        try:
+            db.update_pod2(pod1, obj_ver1, c_id1)
+        except ConcurrentUpdateError as e:
+            print(e)
+        pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
+        pod1.remainder -= 1.5
+        db.update_pod2(pod1, obj_ver1, c_id1)
+        print(f'updates are done')
+        pods = db.get_consumer_pods(c_id1)
+        for pod0 in pods:
+            print(f'\tpod:{pod0.serial_number}, remainder:{pod0.remainder}')
+        print(f'Main task Done!')
+
+        # print("pods")
+        pass
+
+
+    def test_tests(self):
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        p_d2 = self.pod_details2
+        self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])

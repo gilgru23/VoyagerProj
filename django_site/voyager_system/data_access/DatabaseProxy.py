@@ -1,4 +1,4 @@
-from voyager_system.common.ErrorTypes import DataAccessError
+from voyager_system.common.ErrorTypes import *
 from voyager_system.data_access.dtos import *
 from voyager_system.domain.medical_center.Consumer import Consumer
 from voyager_system.domain.medical_center.Caregiver import Caregiver
@@ -16,6 +16,35 @@ class DatabaseProxy:
         super().__init__()
         self.object_cache = object_cache
 
+    # region test functions
+
+    def get_pod_for_update(self, serial_number: str):
+        try:
+            pod_dto = db.get_pod_by_serial_number(serial_number)
+            return self.dto_to_pod(pod_dto), pod_dto.obj_version
+        except ObjectDoesNotExist as e:
+            return None, None
+        except Exception as e:
+            err_str = f"Unable to retrieve pod from db, with serial number [{serial_number}]." + "\n\t" + str(e)
+            raise DataAccessError(err_str)
+
+    def update_pod2(self, pod: Pod, consumer_id: int):
+        pod_dto = self.pod_to_dto(pod)
+        try:
+            db.update_pod2(pod_dto=pod_dto, consumer_id=consumer_id)
+        except ConcurrentUpdateError as e:
+            err_str = f"Unable to update pod [{pod.serial_number}] because of race condition. try again\n\t" + str(
+                e)
+            raise ConcurrentUpdateError(err_str)
+        except Exception as e:
+            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(
+                e)
+            raise DataAccessError(err_str)
+
+    # endregion test
+
+
+
     # region Account
     def get_account_by_id(self, account_id):
         try:
@@ -24,7 +53,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve account from db, with id [{account_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve account from db, with id [{account_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_account_by_email(self, email):
@@ -34,14 +63,14 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve account from db, with email [{email}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve account from db, with email [{email}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def add_account(self, email, phone, first_name, last_name, date_of_birth):
         try:
             return db.add_account(email=email, f_name=first_name, l_name=last_name, phone=phone, dob=date_of_birth)
         except Exception as e:
-            err_str = f"Unable to add a new account to db, with email [{email}]" + "\n" + str(e)
+            err_str = f"Unable to add a new account to db, with email [{email}]" + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def has_account_with_email(self, email):
@@ -60,7 +89,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve consumer from db, with id [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
         consumer = self.dto_to_consumer(consumer_dto, account_dto)
         return consumer
@@ -76,7 +105,7 @@ class DatabaseProxy:
         try:
             db.update_consumer(consumer_dto)
         except Exception as e:
-            err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n" + str(e)
+            err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_consumer_pods(self, consumer_id):
@@ -87,7 +116,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve consumer's pods from db, with id [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve consumer's pods from db, with id [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_consumer_dispensers(self, consumer_id):
@@ -98,7 +127,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve consumer's dispensers from db, with id [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve consumer's dispensers from db, with id [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_consumer_dosing(self, consumer_id: int):
@@ -109,7 +138,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve consumer's past dosings from db, with id [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve consumer's past dosings from db, with id [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
         pass
 
@@ -130,7 +159,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve caregiver from db, with id [{caregiver_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve caregiver from db, with id [{caregiver_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
         caregiver = self.dto_to_caregiver(caregiver_dto, account_dto)
         return caregiver
@@ -145,7 +174,7 @@ class DatabaseProxy:
         try:
             return db.add_pod(pod_dto=dto)
         except Exception as e:
-            err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n" + str(e)
+            err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_pod(self,serial_number: str):
@@ -155,7 +184,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve pod from db, with serial number [{serial_number}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve pod from db, with serial number [{serial_number}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def update_pod(self, pod: Pod, consumer_id: int):
@@ -163,7 +192,7 @@ class DatabaseProxy:
         try:
             db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id)
         except Exception as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     # endregion Pod
@@ -174,7 +203,7 @@ class DatabaseProxy:
         try:
             return db.add_pod_type(dto)
         except Exception as e:
-            err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n" + str(e)
+            err_str = f"Unable to add a new pod-type [{pod_type.name}] to DB." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_pod_type(self,pod_type_name: str):
@@ -184,7 +213,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve pod type from db, with type-name [{pod_type_name}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve pod type from db, with type-name [{pod_type_name}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def update_podtype(self, podtype: PodType):
@@ -192,7 +221,7 @@ class DatabaseProxy:
         try:
             db.update_pod_type(dto)
         except Exception as e:
-            err_str = f"Unable to add update pod-type [{podtype.name}]." + "\n" + str(e)
+            err_str = f"Unable to add update pod-type [{podtype.name}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     # endregion PodType
@@ -203,17 +232,26 @@ class DatabaseProxy:
         try:
             return db.add_dispenser(dto)
         except Exception as e:
-            err_str = f"Unable to add a new dispenser type to DB, with serial-number [{dispenser.serial_number}]" + "\n" + str(
+            err_str = f"Unable to add a new dispenser type to DB, with serial-number [{dispenser.serial_number}]" + "\n\t" + str(
                 e)
             raise DataAccessError(err_str)
 
+    def get_dispenser(self, serial_number: str):
+        try:
+            disp_dto = db.get_dispenser(serial_number)
+            return self.dto_to_dispenser(disp_dto)
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve dispenser from db, with serial number [{serial_number}]." + "\n\t" + str(e)
+            raise DataAccessError(err_str)
 
     def update_dispenser(self, dispenser: Dispenser, consumer_id: int):
         dispenser_dto = self.dispenser_to_dto(dispenser,consumer_id=consumer_id)
         try:
             db.update_dispenser(dispenser_dto=dispenser_dto)
         except Exception as e:
-            err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer_id}]." + "\n" + str(
+            err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer_id}]." + "\n\t" + str(
                 e)
             raise DataAccessError(err_str)
 
@@ -227,7 +265,7 @@ class DatabaseProxy:
             return db.add_dosing(dto)
         except Exception as e:
             err_str = f"Unable to add a new dosing to DB, with id [{dosing.id}]"\
-                      + "\n" + str(e)
+                      + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
 
@@ -239,7 +277,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve from db past dosings, for pod with serial number [{pod_serial_number}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve from db past dosings, for pod with serial number [{pod_serial_number}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
         pass
 
@@ -253,7 +291,7 @@ class DatabaseProxy:
             return db.add_feedback(dto)
         except Exception as e:
             err_str = f"Unable to add a new feedback for dosing to DB, with dosing id [{dosing_id}]"\
-                      + "\n" + str(e)
+                      + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
     def get_feedback_for_dosing(self, dosing_id: int):
@@ -264,7 +302,7 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return None
         except Exception as e:
-            err_str = f"Unable to retrieve from db feedback, for dosing with id [{dosing_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve from db feedback, for dosing with id [{dosing_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
 
 
@@ -276,15 +314,14 @@ class DatabaseProxy:
         except ObjectDoesNotExist as e:
             return []
         except Exception as e:
-            err_str = f"Unable to retrieve from db past feedback, for consumer with id [{consumer_id}]." + "\n" + str(e)
+            err_str = f"Unable to retrieve from db past feedback, for consumer with id [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
     # endregion Feedback
 
     # region DTO conversion
 
     """
-    No nested DTO's  (except for possibly one specific implementation of Consumer).
-    All fields must be queried separately.      
+    No nested DTO's      
     """
 
     @staticmethod
@@ -297,6 +334,7 @@ class DatabaseProxy:
         dto.dob = account.date_of_birth
         # dto.phone = account.phone
         dto.registration_date = account.registration_date
+        dto.obj_version = account.obj_version
         return dto
 
     @staticmethod
@@ -309,6 +347,7 @@ class DatabaseProxy:
         account.date_of_birth = account_dto.dob
         # account_dto.phone = dto.phone
         account.registration_date = account_dto.registration_date
+        account.obj_version = account_dto.obj_version
         return account
 
     @staticmethod
@@ -321,12 +360,14 @@ class DatabaseProxy:
         dto.gender = consumer.gender
         dto.units = consumer.units
         dto.goal = consumer.goal
+        dto.obj_version = consumer.obj_version
         return dto
 
     @staticmethod
     def dto_to_consumer(consumer_dto: ConsumerDto, account_dto: AccountDto):
         consumer = Consumer()
-        # consumer (personal) info
+        consumer.obj_version = consumer_dto.obj_version
+        # consumer personal info
         consumer.residence = consumer_dto.residence
         consumer.height = consumer_dto.height
         consumer.weight = consumer_dto.weight
@@ -379,6 +420,7 @@ class DatabaseProxy:
         dto.serial_num = dispenser.serial_number
         dto.version = dispenser.version
         dto.registration_date = dispenser.registration_date
+        dto.obj_version = dispenser.obj_version
         return dto
 
     @staticmethod
@@ -387,6 +429,7 @@ class DatabaseProxy:
         disp.serial_number = dispenser_dto.serial_num
         disp.version = dispenser_dto.version
         disp.registration_date = dispenser_dto.registration_date
+        disp.obj_version = dispenser_dto.obj_version
         return disp
 
     @staticmethod
@@ -417,6 +460,7 @@ class DatabaseProxy:
         dto.serial_num = pod.serial_number
         dto.pod_type = pod.type_name
         dto.remainder = pod.remainder
+        dto.obj_version = pod.obj_version
         return dto
 
     @staticmethod
@@ -425,6 +469,7 @@ class DatabaseProxy:
         pod.serial_number = pod_dto.serial_num
         pod.type_name = pod_dto.pod_type
         pod.remainder = pod_dto.remainder
+        pod.obj_version = pod_dto.obj_version
         return pod
 
 

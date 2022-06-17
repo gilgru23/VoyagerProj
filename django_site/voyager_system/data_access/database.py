@@ -1,10 +1,14 @@
-from time import time
+from time import time,sleep
 from turtle import pos
 from typing import List
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 
 from account_api.models import Account
 from consumer_api.models import Consumer, Dispenser, Pod, PodType, Business, Company, Dosing, Feedback, \
     FeedbackReminder, Regimen, Caregiver
+from voyager_system.common.ErrorTypes import ConcurrentUpdateError
 from voyager_system.data_access.dtos import AccountDto, ConsumerDto, DispenserDto, PodTypeDto, PodDto, DosingDto, \
     RegimenDto, FeedbackDto, FeedbackReminderDto, CaregiverDto
 
@@ -41,6 +45,7 @@ def get_account_by_email(email: str) -> AccountDto:
     # dto.phone = account.phone
     dto.dob = account.dob
     dto.registration_date = account.registration_date
+    dto.obj_version = account.obj_version
     return dto
 
 
@@ -59,11 +64,14 @@ def get_account_by_id(id: int) -> AccountDto:
 
 def update_account(acct_dto: AccountDto):
     acct: Account = Account.objects.get(id=acct_dto.id)
+    if acct.obj_version != acct_dto.obj_version:
+        raise ConcurrentUpdateError()
     acct.email = acct_dto.email
     acct.phone = acct_dto.phone
     acct.f_name = acct_dto.f_name
     acct.l_name = acct_dto.l_name
     acct.phone = acct_dto.phone
+    acct.obj_version = acct_dto.obj_version + 1
     acct.save()
 
 
@@ -91,6 +99,7 @@ def get_consumer(account_id: int) -> ConsumerDto:
     dto.weight = consumer.weight
     dto.units = consumer.units
     dto.gender = consumer.gender
+    dto.obj_version = consumer.obj_version
     return dto
 
 
@@ -100,12 +109,15 @@ def has_consumer(id):
 
 def update_consumer(consumer_dto: ConsumerDto):
     cons: Consumer = Consumer.objects.get(account_id=consumer_dto.id)
+    if cons.obj_version != consumer_dto.obj_version:
+        raise ConcurrentUpdateError()
     cons.residence = consumer_dto.residence
     cons.height = consumer_dto.height
     cons.weight = consumer_dto.weight
     cons.units = consumer_dto.units
     cons.gender = consumer_dto.gender
     cons.goal = consumer_dto.goal
+    cons.obj_version = consumer_dto.obj_version + 1
     cons.save()
 
 
@@ -134,7 +146,7 @@ def get_caregiver(caregiver_id: int) -> CaregiverDto:
 # region dispenser
 def dispenser_to_dto(disp: Dispenser, consumer_id: int):
     return DispenserDto().build(
-        disp.serial_num, disp.version, consumer_id, disp.registration_date)
+        disp.serial_num, disp.version, consumer_id, disp.registration_date, disp.obj_version)
 
 
 def add_dispenser(dispenser_dto: DispenserDto):
@@ -151,9 +163,7 @@ def add_dispenser(dispenser_dto: DispenserDto):
 def get_dispenser(serial_num: str) -> DispenserDto:
     disp: Dispenser = Dispenser.objects.get(serial_num=serial_num)
     consumer_id = disp.consumer_id if disp.consumer else None
-    return DispenserDto().build(
-        disp.serial_num, disp.version, consumer_id, disp.registration_date
-    )
+    return dispenser_to_dto(disp, consumer_id)
 
 
 def update_dispenser(dispenser_dto: DispenserDto):
@@ -162,6 +172,8 @@ def update_dispenser(dispenser_dto: DispenserDto):
         consumer = Consumer.objects.get(account=dispenser_dto.consumer)
 
     disp: Dispenser = Dispenser.objects.get(serial_num=dispenser_dto.serial_num)
+    if disp.obj_version != dispenser_dto.obj_version:
+        raise ConcurrentUpdateError()
     disp.version = dispenser_dto.version
     disp.consumer = consumer
     disp.registration_date = dispenser_dto.registration_date
@@ -256,7 +268,7 @@ def get_pod_by_serial_number(serial_number: str) -> PodDto:
     return dto
 
 
-def update_pod(pod_dto: PodDto, consumer_id: int):
+def update_pod2(pod_dto: PodDto, consumer_id: int):
     pod = Pod.objects.get(serial_num=pod_dto.serial_num)
     pod.consumer = Consumer.objects.get(account_id=consumer_id)
     pod.pod_type = PodType.objects.get(name=pod_dto.pod_type)
@@ -264,11 +276,24 @@ def update_pod(pod_dto: PodDto, consumer_id: int):
     pod.save()
 
 
+def update_pod(pod_dto: PodDto, consumer_id: int):
+    pod = Pod.objects.get(serial_num=pod_dto.serial_num)
+    if pod.obj_version != pod_dto.obj_version:
+        raise ConcurrentUpdateError()
+    pod.consumer = Consumer.objects.get(account_id=consumer_id)
+    pod.pod_type = PodType.objects.get(name=pod_dto.pod_type)
+    pod.remainder = pod_dto.remainder
+    pod.obj_version = pod_dto.obj_version+1
+    pod.save()
+
+
+
 def pod_to_dto(pod):
     dto = PodDto()
     dto.pod_type = pod.pod_type.name  # get_pod_type(pod.pod_type.name)
     dto.serial_num = pod.serial_num
     dto.remainder = pod.remainder
+    dto.obj_version = pod.obj_version
     return dto
 
 

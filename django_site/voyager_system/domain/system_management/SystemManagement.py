@@ -17,7 +17,7 @@ class SystemManagement:
     EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
     # todo: handle phone number
-    def create_account(self, email, phone, f_name, l_name, dob) -> str:
+    def create_account(self, email, phone, f_name, l_name, dob):
         """
         creates a new account in the system
 

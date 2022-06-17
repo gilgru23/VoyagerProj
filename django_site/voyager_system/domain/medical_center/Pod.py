@@ -11,10 +11,11 @@ class PodType:
 
 class Pod:
 
-    def __init__(self, serial_number: str = None, remainder: float = None, type_name: str = None) -> None:
+    def __init__(self, serial_number: str = None, remainder: float = None, type_name: str = None, obj_version = None) -> None:
         self.serial_number = serial_number
         self.type_name = type_name
         self.remainder = remainder
+        self.obj_version = obj_version
 
     @staticmethod
     def from_type(serial_number: str, pod_type: PodType):

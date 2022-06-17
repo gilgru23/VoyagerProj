@@ -4,3 +4,7 @@ class AppOperationError(Exception):
 
 class DataAccessError(Exception):
     pass
+
+
+class ConcurrentUpdateError(Exception):
+    pass
