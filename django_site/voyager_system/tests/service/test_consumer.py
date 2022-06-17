@@ -38,7 +38,7 @@ class TestConsumer(TransactionTestCase):
     company_details = {'name': "E-corp"}
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
-    pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
+    pod_type_details = {"name": "corpDrops", 'capacity': 40.0, 'company': company_details['name']}
     pod_details1 = {"serial_number": "1_1", 'type_name':pod_type_details['name']}
     pod_details2 = {"serial_number": "1_2", 'type_name':pod_type_details['name']}
     pod_details3 = {"serial_number": "1_3", 'type_name':pod_type_details['name']}
@@ -238,33 +238,34 @@ class TestConsumer(TransactionTestCase):
             print(f'task2 Done! pod:{pod0.serial_number}, remainder:{pod0.remainder}')
         pass
 
-    def my_tests3(self):
+    def test_concurrent_pod_update(self):
         c_id1 = self.consumer_details1['id']
         p_d1 = self.pod_details1
+        p_t_d = self.pod_type_details
         db = self.db_proxy
 
-        pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
-        pod2, obj_ver2 = db.get_pod_for_update(p_d1['serial_number'])
+        # pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
+        # pod2, obj_ver2 = db.get_pod_for_update(p_d1['serial_number'])
+
+        pod1 = db.get_pod(p_d1['serial_number'])
         pod1.remainder -= 1.5
-        print(f'task1 going to sleep')
+        pod2 = db.get_pod(p_d1['serial_number'])
         pod2.remainder -= 5
-        print(f'task1 woke up')
-        db.update_pod2(pod2, obj_ver2, c_id1)
-        try:
-            db.update_pod2(pod1, obj_ver1, c_id1)
-        except ConcurrentUpdateError as e:
-            print(e)
-        pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
+
+        db.update_pod(pod2, c_id1)
+
+        with self.assertRaises(ConcurrentUpdateError):
+            db.update_pod(pod1, c_id1)
+
+        pod1 = db.get_pod(p_d1['serial_number'])
         pod1.remainder -= 1.5
-        db.update_pod2(pod1, obj_ver1, c_id1)
+        db.update_pod(pod1, c_id1)
         print(f'updates are done')
         pods = db.get_consumer_pods(c_id1)
-        for pod0 in pods:
-            print(f'\tpod:{pod0.serial_number}, remainder:{pod0.remainder}')
-        print(f'Main task Done!')
-
-        # print("pods")
-        pass
+        pod3 = pods[0]
+        self.assertEqual(pod3.serial_number, p_d1['serial_number'])
+        self.assertEqual(pod3.remainder, p_t_d['capacity']-5-1.5)
+        self.assertEqual(pod3.obj_version, 2)
 
 
     def test_tests(self):

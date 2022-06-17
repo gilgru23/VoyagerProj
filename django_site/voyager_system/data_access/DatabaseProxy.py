@@ -104,6 +104,9 @@ class DatabaseProxy:
         consumer_dto = self.consumer_to_dto(consumer)
         try:
             db.update_consumer(consumer_dto)
+        except ConcurrentUpdateError as e:
+            err_str = f"Unable to update consumer [{consumer.id}] because of race condition. try again"
+            raise ConcurrentUpdateError(err_str)
         except Exception as e:
             err_str = f"Unable to update consumer [{consumer.id}] in db." + "\n\t" + str(e)
             raise DataAccessError(err_str)
@@ -191,6 +194,11 @@ class DatabaseProxy:
         pod_dto = self.pod_to_dto(pod)
         try:
             db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id)
+        except ConcurrentUpdateError as e:
+            err_str = f"Unable to update pod [{pod.serial_number}] because of race condition. try again\n\t" + str(
+                e)
+            # log error
+            raise ConcurrentUpdateError(err_str)
         except Exception as e:
             err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
@@ -250,6 +258,10 @@ class DatabaseProxy:
         dispenser_dto = self.dispenser_to_dto(dispenser,consumer_id=consumer_id)
         try:
             db.update_dispenser(dispenser_dto=dispenser_dto)
+        except ConcurrentUpdateError as e:
+            err_str = f"Unable to update dispenser [{dispenser.serial_number}] because of race condition. try again!"
+            # log error
+            raise ConcurrentUpdateError(err_str)
         except Exception as e:
             err_str = f"Unable to update dispenser [{dispenser.serial_number}]. with consumer [{consumer_id}]." + "\n\t" + str(
                 e)
