@@ -1,4 +1,4 @@
-from time import time,sleep
+from time import time, sleep
 from turtle import pos
 from typing import List
 
@@ -127,13 +127,16 @@ def update_consumer(consumer_dto: ConsumerDto):
 def add_caregiver(id: int):
     return Consumer.objects.create(account=Account.objects.get(id=id))
 
+
 def has_caregiver(id):
     return Caregiver.objects.filter(account_id=id).exists()
+
 
 def update_caregiver(caregiver_dto: CaregiverDto):
     care: Caregiver = Caregiver.objects.get(account_id=caregiver_dto.id)
     care.consumers = Consumer.objects.filter(pk__in=caregiver_dto.consumers)
     care.save()
+
 
 def get_caregiver(caregiver_id: int) -> CaregiverDto:
     caregiver = Caregiver.objects.get(account=caregiver_id)
@@ -141,6 +144,8 @@ def get_caregiver(caregiver_id: int) -> CaregiverDto:
     dto.id = caregiver_id
     dto.consumers = caregiver.consumers.values_list('id', flat=True)
     return dto
+
+
 # endregion Caregiver
 
 # region dispenser
@@ -277,15 +282,18 @@ def update_pod2(pod_dto: PodDto, consumer_id: int):
 
 
 def update_pod(pod_dto: PodDto, consumer_id: int):
-    pod = Pod.objects.get(serial_num=pod_dto.serial_num)
-    if pod.obj_version != pod_dto.obj_version:
-        raise ConcurrentUpdateError()
-    pod.consumer = Consumer.objects.get(account_id=consumer_id)
-    pod.pod_type = PodType.objects.get(name=pod_dto.pod_type)
-    pod.remainder = pod_dto.remainder
-    pod.obj_version = pod_dto.obj_version+1
-    pod.save()
-
+    old_ver = pod_dto.obj_version
+    new_ver = old_ver + 1
+    consumer = Consumer.objects.get(account_id=consumer_id)
+    updated = Pod.objects.filter(serial_num=pod_dto.serial_num, obj_version=old_ver).update(obj_version=new_ver,
+                                                                                            consumer=consumer,
+                                                                                            remainder=pod_dto.remainder)
+    if not updated:
+        found = Pod.objects.filter(serial_num=pod_dto.serial_num).exists()
+        if found:
+            raise ConcurrentUpdateError()
+        else:
+            raise ObjectDoesNotExist()
 
 
 def pod_to_dto(pod):

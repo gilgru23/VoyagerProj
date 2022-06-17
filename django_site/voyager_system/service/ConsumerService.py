@@ -52,14 +52,15 @@ class ConsumerService:
 
     @staticmethod
     def manage_request_calls(func):
+        count = 0
         for c in range(REQ_TIMEOUT):
             try:
                 output = func()
                 return Result.success(output)
             except ConcurrentUpdateError as e:
-                pass
+                count += 1
             except AppOperationError as e:
                 return Result.failure(str(e))
             except DataAccessError as e:
-                return Result.failure("Unable to complete the operation")
-            return Result.failure("Unable to complete the operation")
+                return Result.failure("Unable to complete the operation in DB")
+        return Result.failure(f"Unable to complete the operation, {count} attempts")

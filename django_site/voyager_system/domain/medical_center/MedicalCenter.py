@@ -212,9 +212,9 @@ class MedicalCenter:
         :raise AppOperationError: throws exception if the consumer is not registered
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
+        pod = self.marketpalce.validate_pod(pod_serial_num, pod_type_name)
         consumer = self.get_consumer(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
-        pod = self.marketpalce.validate_pod(pod_serial_num, pod_type_name)
         consumer.register_pod(pod=pod)
         self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
@@ -228,9 +228,9 @@ class MedicalCenter:
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         """
+        dispenser = self.marketpalce.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
         consumer = self.get_consumer(consumer_id)
         consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
-        dispenser = self.marketpalce.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
         consumer.register_dispenser(dispenser)
         self.db.update_dispenser(dispenser, consumer_id=consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] registered dispenser [serial #: {dispenser_serial_number}]")

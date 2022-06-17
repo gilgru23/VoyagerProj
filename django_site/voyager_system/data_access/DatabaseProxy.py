@@ -199,6 +199,11 @@ class DatabaseProxy:
                 e)
             # log error
             raise ConcurrentUpdateError(err_str)
+        except ObjectDoesNotExist as e:
+            err_str = f"Unable to update pod [{pod.serial_number}] - because pod was not found.\n\t" + str(
+                e)
+            # log error
+            raise AppOperationError(err_str)
         except Exception as e:
             err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)

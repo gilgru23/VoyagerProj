@@ -1,4 +1,3 @@
-
 from django.test import TestCase
 from django.utils import timezone
 
@@ -39,10 +38,10 @@ class TestConsumer(TransactionTestCase):
     dispenser_details1 = {'serial_number': "1515", 'version': "1.5"}
     dispenser_details2 = {'serial_number': "1212", 'version': "2.5"}
     pod_type_details = {"name": "corpDrops", 'capacity': 40.0, 'company': company_details['name']}
-    pod_details1 = {"serial_number": "1_1", 'type_name':pod_type_details['name']}
-    pod_details2 = {"serial_number": "1_2", 'type_name':pod_type_details['name']}
-    pod_details3 = {"serial_number": "1_3", 'type_name':pod_type_details['name']}
-    pod_details4 = {"serial_number": "1_4", 'type_name':pod_type_details['name']}
+    pod_details1 = {"serial_number": "1_1", 'type_name': pod_type_details['name']}
+    pod_details2 = {"serial_number": "1_2", 'type_name': pod_type_details['name']}
+    pod_details3 = {"serial_number": "1_3", 'type_name': pod_type_details['name']}
+    pod_details4 = {"serial_number": "1_4", 'type_name': pod_type_details['name']}
 
     def setUp(self):
         print('\nset up service test')
@@ -116,11 +115,11 @@ class TestConsumer(TransactionTestCase):
         result = self.consumer_service.get_consumer_pods(consumer1_id)
         pod_dicts = Res.get_value(result)
         self.assertEqual(len(pod_dicts), 3)
-        list(pod_dicts).sort(key= lambda x: x['serial_number'])
+        list(pod_dicts).sort(key=lambda x: x['serial_number'])
         pods_details = [self.pod_details1, self.pod_details2, self.pod_details3]
-        pods_details.sort(key= lambda x: x['serial_number'])
+        pods_details.sort(key=lambda x: x['serial_number'])
         for pod_dict, pod_details in zip(pod_dicts, pods_details):
-            self.assertEqual(pod_dict['serial_number'],pod_details['serial_number'])
+            self.assertEqual(pod_dict['serial_number'], pod_details['serial_number'])
 
     def test_register_dispenser_to_consumer(self):
         consumer1_id = self.consumer_details1['id']
@@ -143,9 +142,9 @@ class TestConsumer(TransactionTestCase):
         p_d1 = self.pod_details1
         p_d2 = self.pod_details2
         p_d3 = self.pod_details3
-        self.consumer_service.register_pod_to_consumer(c_id1,p_d1['serial_number'],p_d1['type_name'])
-        self.consumer_service.register_pod_to_consumer(c_id1,p_d2['serial_number'],p_d2['type_name'])
-        self.consumer_service.register_pod_to_consumer(c_id1,p_d3['serial_number'],p_d3['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
+        self.consumer_service.register_pod_to_consumer(c_id1, p_d3['serial_number'], p_d3['type_name'])
 
         result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d2['serial_number'],
                                                      amount=0.5, time=timezone.now(), longitude=42.76, latitude=36.43)
@@ -163,7 +162,6 @@ class TestConsumer(TransactionTestCase):
         c_id1 = self.consumer_details1['id']
         p_d1 = self.pod_details1
         db = self.db_proxy
-
 
         # with transaction.atomic():
         #     pod, db_pod = db.get_pod2(p_d1['serial_number'])
@@ -184,7 +182,6 @@ class TestConsumer(TransactionTestCase):
         #
         #     res1 = future1.result()
         #     res2 = future2.result()
-
 
         t1 = threading.Thread(target=self.helper_get_pod_lock, args=[])
         t2 = threading.Thread(target=self.helper_get_pod_no_lock, args=[], daemon=True)
@@ -219,7 +216,7 @@ class TestConsumer(TransactionTestCase):
             print(f'task1 going to sleep')
             time.sleep(5)
             print(f'task1 woke up')
-            db.update_pod2(pod,db_pod,c_id1)
+            db.update_pod2(pod, db_pod, c_id1)
             print(f'task1 Done!')
 
         pass
@@ -234,7 +231,7 @@ class TestConsumer(TransactionTestCase):
         db = self.db_proxy
 
         with transaction.atomic():
-            pod0,sb_pod0 = db.get_pod2(p_d1['serial_number'])
+            pod0, sb_pod0 = db.get_pod2(p_d1['serial_number'])
             print(f'task2 Done! pod:{pod0.serial_number}, remainder:{pod0.remainder}')
         pass
 
@@ -244,29 +241,61 @@ class TestConsumer(TransactionTestCase):
         p_t_d = self.pod_type_details
         db = self.db_proxy
 
-        # pod1, obj_ver1 = db.get_pod_for_update(p_d1['serial_number'])
-        # pod2, obj_ver2 = db.get_pod_for_update(p_d1['serial_number'])
-
+        # first 'task' gets pod
         pod1 = db.get_pod(p_d1['serial_number'])
+        # first 'task' modifies pod
         pod1.remainder -= 1.5
-        pod2 = db.get_pod(p_d1['serial_number'])
-        pod2.remainder -= 5
 
+        # second 'task' gets pod
+        pod2 = db.get_pod(p_d1['serial_number'])
+        # second 'task' modifies pod
+        pod2.remainder -= 5
+        # second 'task' saves modified pod
         db.update_pod(pod2, c_id1)
 
         with self.assertRaises(ConcurrentUpdateError):
+            # first 'task' tries to override modifications,
+            # throws concurrency error
             db.update_pod(pod1, c_id1)
 
+        # first 'task' gets current version of pod
         pod1 = db.get_pod(p_d1['serial_number'])
+        # first 'task' modifies current version of pod
         pod1.remainder -= 1.5
+        # first 'task' saves modified pod
         db.update_pod(pod1, c_id1)
         print(f'updates are done')
         pods = db.get_consumer_pods(c_id1)
+        # make sure pod was registered to consumer
+        self.assertTrue(len(pods) == 1)
+        # (value of len(pods) cannot be 2 because both 'tasks' modify the same pod)
+
         pod3 = pods[0]
         self.assertEqual(pod3.serial_number, p_d1['serial_number'])
-        self.assertEqual(pod3.remainder, p_t_d['capacity']-5-1.5)
+        self.assertEqual(pod3.remainder, p_t_d['capacity'] - 5 - 1.5)
         self.assertEqual(pod3.obj_version, 2)
 
+    def test_concurrent_pod_update_2(self):
+        for i in range(20):
+            self.update_test_2()
+
+    def update_test_2(self):
+        def task1(i):
+            # print(f'reg-pod #{i} starting')
+            result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+            # print(f'#{i} result: {Res.is_successful(result)}, msg: {result[1]}\n')
+            return result
+
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        db = self.db_proxy
+        vals = [i for i in range(2)]
+        results = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # print('executor')
+            results = executor.map(task1, vals)
+
+        self.assertTrue(any([Res.is_failure(r) for r in results]))
 
     def test_tests(self):
         c_id1 = self.consumer_details1['id']
@@ -274,4 +303,6 @@ class TestConsumer(TransactionTestCase):
         p_d2 = self.pod_details2
         result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
         self.assertTrue(Res.is_successful(result))
-        self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
+        result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+        self.assertTrue(Res.is_successful(result))
+        # self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
