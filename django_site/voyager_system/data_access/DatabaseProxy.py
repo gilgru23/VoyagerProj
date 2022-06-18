@@ -229,9 +229,9 @@ class DatabaseProxy:
     def get_dispenser(self, serial_number: str):
         try:
             disp_dto = db.get_dispenser(serial_number)
-            return self.dto_to_dispenser(disp_dto)
+            return self.dto_to_dispenser(disp_dto), disp_dto.consumer
         except ObjectDoesNotExist as e:
-            return None
+            return None, None
         except Exception as e:
             err_str = f"Unable to retrieve dispenser from db, with serial number [{serial_number}]." + "\n\t" + str(e)
             raise DataAccessError(err_str)
