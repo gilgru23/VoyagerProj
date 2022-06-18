@@ -3,7 +3,8 @@ Final proj
 Dev Team notes for React-Native, to run the application in dev mode:
 
 1. run in the terminal: "adb devices" to get your device id and then update the line:"adb -s <device_id> reverse tcp:8000 tcp:8000 && react-native run-android" with your device id in package.json under scripts/dev.
-2. Connect your device to the computer and running in the cmd the command: "npm run dev" if local server is running otherwise run "npm run android" 
+2. If you use local server change the varaible "prod" in Client/Config/constants.js to "false" otherwise keep this varaible with "true".
+3. Connect your device to the computer and run from the cmd the command in Client directory: "npm run dev" if local server is running otherwise run "npm run android" 
 
 Dev Team notes for django:
 
