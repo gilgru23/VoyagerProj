@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 import json
 
@@ -85,12 +85,22 @@ class TestAccounts(TestCase):
         response = self.client.generic('get', reverse('login'), body)
         self.assertNotEqual(response.status_code, 200)
 
-    def test_logout(self):
+    def test_logout_from_account_success(self):
+        print(f'\tTest: logout from account - success')
         body = ""
         response = self.client.generic('get', reverse('logout'), body)
         self.assertEqual(response.status_code, 200)
 
-    def test_scenario_1(self):
+    def test_logout_from_account_fail(self):
+        print(f'\tTest: logout from account - fail')
+        print(f'\t\tclient is not logged-in')
+        other_client = Client()
+        body = ""
+        response = other_client.generic('get', reverse('logout'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+
+    def test_complex_scenario_1(self):
         """
         account 2 logs-in, creates a consumer profile and logs out.
         """

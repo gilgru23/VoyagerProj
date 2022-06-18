@@ -134,14 +134,32 @@ class TestConsumers(TestCase):
 
         return response
 
-    def test_register_consumer(self):
-        print(f'\tTest: register consumer - success')
+    def test_create_consumer_profile_success(self):
+        print(f'\tTest: create consumer profile - success')
         body = json.dumps(self.consumer_details2)
         response = self.client2.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 200)
 
-    def test_register_consumer_fail(self):
-        print(f'\tTest: register consumer - fail')
+
+    def test_create_consumer_profile_fail_1(self):
+        print(f'\tTest: create consumer profile - fail')
+        print(f'\t\tnot logged in to account')
+        # check that a user that never registered cannot create a profile
+        other_client = Client()
+        body = json.dumps(self.consumer_details1)
+        response = other_client.generic('GET', reverse('create consumer profile'), body)
+        self.assertNotEqual(response.status_code, 200)
+        # client 2 is logged in to account 2.
+        # log out from account 2
+        response = self.client2.generic('GET', reverse('logout'), "")
+        self.assertEqual(response.status_code, 200)
+        # check that a user that has logged out cannot create a profile
+        response = self.client2.generic('GET', reverse('create consumer profile'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+
+    def test_create_consumer_profile_fail_2(self):
+        print(f'\tTest: create consumer profile - fail')
         print(f'\t\tconsumer profile already exists')
         body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)

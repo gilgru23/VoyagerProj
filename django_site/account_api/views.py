@@ -22,7 +22,6 @@ def register_user(request: HttpRequest):
     try:
         _validate_password(pwd)
     except ValidationError as e:
-
         return rh.error_str_to_response(str(e))
     res = service.get_guest_service().create_account(
         email, phone, f_name, l_name, dob)
@@ -49,19 +48,21 @@ def login_user(request: HttpRequest):
 
 @csrf_exempt
 def logout_user(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    if account_id == -1:
+        return HttpResponse("Failed to log out", status=rh.BAD_REQUEST_STATUS_CODE)
     logout(request)
     return HttpResponse("logged out")
 
 
 @csrf_exempt
 def create_consumer_profile(request: HttpRequest):
-    id = rh.get_acount_id(request)
+    account_id = rh.get_acount_id(request)
     keys = ['residence', 'height', 'weight', 'units', 'gender', 'goal']
     residence, height, weight, units, gender, goal = rh.keys_to_values(
         request, keys)
-    weight=100
     res = service.get_guest_service().create_consumer_profile(
-        id, residence, height, weight, units, gender, goal)
+        account_id, residence, height, weight, units, gender, goal)
     return rh.result_to_response(res)
 
 # throws exception if invalid

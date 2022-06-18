@@ -9,8 +9,11 @@ BAD_REQUEST_STATUS_CODE = 400
 # todo: implement better, holding a dictionary of email to id, rather than referencing db
 def get_acount_id(request: HttpRequest) -> int:
     email = request.user.username
-    acct: Account = Account.objects.get(email=email)
-    account_id = acct.pk
+    try:
+        acct: Account = Account.objects.get(email=email)
+        account_id = acct.pk
+    except:
+        account_id = -1
     return account_id
 
 
