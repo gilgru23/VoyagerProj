@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_accounts_api']
     # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_accounts_api.TestAccounts.test_logout_from_account_fail']
     # args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api']
-    args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api.TestConsumers.test_register_dispenser_multiple_consumers_fail']
+    args = [sys.argv[0], 'test', 'voyager_system.tests.acceptance.test_consumers_api.TestConsumers.test_get_consumer_pods_empty']
     sys.argv = args
     manage.main()
 

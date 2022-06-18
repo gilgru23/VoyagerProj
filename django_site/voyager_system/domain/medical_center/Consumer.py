@@ -122,7 +122,7 @@ class Consumer(Account):
         filtered_pods = [p for p in self.pods if p.serial_number == pod.serial_number]
         if filtered_pods:
             raise AppOperationError(
-                f"Error: consumer register pod - pod serial_number [{pod.serial_number}] already registered to consumer [{self.id}]")
+                f"Error: consumer register pod - pod serial_number [{pod.serial_number}] already registered to consumer [{self.email}]")
         self.pods.insert(0, pod)
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg

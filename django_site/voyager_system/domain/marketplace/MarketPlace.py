@@ -33,7 +33,7 @@ class MarketPlace:
             # log err_str
             raise AppOperationError(err_str)
         if (owner_id is not None) and (owner_id != consumer_id):
-            err_str = f'Invalid dispenser serial number [{serial_num}]: the dispenser is already registered to a different consumer~'
+            err_str = f'Invalid dispenser serial number [{serial_num}]: the dispenser is already registered to a different consumer'
             # log err_str
             raise AppOperationError(err_str)
 

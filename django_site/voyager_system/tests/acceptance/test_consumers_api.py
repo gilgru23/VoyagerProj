@@ -108,6 +108,11 @@ class TestConsumers(TestCase):
         response = self.client1.generic('POST', reverse('register_pod'), body)
         return response
 
+    def get_consumer_pods(self):
+        response = self.client1.generic(
+            'GET', reverse('get_pods_of_consumer'), '')
+        return response
+
     def consumer_dose(self, pod_details, amount: float, time: str):
         params = {"pod_serial_num": pod_details['serial_number'],
                   "amount": amount, "time": time}
@@ -286,7 +291,7 @@ class TestConsumers(TestCase):
         self.assertNotEqual(response.status_code, 200)
         print(f'\t\terror msg: {response.content.decode("utf-8")}')
 
-    def test_get_dosing_history(self):
+    def test_get_dosing_history_success(self):
         print(f'\tTest: get dosing history - success')
         # perform dosings
         self.test_consumer_dose_success(prt=False)
@@ -296,10 +301,63 @@ class TestConsumers(TestCase):
         dosings = json.loads(response.content)
         self.assertEqual(len(dosings), 3)
 
-    def test_register_pod(self):
+    def test_get_dosing_history_fail(self):
+        print(f'\tTest: get dosing history - fail')
+        print(f'\t\tdosing history is empty')
+        # get history
+        response = self.get_dosing_history()
+        self.assertEqual(response.status_code, 200)
+        dosings = json.loads(response.content)
+        self.assertEqual(len(dosings), 0)
+
+    def test_register_pod_success(self):
         print(f'\tTest: register pod - success')
         response = self.register_pod_to_consumer(self.pod_details1)
         self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details2)
+        self.assertEqual(response.status_code, 200)
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 2)
+
+    def test_register_pod_fail_1(self):
+        print(f'\tTest: register pod - fail')
+        print(f'\t\t pod does not exist')
+        other_pod = self.pod_details1.copy()
+        other_pod['serial_number'] = 'notARealPodNumber'
+        response = self.register_pod_to_consumer(other_pod)
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_register_pod_fail_2(self):
+        print(f'\tTest: register pod - fail')
+        print(f'\t\t pod is lready registered to consumer')
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_get_consumer_pods_success(self):
+        print(f'\tTest: get consumer pods - success')
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details2)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details3)
+        self.assertEqual(response.status_code, 200)
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 3)
+
+    def test_get_consumer_pods_empty(self):
+        print(f'\tTest: get consumer pods - success')
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 0)
 
     def test_add_feedback_to_dosing(self):
         print(f'\tTest: add feedback to dosing - success')
