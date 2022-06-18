@@ -359,10 +359,34 @@ class TestConsumers(TestCase):
         pods = json.loads(response.content)
         self.assertEqual(len(pods), 0)
 
-    def test_add_feedback_to_dosing(self):
+    def test_add_feedback_to_dosing_success(self):
         print(f'\tTest: add feedback to dosing - success')
         # perform dosing
-        self.test_consumer_dose()
+        self.test_consumer_dose_success(False)
+        # get history
+        response = self.get_dosing_history()
+        dosings = json.loads(response.content)
+        # add feedback
+        dosing_id = dosings[0]['dosing_id']
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating=8,
+                                     feedback_comment="it was good")
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_add_feedback_to_dosing_fail(self):
+        print(f'\tTest: add feedback to dosing - fail')
+        print(f'\t\tno dosings made by consumer')
+        # add feedback
+        dosing_id = -268
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating=8,
+                                     feedback_comment="it was good")
+        self.assertNotEqual(response.status_code, 200)
+
+
+    def test_get_feedback_success(self):
+        print(f'\tTest: add feedback to dosing - success')
+        # perform dosing
+        self.test_consumer_dose_success(False)
         # get history
         response = self.get_dosing_history()
         dosings = json.loads(response.content)
