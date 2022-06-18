@@ -6,6 +6,8 @@ import { Consumer } from './src/model/Consumer.js'
 import { MockServer } from './src/Communication/mockServer.js'
 import { Dispenser } from './src/model/dispenser.js'
 import { Pod } from './src/model/pod.js'
+import { Dosing } from './src/model/dosing.js'
+import { Feedback } from './src/model/feedback.js'
 
 const model = new Model(true)
 
@@ -24,6 +26,7 @@ const gender = 1
 const goal = 'N/A'
 const podId = '1234'
 const podType = 'regular'
+const tempDosingId = '1'
 const userCradentials = {
   email: validEmail,
   firstName: firstName,
@@ -32,6 +35,9 @@ const userCradentials = {
 }
 const dispenserId = 'id1234'
 const dispenserName = 'dispenser1'
+const dosingAmount = 3
+const dosingRating = 4
+const feedbackComment = 'good experience'
 const genUid = () => new Date().getTime().toString()
 
 describe('registration', async function () {
@@ -135,19 +141,30 @@ describe('createConsumerProfile', async function () {
       new Consumer(validEmail, firstName, lastName, birthDateString)
     )
   })
-
   it('createConsumerProfile failure scenario- empty parameter', async function () {
     const response = await model.createConsumerProfile(
       residence,
       height,
       weight,
-      '',
+      'mg',
       gender,
       goal,
       userCradentials
     )
-    assert.equal(response.status, responseStatus.FAILURE)
-  })
+    assert.equal(response.status, responseStatus.SUCCESS)
+  }),
+    it('createConsumerProfile failure scenario- empty parameter', async function () {
+      const response = await model.createConsumerProfile(
+        residence,
+        height,
+        weight,
+        '',
+        gender,
+        goal,
+        userCradentials
+      )
+      assert.equal(response.status, responseStatus.FAILURE)
+    })
 })
 
 describe('register dispenser', async function (done) {
@@ -223,6 +240,119 @@ describe('register pod', async function () {
   })
   it('register pod failure scenario- one of the parameters is empty', async function () {
     const response = await model.registerPod('', podType, validEmail)
+    assert.equal(response.status, responseStatus.FAILURE)
+  })
+})
+
+describe('dose', async function () {
+  this.beforeEach(async () => {
+    await model.registerUser(
+      validEmail,
+      validPassword,
+      firstName,
+      lastName,
+      birthDateString
+    )
+    await model.registerDispenser(dispenserId, dispenserName, validEmail)
+    await model.registerPod(podId, podType, validEmail)
+  })
+  this.afterEach(async () => {
+    MockServer.users = []
+  })
+  it('dose success scenario', async function () {
+    const response = await model.dose(
+      podId,
+      dosingAmount,
+      birthDateString,
+      validEmail,
+      dispenserId
+    )
+    assert.equal(response.status, responseStatus.SUCCESS)
+    console.log('response:', response.content)
+    assert.deepEqual(
+      response.content,
+      new Dosing(tempDosingId, podId, podType, dosingAmount, birthDateString)
+    )
+  })
+  it('dose failure scenario- no registered pod for dosing', async function () {
+    const response = await model.dose(
+      'fake pod',
+      dosingAmount,
+      birthDateString,
+      validEmail,
+      dispenserId
+    )
+    assert.equal(response.status, responseStatus.FAILURE)
+  })
+  it('register pod failure scenario- one of the parameters is empty', async function () {
+    const response = await model.dose(
+      podId,
+      '',
+      birthDateString,
+      validEmail,
+      dispenserId
+    )
+    assert.equal(response.status, responseStatus.FAILURE)
+  })
+})
+
+describe('feedback', async function () {
+  this.beforeEach(async () => {
+    await model.registerUser(
+      validEmail,
+      validPassword,
+      firstName,
+      lastName,
+      birthDateString
+    )
+    await model.registerDispenser(dispenserId, dispenserName, validEmail)
+    await model.registerPod(podId, podType, validEmail)
+    await model.dose(
+      podId,
+      dosingAmount,
+      birthDateString,
+      validEmail,
+      dispenserId
+    )
+  })
+  this.afterEach(async () => {
+    MockServer.users = []
+  })
+  it('feedback success scenario', async function () {
+    const response = await model.provideFeedback(
+      `${podId}_${birthDateString}`,
+      dosingRating,
+      feedbackComment,
+      validEmail
+    )
+    assert.equal(response.status, responseStatus.SUCCESS)
+    console.log('response:', response.content)
+    assert.deepEqual(
+      response.content,
+      new Feedback(
+        `${podId}_${birthDateString}`,
+        birthDateString,
+        dosingRating,
+        feedbackComment
+      )
+    )
+  })
+  it('feedback failure scenario- feeback for dosing that doesnt exist', async function () {
+    const response = await model.provideFeedback(
+      'fake dosing',
+      dosingRating,
+      feedbackComment,
+      validEmail
+    )
+    assert.equal(response.status, responseStatus.FAILURE)
+  })
+  it('feedback failure scenario- one of the parameters is empty', async function () {
+    const response = await model.provideFeedback(
+      `${podId}_${birthDateString}`,
+      '',
+      feedbackComment,
+      validEmail
+    )
     assert.equal(response.status, responseStatus.FAILURE)
   })
 })

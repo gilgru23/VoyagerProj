@@ -5,15 +5,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './src/view/compenents/HomeScreen'
 import Signup from './src/view/compenents/signup'
 import Login from './src/view/compenents/login'
-import Communication from './src/view/compenents/Communication.js'
 import PersonalInfo from './src/view/compenents/personalInfo'
 import PersonalPods from './src/view/compenents/personalPods'
 import CurrPod from './src/view/compenents/currPod'
 import Schedule from './src/view/compenents/Schedule'
 import { MockServer } from './src/Communication/mockServer'
 import { Controller } from './src/controller/controller'
-import BluetoothScreen from './src/CommCheck/src/BluetoothScreen'
-import ConnectionScreen from './src/CommCheck/src/connection/ConnectionScreen'
+import BluetoothScreen from './src/BluetoothCommunication/src/BluetoothScreen'
+import ConnectionScreen from './src/BluetoothCommunication/src/connection/ConnectionScreen'
 import History from './src/view/compenents/history'
 import PersonalPage from './src/view/compenents/personalPage'
 import DosingFeeback from './src/view/compenents/dosingFeedback'
@@ -65,11 +64,6 @@ function App() {
         <Stack.Screen
           name="Login"
           component={Login}
-          initialParams={{ controller: controller }}
-        />
-        <Stack.Screen
-          name="Communication"
-          component={Communication}
           initialParams={{ controller: controller }}
         />
         <Stack.Screen

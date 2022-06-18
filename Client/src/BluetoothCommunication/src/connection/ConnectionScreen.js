@@ -256,14 +256,14 @@ export default class ConnectionScreen extends React.Component {
       if (messageContent.type === msgsFromDispenserTypes.DOSING) {
         console.log(message.timestamp)
         PushNotification.localNotification({
-          channelId: this.props.consumer.email || 'gilgu@gmail.com',
+          channelId: this.props.consumer.email,
           title: `Message from dispneser ${this.props.device.name}`,
           message: `Dose has been made:\n  time: ${localTime.toString()} \n pod type: ${
             messageContent.podType
           }\n dosage:${messageContent.amount} mg` // (required)
         })
         PushNotification.localNotificationSchedule({
-          channelId: this.props.consumer.email || 'gilgu@gmail.com',
+          channelId: this.props.consumer.email,
           date: timeToRemindFeedBack,
           title: `Reminder For Feeback`,
           message: `This is reminder for dose feedback that has been made in: ${this.props.device.name}:\n  time: ${message.timestamp} \n pod type: ${messageContent.podType}\n dosage:${messageContent.amount} mg` // (required)

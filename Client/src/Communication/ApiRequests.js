@@ -10,6 +10,7 @@ export const registerUser = async (
   birthDate
 ) => {
   try {
+    console.log(`${baseURL}/accounts/register_user`)
     const response = await axios.post(`${baseURL}/accounts/register_user`, {
       email: email,
       pwd: password,
@@ -70,6 +71,7 @@ export const loginUser = async (email, pwd) => {
     }
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   } catch (e) {
+    console.log('login failed')
     return createResponseObj(responseStatus.FAILURE, 'Registeration failed')
   }
 }
@@ -109,7 +111,7 @@ export const registerPod = async (id, podType) => {
   }
 }
 
-export const dose = async (pod, amount, time) => {
+export const dose = async (pod, amount, time, userName, dispenserId) => {
   try {
     const response = await axios.post(`${baseURL}/consumers/dose`, {
       pod_serial_num: pod,
@@ -180,7 +182,7 @@ export const logout = async () => {
   }
 }
 
-export const provideFeedback = async (dosingId, rating, comment) => {
+export const provideFeedback = async (dosingId, rating, comment, userId) => {
   console.log('sending comment: ', comment)
   try {
     const response = await axios.post(`${baseURL}/consumers/provide_feedback`, {

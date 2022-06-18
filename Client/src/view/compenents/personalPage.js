@@ -30,7 +30,7 @@ export default function PersonalPage({ route, navigation }) {
 
   const dispenserConnectionScreen = {
     id: 'BluetoothScreen',
-    title: 'Connect application to your dispenser',
+    title: 'Connect the application to your dispenser',
     img: require('./assets/dispenser.png')
   }
   const screens = route.params.device

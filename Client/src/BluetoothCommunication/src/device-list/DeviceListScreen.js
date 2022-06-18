@@ -60,7 +60,7 @@ export default class DeviceListScreen extends React.Component {
     await requestAccessFineLocationPermission()
     const response = await this.props.controller.getDispenserOfConsumer()
     console.log(response)
-    if ((response.status = responseStatus.SUCCESS)) {
+    if (response.status === responseStatus.SUCCESS) {
       this.setState({ registerdDevices: response.content })
     }
     this.getBondedDevices()

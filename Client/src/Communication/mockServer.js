@@ -1,6 +1,8 @@
 import { responseStatus } from '../Config/constants.js'
 import { Consumer } from '../model/Consumer.js'
 import { Dispenser } from '../model/dispenser.js'
+import { Dosing } from '../model/dosing.js'
+import { Feedback } from '../model/feedback.js'
 import {
   createResponseObj,
   validateEmail,
@@ -12,6 +14,8 @@ import {
 export class MockServer {
   constructor(users, dispensers) {
     this.users = users
+    this.tempDosingId = '1'
+    this.tempPodType = 'regular'
   }
 
   registerUser = (email, password, firstName, lastName, birthDate) => {
@@ -42,7 +46,8 @@ export class MockServer {
         consumer: new Consumer(email, firstName, lastName, birthDate),
         password: password,
         dispensers: [],
-        pods: []
+        pods: [],
+        dosings: []
       })
       return createResponseObj(responseStatus.SUCCESS, 'registration succeeded')
     }
@@ -83,10 +88,6 @@ export class MockServer {
         'one of the paramter is invalid'
       )
     }
-    console.log('******')
-    console.log(this.users)
-    console.log(email)
-    console.log('******')
     const user = this.users.find((user) => user.consumer.email === email)
     if (!user.dispensers.includes(id)) {
       user.dispensers.push(id)
@@ -108,10 +109,7 @@ export class MockServer {
     const user = this.users.find((user) => user.consumer.email === email)
     if (!user.pods.includes(id)) {
       user.pods.push(id)
-      return createResponseObj(
-        responseStatus.SUCCESS,
-        'Adding dispenser succeeded'
-      )
+      return createResponseObj(responseStatus.SUCCESS, 'Adding pod succeeded')
     }
     return createResponseObj(responseStatus.FAILURE, 'Pod already exists')
   }
@@ -141,6 +139,67 @@ export class MockServer {
         this.users[0].lastName,
         this.users[0].birthDate
       )
+    )
+  }
+
+  dose = (podId, dosingAmount, date, userName, dispenserId) => {
+    if (!checkTheParametersAreValid(podId, dosingAmount, date)) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    const user = this.users.find(
+      (registerdUser) => registerdUser.consumer.email === userName
+    )
+    if (!user.pods.includes(podId)) {
+      return createResponseObj(responseStatus.FAILURE, 'Pod dosent exist')
+    }
+    return createResponseObj(
+      responseStatus.SUCCESS,
+      new Dosing(this.tempDosingId, podId, this.tempPodType, dosingAmount, date)
+    )
+  }
+
+  dose = (podId, dosingAmount, date, userName, dispenserId) => {
+    if (!checkTheParametersAreValid(podId, dosingAmount, date)) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    const user = this.users.find(
+      (registerdUser) => registerdUser.consumer.email === userName
+    )
+    if (!user.pods.includes(podId)) {
+      return createResponseObj(responseStatus.FAILURE, 'Pod dosent exist')
+    }
+    const dosingId = `${podId}_${date}`
+    user.dosings.push(dosingId)
+    return createResponseObj(
+      responseStatus.SUCCESS,
+      new Dosing(this.tempDosingId, podId, this.tempPodType, dosingAmount, date)
+    )
+  }
+
+  provideFeedback = (dosingId, rating, comment, userId) => {
+    if (!checkTheParametersAreValid(dosingId, rating, comment)) {
+      return createResponseObj(
+        responseStatus.FAILURE,
+        'one of the paramter is invalid'
+      )
+    }
+    const user = this.users.find(
+      (registerdUser) => registerdUser.consumer.email === userId
+    )
+    console.log(user, userId)
+    if (!user.dosings.includes(dosingId)) {
+      return createResponseObj(responseStatus.FAILURE, 'Pod dosent exist')
+    }
+    const time = dosingId.split('_')[1]
+    return createResponseObj(
+      responseStatus.SUCCESS,
+      new Feedback(dosingId, time, rating, comment)
     )
   }
 }
