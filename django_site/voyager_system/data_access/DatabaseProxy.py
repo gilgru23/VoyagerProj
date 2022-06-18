@@ -9,13 +9,13 @@ import voyager_system.data_access.database as db
 from django.core.exceptions import ObjectDoesNotExist
 from voyager_system.domain.system_management.Account import Account
 
-# TODO:: add logging
+import logging
 
 class DatabaseProxy:
     def __init__(self, object_cache=None):
         super().__init__()
         self.object_cache = object_cache
-
+        self.logger = logging.getLogger('voyager.data_access')
 
 
     # region Account
@@ -173,17 +173,16 @@ class DatabaseProxy:
         try:
             db.update_pod(pod_dto=pod_dto, consumer_id=consumer_id)
         except ConcurrentUpdateError as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] because of race condition. try again\n\t" + str(
-                e)
-            # log error
+            err_str = f"Unable to update pod [{pod.serial_number}] because of race condition. try again"
+            self.logger.debug(err_str)
             raise ConcurrentUpdateError(err_str)
         except ObjectDoesNotExist as e:
-            err_str = f"Unable to update pod [{pod.serial_number}] - because pod was not found.\n\t" + str(
-                e)
-            # log error
+            err_str = f"Unable to update pod [{pod.serial_number}] - because pod was not found.\n\t" + str(e)
+            self.logger.error(err_str)
             raise AppOperationError(err_str)
         except Exception as e:
             err_str = f"Unable to update pod [{pod.serial_number}] in DB. with consumer [{consumer_id}]." + "\n\t" + str(e)
+            self.logger.error(err_str)
             raise DataAccessError(err_str)
 
     # endregion Pod

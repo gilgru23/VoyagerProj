@@ -158,83 +158,6 @@ class TestConsumer(TransactionTestCase):
         history = Res.get_value(result)
         self.assertEqual(len(history), 2)
 
-    def my_tests2(self):
-        c_id1 = self.consumer_details1['id']
-        p_d1 = self.pod_details1
-        db = self.db_proxy
-
-        # with transaction.atomic():
-        #     pod, db_pod = db.get_pod2(p_d1['serial_number'])
-        #     pod.remainder -= 1.5
-        #     print(f'task1 going to sleep')
-        #     time.sleep(4)
-        #     print(f'task1 woke up')
-        #     db.update_pod2(pod,db_pod,c_id1)
-
-        # self.helper_get_pod_lock()
-
-        # with concurrent.futures.ThreadPoolExecutor() as executor:
-        #     print('executor')
-        #     future1 = executor.submit(self.helper_get_pod_lock)
-        #     future1.add_done_callback(self.on_done)
-        #     future2 = executor.submit(self.helper_get_pod_no_lock)
-        #     future2.add_done_callback(self.on_done)
-        #
-        #     res1 = future1.result()
-        #     res2 = future2.result()
-
-        t1 = threading.Thread(target=self.helper_get_pod_lock, args=[])
-        t2 = threading.Thread(target=self.helper_get_pod_no_lock, args=[], daemon=True)
-        t1.start()
-        t2.start()
-        t1.join()
-        t2.join()
-
-        print(f'Main task going to sleep')
-        time.sleep(2)
-        pods = db.get_consumer_pods(c_id1)
-        for pod0 in pods:
-            print(f'\tpod:{pod0.serial_number}, remainder:{pod0.remainder}')
-        print(f'Main task Done!')
-
-        # print("pods")
-        pass
-
-    def on_done(self, future):
-        connections.close_all()
-
-    def helper_get_pod_lock(self):
-        print(f'task1 is starting')
-        c_id1 = self.consumer_details1['id']
-        p_d1 = self.pod_details1
-        db = self.db_proxy
-
-        with transaction.atomic():
-            pod, db_pod = db.get_pod2(p_d1['serial_number'])
-            print(f'task1 got pod, pod:{pod.serial_number}, remainder:{pod.remainder}')
-            pod.remainder -= 1.5
-            print(f'task1 going to sleep')
-            time.sleep(5)
-            print(f'task1 woke up')
-            db.update_pod2(pod, db_pod, c_id1)
-            print(f'task1 Done!')
-
-        pass
-
-    def helper_get_pod_no_lock(self):
-        print(f'task2 is starting')
-        print(f'task2 going to sleep')
-        time.sleep(2)
-        print(f'task2 woke up')
-        c_id1 = self.consumer_details1['id']
-        p_d1 = self.pod_details1
-        db = self.db_proxy
-
-        with transaction.atomic():
-            pod0, sb_pod0 = db.get_pod2(p_d1['serial_number'])
-            print(f'task2 Done! pod:{pod0.serial_number}, remainder:{pod0.remainder}')
-        pass
-
     def test_concurrent_pod_update(self):
         c_id1 = self.consumer_details1['id']
         p_d1 = self.pod_details1
@@ -281,28 +204,43 @@ class TestConsumer(TransactionTestCase):
 
     def update_test_2(self):
         def task1(i):
-            # print(f'reg-pod #{i} starting')
             result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-            # print(f'#{i} result: {Res.is_successful(result)}, msg: {result[1]}\n')
+            return result
+
+        c_id1 = self.consumer_details1['id']
+        p_d1 = self.pod_details1
+        vals = [i for i in range(2)]
+        results = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            results = executor.map(task1, vals)
+
+        self.assertTrue(any([Res.is_failure(r) for r in results]))
+
+    # def test_concurrent_dose(self):
+    #     c_id1 = self.consumer_details1['id']
+    #     p_d1 = self.pod_details1
+    #     result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+    #     self.assertTrue(Res.is_successful(result))
+    #     for i in range(5):
+    #         self.dose_test(1+i)
+
+    def dose_test(self, j):
+        def task1(i):
+            result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d1['serial_number'],
+                                                         amount=0.25, time=timezone.now(), longitude=42.76,
+                                                         latitude=36.43)
+            print(f'task:{i}, result: {result[0]}, msg: {result[1]}\n')
             return result
 
         c_id1 = self.consumer_details1['id']
         p_d1 = self.pod_details1
         db = self.db_proxy
-        vals = [i for i in range(2)]
+        reps = 2
+        vals = [i for i in range(reps)]
         results = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            # print('executor')
             results = executor.map(task1, vals)
 
-        self.assertTrue(any([Res.is_failure(r) for r in results]))
-
-    def test_tests(self):
-        c_id1 = self.consumer_details1['id']
-        p_d1 = self.pod_details1
-        p_d2 = self.pod_details2
-        result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-        self.assertTrue(Res.is_successful(result))
-        # result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-        # self.assertTrue(Res.is_successful(result))
-        # self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
+        self.assertTrue(all([Res.is_successful(r) for r in results]))
+        pod = db.get_pod(p_d1['serial_number'])
+        self.assertEqual(pod.remainder, self.pod_type_details['capacity'] - (0.25 * reps * j))

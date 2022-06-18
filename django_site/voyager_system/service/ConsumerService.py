@@ -58,9 +58,10 @@ class ConsumerService:
                 output = func()
                 return Result.success(output)
             except ConcurrentUpdateError as e:
-                count += 1
+                print(f"count:{c}")
+                pass
             except AppOperationError as e:
                 return Result.failure(str(e))
             except DataAccessError as e:
                 return Result.failure("Unable to complete the operation in DB")
-        return Result.failure(f"Unable to complete the operation, {count} attempts")
+        return Result.failure(f"Unable to complete the operation")

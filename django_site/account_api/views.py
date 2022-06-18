@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -18,8 +19,11 @@ import voyager_system.data_access.db_check as db_check
 def register_user(request: HttpRequest):
     keys = ['email', 'pwd', 'phone', 'f_name', 'l_name', 'dob']
     email, pwd, phone, f_name, l_name, dob = rh.keys_to_values(request, keys)
-    _validate_password(pwd)
+    try:
+        _validate_password(pwd)
+    except ValidationError as e:
 
+        return rh.error_str_to_response(str(e))
     res = service.get_guest_service().create_account(
         email, phone, f_name, l_name, dob)
     if result.is_failure(res):

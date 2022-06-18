@@ -1,5 +1,4 @@
 
-
 from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
 from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
@@ -24,11 +23,9 @@ class MedicalCenter:
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
         self.logger = logging.getLogger('voyager.domain')
-        pass
+
 
     # region Consumer
-
-    # consumer related interface
 
     def get_consumer(self, consumer_id) -> Consumer:
         """retrieves a consumer from database (or cache) by id
@@ -62,7 +59,7 @@ class MedicalCenter:
         """
 
         def dosing_to_dict(dosing: Dosing, pod_type: str):
-            return {'dosing_id': dosing.id,'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': pod_type,
+            return {'dosing_id': dosing.id ,'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': pod_type,
                     'amount': dosing.amount, 'time': date_time_to_str(dosing.time), 'latitude': dosing.latitude,
                     'longitude': dosing.longitude}
 
@@ -169,7 +166,7 @@ class MedicalCenter:
         consumer = self.get_consumer(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
         past_feedbacks = self.db.get_feedbacks_for_consumer(consumer_id)
-        self.sort_consumer_feedbacks(consumer,past_feedbacks)
+        self.sort_consumer_feedbacks(consumer ,past_feedbacks)
         feedback: Feedback = consumer.provide_feedback(dosing_id, feedback_rating, feedback_comment)
         self.db.add_feedback(feedback, dosing_id)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
@@ -186,15 +183,16 @@ class MedicalCenter:
         """
 
         def feedback_to_dict(feed: Feedback):
-            return {'dosing_id': feed.dosing_id, 'time': date_time_to_str(feed.time), 'rating': feed.rating, 'comment':feed.comment}
+            return {'dosing_id': feed.dosing_id, 'time': date_time_to_str(feed.time), 'rating': feed.rating, 'comment' :feed.comment}
 
         consumer = self.get_consumer(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
         past_feedbacks = self.db.get_feedbacks_for_consumer(consumer_id)
-        self.sort_consumer_feedbacks(consumer,past_feedbacks)
+        self.sort_consumer_feedbacks(consumer ,past_feedbacks)
         dosing = consumer.get_dosing_by_id(dosing_id)
         if dosing is None:
-            raise AppOperationError(f"Error: consumer [{consumer_id}] doesn't have a dosing with matching dosing_id [{dosing_id}]")
+            raise AppOperationError \
+                (f"Error: consumer [{consumer_id}] doesn't have a dosing with matching dosing_id [{dosing_id}]")
         feedback = self.db.get_feedback_for_dosing(dosing_id)
         if feedback is None:
             raise AppOperationError(
@@ -252,4 +250,3 @@ class MedicalCenter:
     # region Caregiver
 
     # endregion Caregiver
-

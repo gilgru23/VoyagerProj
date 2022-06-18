@@ -6,13 +6,13 @@ import json
 BAD_REQUEST_STATUS_CODE = 400
 
 
-
-#todo: implement better, holding a dictionary of email to id, rather than referencing db
+# todo: implement better, holding a dictionary of email to id, rather than referencing db
 def get_acount_id(request: HttpRequest) -> int:
     email = request.user.username
     acct: Account = Account.objects.get(email=email)
     account_id = acct.pk
     return account_id
+
 
 def keys_to_values(request: HttpRequest, keys):
     # body_unicode = request.body.decode('utf-8')
@@ -20,9 +20,11 @@ def keys_to_values(request: HttpRequest, keys):
     body = json.loads(request.body)
     return [body[key] for key in keys]
 
+
 def get_parameters(request: HttpRequest, keys):
     params_dict = request.GET
     return [params_dict.get(key, '') for key in keys]
+
 
 def result_to_response(res):
     (succeeded, val) = res
@@ -38,3 +40,10 @@ def result_to_response(res):
     else:
         return HttpResponse(val, status=BAD_REQUEST_STATUS_CODE)
 
+
+def error_str_to_response(err_str):
+    try:
+        err_str = err_str.strip("[\'\']")
+    except Exception:
+        pass
+    return HttpResponse(err_str, status=BAD_REQUEST_STATUS_CODE)

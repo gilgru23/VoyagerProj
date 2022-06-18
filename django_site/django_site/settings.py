@@ -153,7 +153,12 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs/Domain_Layer.log',
             'formatter': 'verbose'
-
+        },
+        'data_access_layer_log_file':{
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs/Data_Access_Layer.log',
+            'formatter': 'verbose'
         }
     },
     'loggers': {
@@ -168,6 +173,11 @@ LOGGING = {
         },
         'voyager.domain': {
             'handlers': ['domain_layer_log_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'voyager.data_access': {
+            'handlers': ['data_access_layer_log_file'],
             'level': 'DEBUG',
             'propagate': False,
         }

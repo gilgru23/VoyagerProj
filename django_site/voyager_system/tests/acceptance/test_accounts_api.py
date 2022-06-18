@@ -36,7 +36,8 @@ class TestAccounts(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    def test_register_account(self):
+    def test_register_account_success(self):
+        print(f'\tTest: register account - success')
         account = {"email": "sharon@there.com", "pwd": "AaSsDd12341234",
                    "phone": "0540545405", "f_name": "sharon", "l_name": "sharon",
                    "dob": "1990-05-05"}
@@ -44,10 +45,45 @@ class TestAccounts(TestCase):
         response = self.client.generic('POST', reverse('register'), body)
         self.assertEqual(response.status_code, 200)
 
-    def test_login(self):
+    def test_register_account_fail_1(self):
+        print(f'\tTest: register account - fail')
+        print(f'\t\temail already taken')
+        account = self.account1
+        body = json.dumps(account)
+        response = self.client.generic('POST', reverse('register'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_register_account_fail_2(self):
+        print(f'\tTest: register account - fail')
+        print(f'\t\tinvalid password')
+        account = {"email": "sharon@there.com", "pwd": "1234",
+                   "phone": "0540545405", "f_name": "sharon", "l_name": "sharon",
+                   "dob": "1990-05-05"}
+        body = json.dumps(account)
+        response = self.client.generic('POST', reverse('register'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_login_to_account_success(self):
+        print(f'\tTest: login to account - success')
         body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
         response = self.client.generic('get', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
+
+    def test_login_to_account_fail_1(self):
+        print(f'\tTest: login to account - fail')
+        print(f'\t\temail is not registered')
+        account = {'email':'notarealemail@nowhere.no', 'pwd':'324hR32fi@s'}
+        body = json.dumps({'email': account['email'], 'pwd': account['pwd']})
+        response = self.client.generic('get', reverse('login'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_login_to_account_fail_2(self):
+        print(f'\tTest: login to account - fail')
+        print(f'\t\tincorrect password')
+        account = {'email':self.account2['email'], 'pwd':'wrong_password'}
+        body = json.dumps({'email': account['email'], 'pwd': account['pwd']})
+        response = self.client.generic('get', reverse('login'), body)
+        self.assertNotEqual(response.status_code, 200)
 
     def test_logout(self):
         body = ""
