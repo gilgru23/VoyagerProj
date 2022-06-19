@@ -10,6 +10,14 @@ class MarketPlace:
     def __init__(self, db_proxy: DatabaseProxy) -> None:
         self.db = db_proxy
 
+    def add_dispenser(self, serial_num, version):
+        # @todo: check if account is manager
+        self.create_dispenser(serial_num, version)
+
+    def add_pod(self, serial_num, pod_type):
+        # @todo: check if account is manager
+        self.create_pod(serial_num,pod_type)
+
     def validate_pod(self, serial_num: str, pod_type_name: str) -> Pod:
         pod = self.db.get_pod(serial_num)
         if (pod is None) or (pod.type_name != pod_type_name):

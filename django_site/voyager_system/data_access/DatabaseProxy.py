@@ -1,3 +1,5 @@
+from django.db import IntegrityError
+
 from voyager_system.common.ErrorTypes import *
 from voyager_system.data_access.dtos import *
 from voyager_system.domain.medical_center.Consumer import Consumer
@@ -154,8 +156,13 @@ class DatabaseProxy:
         dto = self.pod_to_dto(pod)
         try:
             return db.add_pod(pod_dto=dto)
+        except IntegrityError as e:
+            err_str = f"Unable to add a new pod, with serial-number [{pod.serial_number}]."
+            self.logger.info(err_str)
+            raise AppOperationError(err_str)
         except Exception as e:
             err_str = f"Unable to add a new pod to DB, with serial_number [{pod.serial_number}]" + "\n\t" + str(e)
+            self.logger.error(err_str)
             raise DataAccessError(err_str)
 
     def get_pod(self,serial_number: str):
@@ -221,9 +228,14 @@ class DatabaseProxy:
         dto = self.dispenser_to_dto(dispenser, consumer_id=consumer_id)
         try:
             return db.add_dispenser(dto)
+        except IntegrityError as e:
+            err_str = f"Unable to add a new dispenser, with serial-number [{dispenser.serial_number}]."
+            self.logger.info(err_str)
+            raise AppOperationError(err_str)
         except Exception as e:
-            err_str = f"Unable to add a new dispenser type to DB, with serial-number [{dispenser.serial_number}]" + "\n\t" + str(
+            err_str = f"Unable to add a new dispenser to DB, with serial-number [{dispenser.serial_number}]" + "\n\t" + str(
                 e)
+            self.logger.error(err_str)
             raise DataAccessError(err_str)
 
     def get_dispenser(self, serial_number: str):

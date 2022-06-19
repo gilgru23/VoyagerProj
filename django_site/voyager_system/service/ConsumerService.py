@@ -3,7 +3,6 @@ from voyager_system.common.ErrorTypes import *
 
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 
-REQ_TIMEOUT = 20
 
 
 class ConsumerService:
@@ -45,13 +44,10 @@ class ConsumerService:
         return self.manage_request_calls(
             lambda: self.med_center.get_feedback_for_dosing(consumer_id=consumer_id, dosing_id=dosing_id))
 
-    # - set_dosing_reminder
-    # - get_recomendation(consumer_id)
-    # - set_regimen(consumer_id)
-    # - get_regimen(consumer_id)
 
     @staticmethod
     def manage_request_calls(func):
+        REQ_TIMEOUT = 20
         for c in range(REQ_TIMEOUT):
             try:
                 output = func()

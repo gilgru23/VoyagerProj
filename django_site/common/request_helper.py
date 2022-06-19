@@ -17,13 +17,14 @@ def get_acount_id(request: HttpRequest) -> int:
     return account_id
 
 
+# get values of the POST request
 def keys_to_values(request: HttpRequest, keys):
     # body_unicode = request.body.decode('utf-8')
     # body = request.POST
     body = json.loads(request.body)
     return [body[key] for key in keys]
 
-
+# get parameters of the GET request
 def get_parameters(request: HttpRequest, keys):
     params_dict = request.GET
     return [params_dict.get(key, '') for key in keys]
