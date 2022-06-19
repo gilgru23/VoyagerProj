@@ -3,7 +3,7 @@ from voyager_system.common.ErrorTypes import *
 
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 
-REQ_TIMEOUT = 5
+REQ_TIMEOUT = 20
 
 
 class ConsumerService:
@@ -52,13 +52,11 @@ class ConsumerService:
 
     @staticmethod
     def manage_request_calls(func):
-        count = 0
         for c in range(REQ_TIMEOUT):
             try:
                 output = func()
                 return Result.success(output)
             except ConcurrentUpdateError as e:
-                print(f"count:{c}")
                 pass
             except AppOperationError as e:
                 return Result.failure(str(e))

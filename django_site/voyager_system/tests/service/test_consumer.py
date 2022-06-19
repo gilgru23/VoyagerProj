@@ -198,49 +198,102 @@ class TestConsumer(TransactionTestCase):
         self.assertEqual(pod3.remainder, p_t_d['capacity'] - 5 - 1.5)
         self.assertEqual(pod3.obj_version, 2)
 
-    def test_concurrent_pod_update_2(self):
-        for i in range(20):
-            self.update_test_2()
+    def test_concurrent_pod_register(self):
+        def register_pod_test():
+            def task1(i):
+                result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+                # print(f'\t\ttask:{i}, result: {result[0]}, msg: {result[1]}\n')
+                return result
+            c_id1 = self.consumer_details1['id']
+            p_d1 = self.pod_details1
+            vals = [i for i in range(5)]
+            results = []
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                results = executor.map(task1, vals)
 
-    def update_test_2(self):
-        def task1(i):
-            result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-            return result
+            self.assertTrue(any([Res.is_failure(r) for r in results]))
 
+        for i in range(10):
+            register_pod_test()
+
+    def test_concurrent_dose(self):
+        def dose_test(j):
+            def task1(i):
+                result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d1['serial_number'],
+                                                             amount=0.25, time=timezone.now(), longitude=42.76,
+                                                             latitude=36.43)
+                # print(f'\t\ttask:{i}, result: {result[0]}, msg: {result[1]}\n')
+                return result
+
+            reps = 4
+            vals = [i for i in range(reps)]
+            results = []
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                results = executor.map(task1, vals)
+
+            self.assertTrue(all([Res.is_successful(r) for r in results]))
+            pod = db.get_pod(p_d1['serial_number'])
+            print(f'\tpod final state: serial number: {pod.serial_number} remainder: {pod.remainder}')
+            self.assertEqual(pod.remainder, self.pod_type_details['capacity'] - (0.25 * reps * j))
+
+        # setup consumer
         c_id1 = self.consumer_details1['id']
         p_d1 = self.pod_details1
-        vals = [i for i in range(2)]
-        results = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = executor.map(task1, vals)
-
-        self.assertTrue(any([Res.is_failure(r) for r in results]))
-
-    # def test_concurrent_dose(self):
-    #     c_id1 = self.consumer_details1['id']
-    #     p_d1 = self.pod_details1
-    #     result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
-    #     self.assertTrue(Res.is_successful(result))
-    #     for i in range(5):
-    #         self.dose_test(1+i)
-
-    def dose_test(self, j):
-        def task1(i):
-            result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=p_d1['serial_number'],
-                                                         amount=0.25, time=timezone.now(), longitude=42.76,
-                                                         latitude=36.43)
-            print(f'task:{i}, result: {result[0]}, msg: {result[1]}\n')
-            return result
-
-        c_id1 = self.consumer_details1['id']
-        p_d1 = self.pod_details1
+        d_d1 = self.dispenser_details1
         db = self.db_proxy
-        reps = 2
-        vals = [i for i in range(reps)]
-        results = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = executor.map(task1, vals)
+        # register dispensers
+        result = self.consumer_service.register_dispenser_to_consumer(c_id1, d_d1['serial_number'], d_d1['version'])
+        self.assertTrue(Res.is_successful(result))
+        result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+        self.assertTrue(Res.is_successful(result))
+        for i in range(6):
+            dose_test(1+i)
 
-        self.assertTrue(all([Res.is_successful(r) for r in results]))
-        pod = db.get_pod(p_d1['serial_number'])
-        self.assertEqual(pod.remainder, self.pod_type_details['capacity'] - (0.25 * reps * j))
+
+    def test_concurrent_dose_different_pods(self):
+
+        def get_pod_serial(n: int):
+            return f'p_{n}'
+
+        def dose_test(k):
+
+            def task1(i):
+                result = self.consumer_service.consumer_dose(consumer_id=c_id1, pod_serial_num=get_pod_serial(i),
+                                                             amount=0.25, time=timezone.now(), longitude=42.76,
+                                                             latitude=36.43)
+                # print(f'\t\ttask:{i}, result: {result[0]}, msg: {result[1]}\n')
+                return result
+
+            vals = [j for j in range(sets)]
+            results = []
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                results = executor.map(task1, vals)
+
+            self.assertTrue(all([Res.is_successful(r) for r in results]))
+            for j in range(sets):
+                ser_num = get_pod_serial(j)
+                pod = db.get_pod(ser_num)
+                print(f'\t{j}: pod final state- serial number: {pod.serial_number} remainder: {pod.remainder}')
+                self.assertEqual(pod.remainder, self.pod_type_details['capacity'] - 0.25 * k)
+
+
+        # setup pods and register them to user
+        pod_type = PodType(name=self.pod_type_details['name'], capacity=40, company=self.company_details['name'],
+                           substance="secret", description="done")
+        c_id1 = self.consumer_details1['id']
+        p_d1 = {"serial_number": "1_1", 'type_name': self.pod_type_details['name']}
+        d_d1 = self.dispenser_details1
+        db = self.db_proxy
+        sets = 8
+        for i in range(sets):
+            p_d1['serial_number'] = get_pod_serial(i)
+            pod1 = Pod.from_type(p_d1['serial_number'], pod_type)
+            db.add_pod(pod1)
+            result = self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
+            self.assertTrue(Res.is_successful(result))
+
+        # register dispensers
+        result = self.consumer_service.register_dispenser_to_consumer(c_id1, d_d1['serial_number'], d_d1['version'])
+        self.assertTrue(Res.is_successful(result))
+        for i in range(sets):
+            dose_test(1+i)
