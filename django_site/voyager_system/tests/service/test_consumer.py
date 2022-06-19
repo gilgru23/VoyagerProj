@@ -19,7 +19,7 @@ from django.test import TransactionTestCase
 """
 
 
-class TestConsumer(TransactionTestCase):
+class TestConsumer(TestCase):
     # main units to be tested
     guest_service = ServiceSetup.get_guest_service()
     consumer_service = ServiceSetup.get_consumer_service()
@@ -139,9 +139,11 @@ class TestConsumer(TransactionTestCase):
 
     def test_consumer_dose(self):
         c_id1 = self.consumer_details1['id']
+        d_d1 = self.dispenser_details1
         p_d1 = self.pod_details1
         p_d2 = self.pod_details2
         p_d3 = self.pod_details3
+        self.consumer_service.register_dispenser_to_consumer(c_id1,d_d1['serial_number'],d_d1['version'])
         self.consumer_service.register_pod_to_consumer(c_id1, p_d1['serial_number'], p_d1['type_name'])
         self.consumer_service.register_pod_to_consumer(c_id1, p_d2['serial_number'], p_d2['type_name'])
         self.consumer_service.register_pod_to_consumer(c_id1, p_d3['serial_number'], p_d3['type_name'])
