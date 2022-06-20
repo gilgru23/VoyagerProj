@@ -14,8 +14,7 @@ class TestManagers(TestCase):
     pod_type_details = {"name": "corpDrops", 'capacity': 40, 'company': company_details['name']}
 
     def setUp(self):
-        # Create 13 authors for pagination tests
-        print('\nset up guest acceptance test')
+        print('\nset up managers acceptance test')
         self.setup_pod_types()
 
     def setup_pod_types(self):
@@ -25,13 +24,13 @@ class TestManagers(TestCase):
         self.db_proxy.add_pod_type(pod_type)
 
     def add_dispenser(self, serial_num, version):
-        params = {"new_serial_num": serial_num, "version": version}
+        params = {"new_serial_number": serial_num, "version": version}
         body = json.dumps(params)
         response = self.client.generic('POST', reverse('add_dispenser'), body)
         return response
 
     def add_pod(self, serial_num, type_name):
-        params = {"new_serial_num": serial_num, "pod_type": type_name}
+        params = {"new_serial_number": serial_num, "pod_type": type_name}
         body = json.dumps(params)
         response = self.client.generic('POST', reverse('add_pod'), body)
         return response
@@ -45,5 +44,5 @@ class TestManagers(TestCase):
         self.assertNotEqual(response.status_code, 200)
 
     def test_add_pod(self):
-        response = self.add_dispenser('d_1111', self.pod_type_details['name'])
+        response = self.add_pod('d_1111', self.pod_type_details['name'])
         self.assertEqual(response.status_code, 200)

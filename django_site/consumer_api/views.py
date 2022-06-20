@@ -108,7 +108,7 @@ def get_feedback_for_dosing(request: HttpRequest):
 @csrf_exempt
 def add_dispenser(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    keys = ['new_serial_num', 'version']
+    keys = ['new_serial_number', 'version']
     new_serial_num, version = rh.keys_to_values(request, keys)
     res = service.get_manager_service().add_dispenser(new_serial_num, version)
     return rh.result_to_response(res)
@@ -116,7 +116,7 @@ def add_dispenser(request: HttpRequest):
 @csrf_exempt
 def add_pod(request: HttpRequest):
     account_id = rh.get_acount_id(request)
-    keys = ['new_serial_num', 'pod_type']
+    keys = ['new_serial_number', 'pod_type']
     new_serial_num, pod_type = rh.keys_to_values(request, keys)
     res = service.get_manager_service().add_pod(new_serial_num, pod_type)
     return rh.result_to_response(res)
