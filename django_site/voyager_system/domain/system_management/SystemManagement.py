@@ -4,7 +4,7 @@ from voyager_system.common.DateTimeFormats import date_to_str
 from voyager_system.domain.medical_center.MedicalCenter import MedicalCenter
 from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 
-# @TODO:: add logs
+import logging
 from voyager_system.domain.system_management.Account import Account
 
 
@@ -13,11 +13,12 @@ class SystemManagement:
     def __init__(self, medical_center: MedicalCenter, db_proxy: DatabaseProxy) -> None:
         self.med_center: MedicalCenter = medical_center
         self.db_proxy: DatabaseProxy = db_proxy
+        self.logger = logging.getLogger('voyager.domain')
 
     EMAIL_REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
     # todo: handle phone number
-    def create_account(self, email, phone, f_name, l_name, dob) -> str:
+    def create_account(self, email, phone, f_name, l_name, dob):
         """
         creates a new account in the system
 
@@ -32,13 +33,18 @@ class SystemManagement:
                 2. any of the parameters is invalid
         :raise DataAccessError: throws if db operation fails
         """
-        if not re.search(self.EMAIL_REGEX, email):
-            raise AppOperationError(f"Invalid parameters")
         if not (email and phone and f_name and l_name and dob):
-            raise AppOperationError(f"Invalid parameters")
+            err_str = f'invalid registration parameters [email:{email}, phone:{phone}, first name:{f_name}, last name: {l_name}]'
+            self.logger.debug(err_str)
+            raise AppOperationError(err_str)
+        if not re.search(self.EMAIL_REGEX, email):
+            err_str = f'invalid registration email [{email}]'
+            self.logger.debug(err_str)
+            raise AppOperationError(err_str)
         if self.is_email_registered(email):
-            #  log f"There already exits an account with email: [{email}]"
-            raise AppOperationError(f"There already exits an account with email: [{email}]")
+            err_str = f"There already exits an account with email: [{email}]"
+            self.logger.info(err_str)
+            raise AppOperationError(err_str)
         # Todo: add Registration-Date as an arg to db
         self.db_proxy.add_account(email, phone, f_name, l_name, dob)
 
@@ -62,14 +68,17 @@ class SystemManagement:
         :raise DataAccessError: throws if db operation fails
         """
         if not (residence and gender and units):
-            raise AppOperationError(f"Invalid parameters")
+            err_str = f'invalid registration parameters (residence/ gender / units)'
+            self.logger.debug(err_str)
+            raise AppOperationError(err_str)
         if not self.account_id_exist(consumer_id):
-            # log f"No account associated to id: [{consumer_id}]"
+            err_str = f"No account associated to id: [{consumer_id}]"
+            self.logger.info(err_str)
             raise AppOperationError(f"No account associated to the given id")
         if self.is_consumer(consumer_id):
-            #  log f"There already exits a consumer with id: [{consumer_id}]"
+            err_str = f"There already exits a consumer with account id: [{consumer_id}]"
+            self.logger.info(err_str)
             raise AppOperationError(f"Account is already a consumer")
-        # TODO:: verify height & weight
         self.db_proxy.add_consumer(consumer_id, residence, height, weight, units, gender, goal)
 
 
@@ -85,10 +94,12 @@ class SystemManagement:
         :raise DataAccessError: throws if db operation fails
         """
         if not self.account_id_exist(caregiver_id):
-            # log f"No account associated to id: [{caregiver_id}]"
+            err_str = f"No account associated to id: [{caregiver_id}]"
+            self.logger.info(err_str)
             raise AppOperationError(f"No account associated to the given id")
         if self.is_consumer(caregiver_id):
-            #  log f"There already exits a caregiver with id: [{caregiver_id}]"
+            err_str = f"There already exits a caregiver with id: [{caregiver_id}]"
+            self.logger.info(err_str)
             raise AppOperationError(f"Account is already a caregiver")
         self.db_proxy.add_caregiver(caregiver_id)
 

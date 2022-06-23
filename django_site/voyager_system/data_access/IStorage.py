@@ -53,9 +53,6 @@ class IStorage:
     def get_dispenser(self, serial_num: str):
         raise NotImplementedError("Should have implemented this")
 
-    # todo: depreciate, use update_dispenser instead
-    def set_dispenser_consumer(self, serial_num: str, consumer_id: int):
-        raise NotImplementedError("Should have implemented this")
 
     def update_dispenser(self, dispenser_dto: DispenserDto):
         raise NotImplementedError("Should have implemented this")

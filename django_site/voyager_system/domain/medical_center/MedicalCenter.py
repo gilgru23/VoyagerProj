@@ -1,5 +1,3 @@
-
-
 from voyager_system.common.DateTimeFormats import date_to_str, date_time_to_str
 from voyager_system.data_access.DatabaseProxy import DatabaseProxy
 from voyager_system.common.ErrorTypes import AppOperationError, DataAccessError
@@ -9,7 +7,8 @@ from voyager_system.domain.medical_center.Dispenser import Dispenser
 from voyager_system.domain.medical_center.Dosing import Dosing, Feedback
 from voyager_system.domain.medical_center.Pod import *
 
-from voyager_system.common import Logger
+# from voyager_system.common import Logger
+import logging
 
 
 # imports for test purposes
@@ -23,12 +22,9 @@ class MedicalCenter:
         self.db = db_proxy
         self.marketpalce: MarketPlace = marketplace
         self.notifier = notifier
-        self.logger = Logger.get_logger('Domain', 'MedicalCenter')
-        pass
+        self.logger = logging.getLogger('voyager.domain')
 
     # region Consumer
-
-    # consumer related interface
 
     def get_consumer(self, consumer_id) -> Consumer:
         """retrieves a consumer from database (or cache) by id
@@ -41,11 +37,11 @@ class MedicalCenter:
         try:
             consumer = self.db.get_consumer(consumer_id)
         except DataAccessError as e:
-            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] .\n' + str(e)
-            self.logger.info(err_str)
+            err_str = f'Error: get consumer - consumer [id: {consumer_id}]:\n\t' + str(e)
+            self.logger.error(err_str)
             raise e
         if not consumer:
-            err_str = f'Error: getting consumer - consumer [id: {consumer_id}] is not registered in the system.'
+            err_str = f'Error: get consumer - consumer [id: {consumer_id}] is not registered in the system.'
             self.logger.debug(err_str)
             raise AppOperationError(err_str)
         self.logger.debug(f' retrieved consumer [id: {consumer_id}] from db proxy')
@@ -62,7 +58,7 @@ class MedicalCenter:
         """
 
         def dosing_to_dict(dosing: Dosing, pod_type: str):
-            return {'dosing_id': dosing.id,'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': pod_type,
+            return {'dosing_id': dosing.id, 'pod_serial_number': dosing.pod_serial_number, 'pod_type_name': pod_type,
                     'amount': dosing.amount, 'time': date_time_to_str(dosing.time), 'latitude': dosing.latitude,
                     'longitude': dosing.longitude}
 
@@ -76,7 +72,6 @@ class MedicalCenter:
 
         type_names = dict()
         dosings = self.db.get_consumer_dosing(consumer_id)
-        # pod_serials = {dosing.pod_serial_number for dosing in dosings}
         history = [dosing_to_dict(d, get_pod_type(d.pod_serial_number)) for d in dosings]
         self.logger.debug(f"retrieved consumer's [id: {consumer_id}] dosing history")
         return history
@@ -98,6 +93,7 @@ class MedicalCenter:
         :raise DataAccessError: throws exception if db was not able to get the consumer, it's pods or past dosings
         """
         consumer = self.get_consumer(consumer_id)
+        consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
         new_dosing: Dosing = consumer.dose(pod_serial_number=pod_serial_num, amount=amount, time_str=time,
@@ -170,7 +166,7 @@ class MedicalCenter:
         consumer = self.get_consumer(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
         past_feedbacks = self.db.get_feedbacks_for_consumer(consumer_id)
-        self.sort_consumer_feedbacks(consumer,past_feedbacks)
+        self.sort_consumer_feedbacks(consumer, past_feedbacks)
         feedback: Feedback = consumer.provide_feedback(dosing_id, feedback_rating, feedback_comment)
         self.db.add_feedback(feedback, dosing_id)
         self.logger.info(f"consumer [id: {consumer_id}] added feedback to dosing [id: {dosing_id}]")
@@ -187,15 +183,17 @@ class MedicalCenter:
         """
 
         def feedback_to_dict(feed: Feedback):
-            return {'dosing_id': feed.dosing_id, 'time': date_time_to_str(feed.time), 'rating': feed.rating, 'comment':feed.comment}
+            return {'dosing_id': feed.dosing_id, 'time': date_time_to_str(feed.time), 'rating': feed.rating,
+                    'comment': feed.comment}
 
         consumer = self.get_consumer(consumer_id)
         consumer.dosing_history = self.db.get_consumer_dosing(consumer_id)
         past_feedbacks = self.db.get_feedbacks_for_consumer(consumer_id)
-        self.sort_consumer_feedbacks(consumer,past_feedbacks)
+        self.sort_consumer_feedbacks(consumer, past_feedbacks)
         dosing = consumer.get_dosing_by_id(dosing_id)
         if dosing is None:
-            raise AppOperationError(f"Error: consumer [{consumer_id}] doesn't have a dosing with matching dosing_id [{dosing_id}]")
+            raise AppOperationError \
+                (f"Error: consumer [{consumer_id}] doesn't have a dosing with matching dosing_id [{dosing_id}]")
         feedback = self.db.get_feedback_for_dosing(dosing_id)
         if feedback is None:
             raise AppOperationError(
@@ -213,9 +211,9 @@ class MedicalCenter:
         :raise AppOperationError: throws exception if the consumer is not registered
         :raise DataAccessError: throws exception if db was not able to get consumer
         """
+        pod = self.marketpalce.validate_pod(pod_serial_num, pod_type_name)
         consumer = self.get_consumer(consumer_id)
         consumer.pods = self.db.get_consumer_pods(consumer_id)
-        pod = self.marketpalce.validate_pod(pod_serial_num, pod_type_name)
         consumer.register_pod(pod=pod)
         self.db.update_pod(pod=pod, consumer_id=consumer.id)
         self.logger.info(f"consumer [id: {consumer_id}] registered pod [#: {pod_serial_num}]")
@@ -229,9 +227,10 @@ class MedicalCenter:
         :return: None
         :raise AppOperationError: throws exception if consumer was not found (see get_consumer)
         """
+        dispenser = self.marketpalce.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version,
+                                                        consumer_id=consumer_id)
         consumer = self.get_consumer(consumer_id)
         consumer.dispensers = self.db.get_consumer_dispensers(consumer_id)
-        dispenser = self.marketpalce.validate_dispenser(serial_num=dispenser_serial_number, version=dispenser_version)
         consumer.register_dispenser(dispenser)
         self.db.update_dispenser(dispenser, consumer_id=consumer_id)
         self.logger.info(f"consumer [id: {consumer_id}] registered dispenser [serial #: {dispenser_serial_number}]")
@@ -250,4 +249,6 @@ class MedicalCenter:
 
     # endregion Consumer
 
+    # region Caregiver
 
+    # endregion Caregiver

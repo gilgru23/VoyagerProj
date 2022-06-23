@@ -1,6 +1,6 @@
 from django.utils import timezone
-
 from voyager_system.common.DateTimeFormats import parse_string_to_timezone
+
 from voyager_system.domain.system_management.Account import Account
 from voyager_system.common.ErrorTypes import AppOperationError
 from voyager_system.domain.medical_center.Dispenser import Dispenser
@@ -32,10 +32,13 @@ class Consumer(Account):
     # returns the new Dosing object.
     # throws AppOperationError if the given pod_id is wrong or does not have the required amount for the dosing.
     def dose(self, pod_serial_number: str, amount: float, time_str, latitude=None, longitude=None):
-        is_dosing = self.can_dose(pod_serial_number, amount)
-        if not is_dosing:
+        is_dosing_possible = self.can_dose(pod_serial_number, amount)
+        if not is_dosing_possible:
             raise AppOperationError(
-                f"Error: consumer dosing - wrong serial number [{pod_serial_number}] or amount [{amount}] for consumer [{self.id}]")
+                f"Error: consumer dosing - wrong pod serial number [{pod_serial_number}] or amount [{amount}] ; for consumer [{self.id}]")
+        if len(self.dispensers) == 0:
+            raise AppOperationError(
+                f"Error: consumer dosing - no dispenser to dose with; for consumer [{self.id}]")
         pod: Pod = self.get_pod_by_serial_number(pod_serial_number)
         pod.dose(amount)
         time = parse_string_to_timezone(time_str)
@@ -119,7 +122,7 @@ class Consumer(Account):
         filtered_pods = [p for p in self.pods if p.serial_number == pod.serial_number]
         if filtered_pods:
             raise AppOperationError(
-                f"Error: consumer register pod - pod serial_number [{pod.serial_number}] already registered to consumer [{self.id}]")
+                f"Error: consumer register pod - pod serial_number [{pod.serial_number}] already registered to consumer [{self.email}]")
         self.pods.insert(0, pod)
 
     # registers a new dispenser to the consumer. receives a dispenser serial number arg

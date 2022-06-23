@@ -31,7 +31,6 @@ def register_pod(request: HttpRequest):
     account_id = rh.get_acount_id(request)
     keys = ['serial_num','pod_type']
     serial_num, pod_type = rh.keys_to_values(request, keys)
-    # res = service.get_consumer_service().register_pod_to_consumer(account_id, serial_num, "HARD_CODED_POD_TYPE")
     res = service.get_consumer_service().register_pod_to_consumer(account_id, serial_num, pod_type)
     return rh.result_to_response(res)
 
@@ -105,4 +104,19 @@ def get_feedback_for_dosing(request: HttpRequest):
         res = (False, "parameter dosing_id should be an int.")
     return rh.result_to_response(res)
 
+# @TODO: move following functionalities to Voyager Manager view
+@csrf_exempt
+def add_dispenser(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    keys = ['new_serial_number', 'version']
+    new_serial_num, version = rh.keys_to_values(request, keys)
+    res = service.get_manager_service().add_dispenser(new_serial_num, version)
+    return rh.result_to_response(res)
 
+@csrf_exempt
+def add_pod(request: HttpRequest):
+    account_id = rh.get_acount_id(request)
+    keys = ['new_serial_number', 'pod_type']
+    new_serial_num, pod_type = rh.keys_to_values(request, keys)
+    res = service.get_manager_service().add_pod(new_serial_num, pod_type)
+    return rh.result_to_response(res)

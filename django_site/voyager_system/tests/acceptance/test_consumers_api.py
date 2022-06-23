@@ -14,13 +14,13 @@ class TestConsumers(TestCase):
     client1 = Client()
     client2 = Client()
 
-    account1 = {'email': "micheal@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "micheal",
+    account_details1 = {'email': "michael@dundermifflin.com", 'pwd': 'scottstotts', 'phone': "9999999", 'f_name': "michael",
                 'l_name': "scott", 'dob': "1962-01-01"}
-    consumer1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
+    consumer_details1 = {'residence': 'Scranton, PA', 'height': 175, 'weight': 70, 'units': 1, 'gender': 1,
                  'goal': 'is there?'}
-    account2 = {'email': "jim@dundermifflin.com", 'pwd': '32edefdwQ', 'phone': "8888888", 'f_name': "jim",
+    account_details2 = {'email': "jim@dundermifflin.com", 'pwd': '32edefdwQ', 'phone': "8888888", 'f_name': "jim",
                 'l_name': "halpert", 'dob': "1979-01-01"}
-    consumer2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
+    consumer_details2 = {'residence': 'Scranton, PA / philly, PA', 'height': 191, 'weight': 80, 'units': 1, 'gender': 1,
                  'goal': 'pam'}
 
     company_details = {'name': "E-corp"}
@@ -49,24 +49,24 @@ class TestConsumers(TestCase):
 
     def setup_accounts(self):
         # register account 1
-        body = json.dumps(self.account1)
+        body = json.dumps(self.account_details1)
         response = self.client1.generic('POST', reverse('register'), body)
         self.assertEqual(response.status_code, 200)
         # login account 1
-        body = json.dumps(self.account1)
+        body = json.dumps(self.account_details1)
         response = self.client1.generic('POST', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
         # create consumer 1 profile
-        body = json.dumps(self.consumer1)
+        body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
 
         self.assertEqual(response.status_code, 200)
         # register account 2
-        body = json.dumps(self.account2)
+        body = json.dumps(self.account_details2)
         response = self.client2.generic('POST', reverse('register'), body)
         self.assertEqual(response.status_code, 200)
         # login account 2
-        body = json.dumps({'email': self.account2['email'], 'pwd': self.account2['pwd']})
+        body = json.dumps({'email': self.account_details2['email'], 'pwd': self.account_details2['pwd']})
         response = self.client2.generic('GET', reverse('login'), body)
         self.assertEqual(response.status_code, 200)
 
@@ -108,6 +108,11 @@ class TestConsumers(TestCase):
         response = self.client1.generic('POST', reverse('register_pod'), body)
         return response
 
+    def get_consumer_pods(self):
+        response = self.client1.generic(
+            'GET', reverse('get_pods_of_consumer'), '')
+        return response
+
     def consumer_dose(self, pod_details, amount: float, time: str):
         params = {"pod_serial_num": pod_details['serial_number'],
                   "amount": amount, "time": time}
@@ -134,23 +139,39 @@ class TestConsumers(TestCase):
 
         return response
 
-    def test_register_consumer(self):
-        body = json.dumps(self.consumer2)
+    def test_create_consumer_profile_success(self):
+        print(f'\tTest: create consumer profile - success')
+        body = json.dumps(self.consumer_details2)
         response = self.client2.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 200)
 
-    def test_register_consumer_fail(self):
-        print(f'case should fail:')
-        print(f'consumer profile already exists')
-        body = json.dumps(self.consumer1)
+
+    def test_create_consumer_profile_fail_1(self):
+        print(f'\tTest: create consumer profile - fail')
+        print(f'\t\tnot logged in to account')
+        # check that a user that never registered cannot create a profile
+        other_client = Client()
+        body = json.dumps(self.consumer_details1)
+        response = other_client.generic('GET', reverse('create consumer profile'), body)
+        self.assertNotEqual(response.status_code, 200)
+        # client 2 is logged in to account 2.
+        # log out from account 2
+        response = self.client2.generic('GET', reverse('logout'), "")
+        self.assertEqual(response.status_code, 200)
+        # check that a user that has logged out cannot create a profile
+        response = self.client2.generic('GET', reverse('create consumer profile'), body)
+        self.assertNotEqual(response.status_code, 200)
+
+
+    def test_create_consumer_profile_fail_2(self):
+        print(f'\tTest: create consumer profile - fail')
+        print(f'\t\tconsumer profile already exists')
+        body = json.dumps(self.consumer_details1)
         response = self.client1.generic('GET', reverse('create consumer profile'), body)
         self.assertEqual(response.status_code, 400)
 
-    def test_register_pod(self):
-        response = self.register_pod_to_consumer(self.pod_details1)
-        self.assertEqual(response.status_code, 200)
-
-    def test_register_dispenser(self):
+    def test_register_dispenser_success(self):
+        print(f'\tTest: register dispenser - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -166,7 +187,42 @@ class TestConsumers(TestCase):
         dispensers = json.loads(response.content)
         self.assertEqual(len(dispensers), 2)
 
-    def test_consumer_dose(self):
+    def test_register_dispenser_fail_1(self):
+        print(f'\tTest: register dispenser - fail')
+        print(f"\t\tthe dispenser's serial-number does not exist")
+        # register dispenser1 to consumer
+        response = self.register_dispenser_to_consumer({'serial_number':"notaRealSerialNumber", 'version':'None'})
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_register_dispenser_fail_2(self):
+        print(f'\tTest: register dispenser - fail')
+        print(f"\t\tconsumer is not logged in")
+        response = self.client1.generic('GET', reverse('logout'), "")
+        self.assertEqual(response.status_code, 200)
+        response = self.register_dispenser_to_consumer(self.dispenser_details1)
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_register_dispenser_multiple_consumers_fail(self):
+        print(f'\tTest: register dispenser multiple consumers - fail')
+        # create consumer 2 profile
+        body = json.dumps(self.consumer_details2)
+        response = self.client2.generic('GET', reverse('create consumer profile'), body)
+        # register dispenser1 to consumer
+        response = self.register_dispenser_to_consumer(self.dispenser_details1)
+        self.assertEqual(response.status_code, 200)
+
+        # register dispenser2 to consumer
+        params = {"serial_num": self.dispenser_details1['serial_number'],
+                  "version": self.dispenser_details1['version']}
+        body = json.dumps(params)
+        response = self.client2.generic(
+            'POST', reverse('register dispenser'), body)
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_consumer_dose_success(self, prt = True):
+        if prt:
+            print(f'\tTest: consumer dose - success')
         # register dispenser1 to consumer
         response = self.register_dispenser_to_consumer(self.dispenser_details1)
         self.assertEqual(response.status_code, 200)
@@ -188,18 +244,149 @@ class TestConsumers(TestCase):
             self.pod_details2, amount=0.5, time='2020-05-20 16:15:00')
         self.assertEqual(response.status_code, 200)
 
-    def test_get_dosing_history(self):
+    def test_consumer_dose_fail_1(self):
+        print(f'\tTest: consumer dose - fail')
+        print(f'\t\t no dispenser is registered to consumer')
+
+        # register pod 1 to consumer
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+
         # perform dosings
-        self.test_consumer_dose()
+        response = self.consumer_dose(
+            self.pod_details1, amount=1.5, time='2020-05-20 16:05:00')
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_consumer_dose_fail_2(self):
+        print(f'\tTest: consumer dose - fail')
+        print(f'\t\tno pod is registered to consumer')
+        # register dispenser1 to consumer
+        response = self.register_dispenser_to_consumer(self.dispenser_details1)
+        self.assertEqual(response.status_code, 200)
+
+        # perform dosings
+        response = self.consumer_dose(
+            self.pod_details1, amount=1.5, time='2020-05-20 16:05:00')
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_consumer_dose_fail_3(self):
+        print(f'\tTest: consumer dose - fail')
+        print(f'\t\tsampled pod is empty')
+        # register dispenser1 to consumer
+        response = self.register_dispenser_to_consumer(self.dispenser_details1)
+        self.assertEqual(response.status_code, 200)
+
+        # register pod 1 to consumer
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+
+        # perform dosings
+        response = self.consumer_dose(
+            self.pod_details1, amount=40, time='2020-05-20 16:05:00')
+        self.assertEqual(response.status_code, 200)
+        response = self.consumer_dose(
+            self.pod_details1, amount=0.5, time='2020-05-20 16:05:00')
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_get_dosing_history_success(self):
+        print(f'\tTest: get dosing history - success')
+        # perform dosings
+        self.test_consumer_dose_success(prt=False)
         # get history
         response = self.get_dosing_history()
         self.assertEqual(response.status_code, 200)
         dosings = json.loads(response.content)
         self.assertEqual(len(dosings), 3)
 
-    def test_add_feedback_to_dosing(self):
-        # perform dosings
-        self.test_consumer_dose()
+    def test_get_dosing_history_fail(self):
+        print(f'\tTest: get dosing history - fail')
+        print(f'\t\tdosing history is empty')
+        # get history
+        response = self.get_dosing_history()
+        self.assertEqual(response.status_code, 200)
+        dosings = json.loads(response.content)
+        self.assertEqual(len(dosings), 0)
+
+    def test_register_pod_success(self):
+        print(f'\tTest: register pod - success')
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details2)
+        self.assertEqual(response.status_code, 200)
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 2)
+
+    def test_register_pod_fail_1(self):
+        print(f'\tTest: register pod - fail')
+        print(f'\t\t pod does not exist')
+        other_pod = self.pod_details1.copy()
+        other_pod['serial_number'] = 'notARealPodNumber'
+        response = self.register_pod_to_consumer(other_pod)
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_register_pod_fail_2(self):
+        print(f'\tTest: register pod - fail')
+        print(f'\t\t pod is lready registered to consumer')
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertNotEqual(response.status_code, 200)
+        print(f'\t\terror msg: {response.content.decode("utf-8")}')
+
+    def test_get_consumer_pods_success(self):
+        print(f'\tTest: get consumer pods - success')
+        response = self.register_pod_to_consumer(self.pod_details1)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details2)
+        self.assertEqual(response.status_code, 200)
+        response = self.register_pod_to_consumer(self.pod_details3)
+        self.assertEqual(response.status_code, 200)
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 3)
+
+    def test_get_consumer_pods_empty(self):
+        print(f'\tTest: get consumer pods - success')
+        response = self.get_consumer_pods()
+        self.assertEqual(response.status_code, 200)
+        pods = json.loads(response.content)
+        self.assertEqual(len(pods), 0)
+
+    def test_add_feedback_to_dosing_success(self):
+        print(f'\tTest: add feedback to dosing - success')
+        # perform dosing
+        self.test_consumer_dose_success(False)
+        # get history
+        response = self.get_dosing_history()
+        dosings = json.loads(response.content)
+        # add feedback
+        dosing_id = dosings[0]['dosing_id']
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating=8,
+                                     feedback_comment="it was good")
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_add_feedback_to_dosing_fail(self):
+        print(f'\tTest: add feedback to dosing - fail')
+        print(f'\t\tno dosings made by consumer')
+        # add feedback
+        dosing_id = -268
+        response = self.add_feedback(dosing_id=dosing_id, feedback_rating=8,
+                                     feedback_comment="it was good")
+        self.assertNotEqual(response.status_code, 200)
+
+
+    def test_get_feedback_success(self):
+        print(f'\tTest: add feedback to dosing - success')
+        # perform dosing
+        self.test_consumer_dose_success(False)
         # get history
         response = self.get_dosing_history()
         dosings = json.loads(response.content)
@@ -215,9 +402,8 @@ class TestConsumers(TestCase):
         self.assertEqual(feedback['comment'], "it was good")
 
     def test_get_feedback_fail(self):
-        print(f'case should fail:')
-        print(f'no feedback was provided for the requested dosing')
+        print(f'\tTest: get feedback - fail')
+        print(f'\t\tno feedback was provided for the requested dosing')
         dosing_id = 1
         response = self.get_feedback(dosing_id=dosing_id)
         self.assertEqual(response.status_code, 400)
-

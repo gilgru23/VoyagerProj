@@ -3,6 +3,7 @@ from django.db import models
 from account_api.models import Account
 
 
+
 # Create your models here.
 class Consumer(models.Model):
     class Unit(models.IntegerChoices):
@@ -20,7 +21,7 @@ class Consumer(models.Model):
     weight = models.IntegerField()
     units = models.IntegerField(choices=Unit.choices)
     gender = models.IntegerField(choices=Gender.choices)
-
+    obj_version = models.IntegerField(default=0)
     # goal = models.CharField(max_length=50)
 
     def __str__(self):
@@ -34,6 +35,7 @@ class Dispenser(models.Model):
     version = models.CharField(max_length=50, null=False)
     consumer = models.ForeignKey(Consumer, null=True, blank=True, default=None, on_delete=models.SET_NULL)
     registration_date = models.DateTimeField(null=True, blank=True, default=None)
+    obj_version = models.IntegerField(default=0)
 
     def __str__(self):
         return self.serial_num
@@ -80,7 +82,8 @@ class Pod(models.Model):
     serial_num = models.CharField(max_length=100, unique=True)
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE, null=True, blank=True)
     pod_type = models.ForeignKey(PodType, on_delete=models.CASCADE, null=False)
-    remainder = models.IntegerField(null=True, blank=True)
+    remainder = models.FloatField(null=True, blank=True)
+    obj_version = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.pod_type) + " " + self.serial_num

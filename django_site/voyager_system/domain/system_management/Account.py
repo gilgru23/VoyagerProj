@@ -7,3 +7,4 @@ class Account:
         self.last_name = ""
         self.date_of_birth = None
         self.registration_date = None
+        self.obj_version = None
