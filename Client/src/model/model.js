@@ -20,7 +20,7 @@ import { Dosing } from './dosing.js'
 import { MockServer } from '../Communication/mockServer.js'
 import { responseStatus } from '../Config/constants.js'
 import { createResponseObj, toDateString } from '../utilsFunctions.js'
-import { Feedback } from './feedback'
+import { Feedback } from './feedback.js'
 export class Model {
   constructor(testMode) {
     console.log(testMode)
@@ -142,10 +142,10 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
-  dose = async (pod, amount, time) => {
-    const response = await this.doseReq(pod, amount, time)
+  dose = async (pod, amount, time, userName, dispenserId) => {
+    const response = await this.doseReq(pod, amount, time, userName)
     if (response.status === responseStatus.SUCCESS) {
-      return createResponseObj(responseStatus.SUCCESS, 'Dosing succeeded')
+      return createResponseObj(responseStatus.SUCCESS, response.content)
     }
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
@@ -193,8 +193,13 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 
-  provideFeedback = async (dosingId, rating, comment) => {
-    const response = await this.provideFeedbackReq(dosingId, rating, comment)
+  provideFeedback = async (dosingId, rating, comment, userId) => {
+    const response = await this.provideFeedbackReq(
+      dosingId,
+      rating,
+      comment,
+      userId
+    )
     if (response.status === responseStatus.SUCCESS) {
       console.log('provide feedback in model')
       return createResponseObj(responseStatus.SUCCESS, response.content)
@@ -216,69 +221,3 @@ export class Model {
     return createResponseObj(responseStatus.FAILURE, 'Server error')
   }
 }
-
-// export const registerUser = async (
-//   email,
-//   password,
-//   firstName,
-//   lastName,
-//   birthDate
-// ) => {
-//   const response = await userRegistrationRequest(
-//     email,
-//     password,
-//     firstName,
-//     lastName,
-//     birthDate
-//   )
-//   return response
-// }
-
-// export const loginUser = async (email, password) => {
-//   const response = await loginUserRequest(email, password)
-//   if (response.status === responseStatus.SUCCESS) {
-//     return createResponseObj(
-//       responseStatus.SUCCESS,
-//       new Consumer(email, 'Gil', 'Gruber', new Date())
-//     )
-//   }
-//   return createResponseObj(responseStatus.FAILURE, 'Server error')
-// }
-
-// export const createConsumerProfile = async (
-//   residence,
-//   height,
-//   weight,
-//   units,
-//   gender,
-//   goal
-// ) => {
-//   const response = await createConsumerProfileRequest(
-//     residence,
-//     height,
-//     weight,
-//     units,
-//     gender,
-//     goal
-//   )
-//   if (response.status === responseStatus.SUCCESS) {
-//     return createResponseObj(
-//       responseStatus.SUCCESS,
-//       new Consumer(
-//         userCradentials.email,
-//         userCradentials.firstName,
-//         userCradentials.lastName,
-//         birthDate
-//       )
-//     )
-//   }
-//   return createResponseObj(responseStatus.FAILURE, 'Server error')
-// }
-
-// export const registerDispenser = async (id, name) => {
-//   const response = await registerDispenserRequest(id, name)
-//   if (response.status === responseStatus.SUCCESS) {
-//     return createResponseObj(responseStatus.SUCCESS, new Dispenser(id, name))
-//   }
-//   return createResponseObj(responseStatus.FAILURE, 'Server error')
-// }
