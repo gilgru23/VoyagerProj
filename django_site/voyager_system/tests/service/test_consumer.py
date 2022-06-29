@@ -159,3 +159,36 @@ class TestConsumer(TestCase):
         self.assertTrue(Res.is_successful(result))
         history = Res.get_value(result)
         self.assertEqual(len(history), 2)
+
+
+    def test_caregiver_gets_consumer_history(self):
+        print(f'Test: register caregiver to consumer - success:')
+        a3 = {'email': "pam@dundermifflin.com", 'phone': "9999999", 'f_name': "pam",
+              'l_name': "beasly", 'dob': "1980-01-01"}
+        c3 = {'residence': 'Scranton, PA / philly, PA', 'height': 167, 'weight': 50, 'units': 1, 'gender': 2,
+              'goal': 'jim'}
+
+        self.guest_service.create_account(email=a3['email'], phone=a3['phone'],
+                                          f_name=a3['f_name'],
+                                          l_name=a3['l_name'], dob=a3['dob'])
+        account = self.db_proxy.get_account_by_email(a3['email'])
+        a3['id'] = account.id
+        c3['id'] = account.id
+        self.guest_service.create_consumer_profile(c3['id'], c3['residence'], c3['height'], c3['weight'], c3['units'],
+                                                   c3['gender'], c3['goal'])
+        a2 = self.account_details2
+        c1 = self.consumer_details1
+
+        result = self.guest_service.create_caregiver_profile(a2['id'])
+        self.assertTrue(Res.is_successful(result))
+        result = self.consumer_service.register_caregiver_to_consumer(consumer_id=c1['id'],
+                                                                              caregiver_email=a2['email'])
+        self.assertTrue(Res.is_successful(result))
+        result = self.consumer_service.register_caregiver_to_consumer(consumer_id=c3['id'],
+                                                                              caregiver_email=a2['email'])
+        self.assertTrue(Res.is_successful(result))
+        self.test_consumer_dose()
+        result = self.consumer_service.get_consumer_history_for_caregiver(caregiver_id=a2['id'],consumer_id=c1['id'])
+        self.assertTrue(Res.is_successful(result))
+        history = Res.get_value(result)
+        print(history)

@@ -247,8 +247,30 @@ class MedicalCenter:
             raise AppOperationError(err_str)
         return recommendation
 
+    def register_caregiver(self, consumer_id: int, caregiver_email: str):
+        consumer = self.get_consumer(consumer_id)
+        caregiver = self.db.get_caregiver_by_email(caregiver_email)
+        caregiver.add_consumer(consumer)
+        self.db.update_caregiver(caregiver)
+
     # endregion Consumer
 
     # region Caregiver
+    def get_consumers_of_caregiver(self, caregiver_id):
+        def consumer_to_dict(consumer:Consumer):
+            return {'id':consumer.id, 'email':consumer.email}
+        caregiver = self.db.get_caregiver(caregiver_id)
+        consumer_ids = caregiver.get_consumers()
+        consumers = []
+        for consumer_id in consumer_ids:
+            cons = self.get_consumer(consumer_id)
+            consumers.append(cons)
+        return [consumer_to_dict(cons) for cons in consumers]
+
+    def caregiver_get_consumer_dosing_history(self, caregiver_id, consumer_id):
+        caregiver = self.db.get_caregiver(caregiver_id)
+        if not caregiver.has_consumer(consumer_id):
+            raise AppOperationError(f'Consumer [id - {consumer_id}] is not associated to caregiver [id - {caregiver_id}]')
+        return self.get_consumer_dosing_history(consumer_id=consumer_id)
 
     # endregion Caregiver
