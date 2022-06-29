@@ -44,6 +44,18 @@ class ConsumerService:
         return self.manage_request_calls(
             lambda: self.med_center.get_feedback_for_dosing(consumer_id=consumer_id, dosing_id=dosing_id))
 
+    def register_caregiver_to_consumer(self, consumer_id: int, caregiver_email: str):
+        return self.manage_request_calls(
+            lambda: self.med_center.register_caregiver(consumer_id=consumer_id, caregiver_email = caregiver_email))
+
+    def get_consumers_of_caregiver(self,caregiver_id: int):
+        return self.manage_request_calls(
+            lambda: self.med_center.get_consumers_of_caregiver(caregiver_id=caregiver_id))
+
+
+    def get_consumer_history_for_caregiver(self,caregiver_id: int,consumer_id: int):
+        return self.manage_request_calls(
+            lambda: self.med_center.caregiver_get_consumer_dosing_history(caregiver_id=caregiver_id,consumer_id=consumer_id))
 
     @staticmethod
     def manage_request_calls(func):

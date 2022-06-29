@@ -134,7 +134,6 @@ class DatabaseProxy:
     def add_caregiver(self, caregiver_id):
         return db.add_caregiver(caregiver_id)
 
-
     def get_caregiver(self, caregiver_id):
         try:
             account_dto = db.get_account_by_id(caregiver_id)
@@ -146,6 +145,36 @@ class DatabaseProxy:
             raise DataAccessError(err_str)
         caregiver = self.dto_to_caregiver(caregiver_dto, account_dto)
         return caregiver
+
+    def get_caregiver_by_email(self, caregiver_email):
+        try:
+            account_dto = db.get_account_by_email(caregiver_email)
+            caregiver_dto = db.get_caregiver(account_dto.id)
+        except ObjectDoesNotExist as e:
+            return None
+        except Exception as e:
+            err_str = f"Unable to retrieve caregiver from db, with email [{caregiver_email}]." + "\n\t" + str(e)
+            raise DataAccessError(err_str)
+        caregiver = self.dto_to_caregiver(caregiver_dto, account_dto)
+        return caregiver
+
+
+    def update_caregiver(self, caregiver: Caregiver):
+        caregiver_dto = self.caregiver_to_dto(caregiver)
+        try:
+            db.update_caregiver(caregiver_dto)
+        except ConcurrentUpdateError as e:
+            err_str = f"Unable to update caregiver [{caregiver.id}] because of race condition. try again"
+            raise ConcurrentUpdateError(err_str)
+        except ObjectDoesNotExist as e:
+            err_str = f"Unable to update caregiver profile [{caregiver.id}] - because caregiver was not found.\n\t" + str(
+                e)
+            # log error
+            raise AppOperationError(err_str)
+        except Exception as e:
+            err_str = f"Unable to update caregiver [{caregiver.id}] in db." + "\n\t" + str(e)
+            raise DataAccessError(err_str)
+
 
     # region Caregiver
 
