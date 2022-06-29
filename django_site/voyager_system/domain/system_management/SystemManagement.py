@@ -97,7 +97,7 @@ class SystemManagement:
             err_str = f"No account associated to id: [{caregiver_id}]"
             self.logger.info(err_str)
             raise AppOperationError(f"No account associated to the given id")
-        if self.is_consumer(caregiver_id):
+        if self.is_caregiver(caregiver_id):
             err_str = f"There already exits a caregiver with id: [{caregiver_id}]"
             self.logger.info(err_str)
             raise AppOperationError(f"Account is already a caregiver")

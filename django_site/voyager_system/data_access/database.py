@@ -125,7 +125,7 @@ def update_consumer(consumer_dto: ConsumerDto):
 
 # region Caregiver
 def add_caregiver(id: int):
-    return Consumer.objects.create(account=Account.objects.get(id=id))
+    return Caregiver.objects.create(account=Account.objects.get(id=id))
 
 
 def has_caregiver(id):
@@ -134,7 +134,9 @@ def has_caregiver(id):
 
 def update_caregiver(caregiver_dto: CaregiverDto):
     care: Caregiver = Caregiver.objects.get(account_id=caregiver_dto.id)
-    care.consumers = Consumer.objects.filter(pk__in=caregiver_dto.consumers)
+    # care.consumers = Consumer.objects.filter(pk__in=caregiver_dto.consumers)
+    consumers = list(Consumer.objects.filter(pk__in=caregiver_dto.consumers))
+    care.consumers.add(*consumers)
     care.save()
 
 
@@ -142,7 +144,7 @@ def get_caregiver(caregiver_id: int) -> CaregiverDto:
     caregiver = Caregiver.objects.get(account=caregiver_id)
     dto: CaregiverDto = CaregiverDto()
     dto.id = caregiver_id
-    dto.consumers = caregiver.consumers.values_list('id', flat=True)
+    dto.consumers = list(caregiver.consumers.values_list('pk', flat=True))
     return dto
 
 
